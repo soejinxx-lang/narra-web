@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 async function fetchNovel(id: string) {
   const base = process.env.NEXT_PUBLIC_STORAGE_BASE_URL;
@@ -55,18 +56,23 @@ export default async function Page({
 
       <section>
         {episodes.map((ep: any) => (
-          <div
+          <Link
             key={ep.ep}
-            style={{
-              padding: "12px 0",
-              borderBottom: "1px solid #e5e5e5",
-              cursor: "pointer",
-            }}
+            href={`/novels/${params.id}/episodes/${ep.ep}`}
+            style={{ textDecoration: "none", color: "inherit" }}
           >
-            <div style={{ fontWeight: 500 }}>
-              EP {ep.ep} {ep.title}
+            <div
+              style={{
+                padding: "12px 0",
+                borderBottom: "1px solid #e5e5e5",
+                cursor: "pointer",
+              }}
+            >
+              <div style={{ fontWeight: 500 }}>
+                EP {ep.ep} {ep.title}
+              </div>
             </div>
-          </div>
+          </Link>
         ))}
       </section>
     </main>
