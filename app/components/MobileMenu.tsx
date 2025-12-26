@@ -1,27 +1,41 @@
-import Link from "next/link";
+"use client";
 
-export default function MobileMenu() {
+import NavMenu from "./NavMenu";
+
+export default function MobileMenu({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
+  if (!open) return null;
+
   return (
-    <details>
-      <summary style={{ cursor: "pointer", fontSize: "20px" }}>☰</summary>
-      <ul
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.2)",
+        zIndex: 1000,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
         style={{
-          listStyle: "none",
-          padding: "8px 0",
-          margin: 0,
           position: "absolute",
-          right: "16px",
-          background: "white",
-          border: "1px solid #e5e5e5",
+          top: 56,
+          right: 0,
+          width: "220px",
+          background: "#faf8f3",
+          borderLeft: "1px solid #e5e5e5",
+          borderBottom: "1px solid #e5e5e5",
         }}
       >
-        <li><Link href="/">Home</Link></li>
-        <li><Link href="/novels">All Novels</Link></li>
-        <li><Link href="/browse">Browse</Link></li>
-        <li><Link href="/about">About NARRA</Link></li>
-        <li><Link href="/notes">Translation Notes</Link></li>
-        <li><Link href="/contact">Contact</Link></li>
-      </ul>
-    </details>
+        <NavMenu />
+      </div>
+    </div>
   );
 }
+

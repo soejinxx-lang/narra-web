@@ -4,11 +4,12 @@ export default function NavMenu() {
   return (
     <ul
       style={{
-        display: "flex",
         listStyle: "none",
-        gap: "16px",
         margin: 0,
-        padding: 0,
+        padding: "16px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "12px",
       }}
     >
       <li><Link href="/novels">All Novels</Link></li>

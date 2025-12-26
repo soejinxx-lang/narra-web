@@ -25,13 +25,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable}`}
+        style={{
+          margin: 0,
+          minHeight: "100vh",
+          background: "#faf8f3",
+        }}
+      >
         <Header />
-
-        <main style={{ padding: "16px" }}>
+        <main>
           {children}
         </main>
       </body>
     </html>
   );
 }
+
