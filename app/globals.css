@@ -35,8 +35,17 @@ a {
   text-decoration: none;
 }
 
+/* NARRA logo wordmark */
+.narra-logo {
+  font-family: "KoPub Batang", serif;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: #243A6E;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
 }
+
