@@ -29,10 +29,9 @@ export default function Header() {
         <Link
           href="/"
           onClick={closeMenu}
+          className="narra-logo"
           style={{
             textDecoration: "none",
-            color: "inherit",
-            fontWeight: "bold",
           }}
         >
           NARRA
