@@ -35,17 +35,24 @@ export default function RootLayout({
             justifyContent: "space-between",
             padding: "0 16px",
             borderBottom: "1px solid #e5e5e5",
+            position: "relative",
           }}
         >
           <strong>NARRA</strong>
           <nav>
-            <details>
-              <summary style={{ cursor: "pointer" }}>☰</summary>
+            <details style={{ position: "relative" }}>
+              <summary style={{ cursor: "pointer", listStyle: "none" }}>☰</summary>
               <ul
                 style={{
+                  position: "absolute",
+                  right: 0,
+                  top: "100%",
+                  background: "#fff",
+                  border: "1px solid #e5e5e5",
                   listStyle: "none",
                   padding: "8px 0",
                   margin: 0,
+                  minWidth: "160px",
                 }}
               >
                 <li><Link href="/">Home</Link></li>
