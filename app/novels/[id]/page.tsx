@@ -18,6 +18,19 @@ async function fetchNovel(id: string) {
   return res.json();
 }
 
+async function fetchEpisodes(id: string) {
+  const res = await fetch(`/api/novels/${id}/episodes`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    return [];
+  }
+
+  const data = await res.json();
+  return data.episodes ?? data;
+}
+
 export default async function Page({
   params,
 }: {
@@ -29,6 +42,8 @@ export default async function Page({
     notFound();
   }
 
+  const episodes = await fetchEpisodes(params.id);
+
   return (
     <main style={{ padding: 24 }}>
       <h1 style={{ fontSize: 28, marginBottom: 8 }}>{novel.title}</h1>
@@ -37,6 +52,24 @@ export default async function Page({
           {novel.description}
         </p>
       )}
+
+      <section>
+        {episodes.map((ep: any) => (
+          <div
+            key={ep.ep}
+            style={{
+              padding: "12px 0",
+              borderBottom: "1px solid #e5e5e5",
+              cursor: "pointer",
+            }}
+          >
+            <div style={{ fontWeight: 500 }}>
+              EP {ep.ep} {ep.title}
+            </div>
+          </div>
+        ))}
+      </section>
     </main>
   );
 }
+
