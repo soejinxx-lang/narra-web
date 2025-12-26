@@ -7,7 +7,12 @@ export default function Page() {
         minHeight: "100vh",
       }}
     >
-      <h1 style={{ fontSize: "32px", marginBottom: "8px" }}>NARRA</h1>
+      <div
+        className="narra-logo"
+        style={{ fontSize: "32px", marginBottom: "8px" }}
+      >
+        NARRA
+      </div>
       <p style={{ marginBottom: "32px", color: "#666" }}>
         Web novel translation & reading platform
       </p>
