@@ -26,7 +26,17 @@ export default function Header() {
           padding: "0 16px",
         }}
       >
-        <strong>NARRA</strong>
+        <Link
+          href="/"
+          onClick={closeMenu}
+          style={{
+            textDecoration: "none",
+            color: "inherit",
+            fontWeight: "bold",
+          }}
+        >
+          NARRA
+        </Link>
         <button
           onClick={() => setOpen(!open)}
           style={{
