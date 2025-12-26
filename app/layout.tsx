@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Link from "next/link";
 import "./globals.css";
+import Header from "./components/Header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,47 +26,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {/* Header */}
-        <header
-          style={{
-            height: "56px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "0 16px",
-            borderBottom: "1px solid #e5e5e5",
-            position: "relative",
-          }}
-        >
-          <strong>NARRA</strong>
-          <nav>
-            <details style={{ position: "relative" }}>
-              <summary style={{ cursor: "pointer", listStyle: "none" }}>☰</summary>
-              <ul
-                style={{
-                  position: "absolute",
-                  right: 0,
-                  top: "100%",
-                  background: "#fff",
-                  border: "1px solid #e5e5e5",
-                  listStyle: "none",
-                  padding: "8px 0",
-                  margin: 0,
-                  minWidth: "160px",
-                }}
-              >
-                <li><Link href="/">Home</Link></li>
-                <li><Link href="/novels">All Novels</Link></li>
-                <li><Link href="/browse">Browse</Link></li>
-                <li><Link href="/about">About NARRA</Link></li>
-                <li><Link href="/notes">Translation Notes</Link></li>
-                <li><Link href="/contact">Contact</Link></li>
-              </ul>
-            </details>
-          </nav>
-        </header>
+        <Header />
 
-        {/* Page Content */}
         <main style={{ padding: "16px" }}>
           {children}
         </main>
