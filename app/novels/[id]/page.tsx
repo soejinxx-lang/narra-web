@@ -4,11 +4,9 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 
 async function fetchNovel(id: string) {
-  const base = process.env.NEXT_PUBLIC_STORAGE_BASE_URL;
-
-  if (!base) {
-    throw new Error("STORAGE BASE URL NOT SET");
-  }
+  const base =
+    process.env.NEXT_PUBLIC_STORAGE_BASE_URL ||
+    "https://narra-storage-production.up.railway.app/api";
 
   const res = await fetch(`${base}/novels/${id}`, {
     cache: "no-store",
