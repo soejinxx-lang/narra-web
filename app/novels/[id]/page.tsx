@@ -3,12 +3,10 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 
-async function fetchNovel(id: string) {
-  const base =
-    process.env.NEXT_PUBLIC_STORAGE_BASE_URL ||
-    "https://narra-storage-production.up.railway.app/api";
+const STORAGE_BASE = "https://narra-storage-production.up.railway.app/api";
 
-  const res = await fetch(`${base}/novels/${id}`, {
+async function fetchNovel(id: string) {
+  const res = await fetch(`${STORAGE_BASE}/novels/${id}`, {
     cache: "no-store",
   });
 
@@ -20,11 +18,7 @@ async function fetchNovel(id: string) {
 }
 
 async function fetchEpisodes(id: string) {
-  const base =
-    process.env.NEXT_PUBLIC_STORAGE_BASE_URL ||
-    "https://narra-storage-production.up.railway.app/api";
-
-  const res = await fetch(`${base}/novels/${id}/episodes`, {
+  const res = await fetch(`${STORAGE_BASE}/novels/${id}/episodes`, {
     cache: "no-store",
   });
 
