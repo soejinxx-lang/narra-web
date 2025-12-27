@@ -5,10 +5,11 @@ export async function GET(
   {
     params,
   }: {
-    params: Promise<{ id: string }>;
+    params: { id: string };
   }
 ) {
-  const { id } = await params;
+  const { id } = params;
+
   const base = process.env.NEXT_PUBLIC_STORAGE_BASE_URL;
 
   if (!base) {
@@ -18,9 +19,10 @@ export async function GET(
     );
   }
 
-  const res = await fetch(`${base}/novels/${id}`, {
-    cache: "no-store",
-  });
+  const res = await fetch(
+    `${base}/novels/${encodeURIComponent(id)}`,
+    { cache: "no-store" }
+  );
 
   if (!res.ok) {
     return NextResponse.json(
