@@ -35,10 +35,8 @@ async function fetchNovel(id: string) {
 }
 
 async function fetchEpisodes(id: string) {
-  if (!STORAGE_BASE) return [];
-
   const res = await fetch(
-    `${STORAGE_BASE}/novels/${encodeURIComponent(id)}/episodes`,
+    `/api/novels/${encodeURIComponent(id)}/episodes`,
     { cache: "no-store" }
   );
 
@@ -51,7 +49,6 @@ export default async function Page({ params }: PageProps) {
   const id = params.id;
   const novel = await fetchNovel(id);
 
-  /* 🔴 원인까지 같이 찍히는 디버그 */
   if ((novel as any)?.__error) {
     return (
       <main style={{ padding: 24 }}>
