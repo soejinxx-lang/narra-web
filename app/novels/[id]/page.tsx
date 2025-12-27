@@ -1,6 +1,6 @@
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-import { notFound } from "next/navigation";
 import Link from "next/link";
 
 async function fetchNovel(id: string) {
@@ -46,7 +46,11 @@ export default async function Page({
   const novel = await fetchNovel(params.id);
 
   if (!novel) {
-    notFound();
+    return (
+      <main style={{ padding: 24 }}>
+        <h1>Novel not found</h1>
+      </main>
+    );
   }
 
   const episodes = await fetchEpisodes(params.id);
