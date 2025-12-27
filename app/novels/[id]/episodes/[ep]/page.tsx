@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import { notFound } from "next/navigation";
 
 async function fetchEpisode(id: string, ep: string) {
@@ -39,4 +41,3 @@ export default async function Page({
     </main>
   );
 }
-
