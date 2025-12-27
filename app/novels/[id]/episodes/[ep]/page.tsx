@@ -4,19 +4,19 @@ export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 
 async function fetchEpisode(id: string, ep: string) {
-  const base =
-    process.env.NEXT_PUBLIC_STORAGE_BASE_URL ||
-    "https://narra-storage-production.up.railway.app/api";
-
-  const res = await fetch(`${base}/novels/${id}/episodes/${ep}`, {
-    cache: "no-store",
-  });
+  const res = await fetch(
+    `/api/novels/${encodeURIComponent(id)}/episodes`,
+    { cache: "no-store" }
+  );
 
   if (!res.ok) {
     return null;
   }
 
-  return res.json();
+  const data = await res.json();
+  const episodes = data.episodes ?? data;
+
+  return episodes.find((e: any) => String(e.ep) === String(ep)) ?? null;
 }
 
 export default async function Page({
