@@ -16,12 +16,11 @@ export async function GET(
   }
 
   // URL이 제대로 만들어지는지 확인해보기 위해 콘솔 로그 추가
-  console.log("Fetch URL:", `${base}/novels/${encodeURIComponent(id)}`);
+  const fetchUrl = `${base}/novels/${encodeURIComponent(id)}`;
+  console.log("Fetch URL:", fetchUrl); // fetchUrl 확인용 로그 추가
 
-  const res = await fetch(
-    `${base}/novels/${encodeURIComponent(id)}`,
-    { cache: "no-store" }
-  );
+  // fetch 요청을 보내는 부분
+  const res = await fetch(fetchUrl, { cache: "no-store" });
 
   if (!res.ok) {
     return NextResponse.json(
