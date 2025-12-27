@@ -1,7 +1,11 @@
 import { notFound } from "next/navigation";
 
 async function fetchEpisode(id: string, ep: string) {
-  const res = await fetch(`/api/novels/${id}/episodes/${ep}`, {
+  const base =
+    process.env.NEXT_PUBLIC_STORAGE_BASE_URL ||
+    "https://narra-storage-production.up.railway.app/api";
+
+  const res = await fetch(`${base}/novels/${id}/episodes/${ep}`, {
     cache: "no-store",
   });
 
@@ -35,3 +39,4 @@ export default async function Page({
     </main>
   );
 }
+
