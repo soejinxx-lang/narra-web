@@ -2,19 +2,17 @@ import { NextResponse, NextRequest } from "next/server";
 
 export async function GET(
   _req: NextRequest,
-  {
-    params,
-  }: {
+  context: {
     params: { id: string };
   }
 ) {
-  const { id } = params;
+  const { id } = context.params;
 
   const base = process.env.NEXT_PUBLIC_STORAGE_BASE_URL;
 
   if (!base) {
     return NextResponse.json(
-      { error: "STORAGE BASE URL NOT SET" },
+      { error: "STORAGE_BASE_URL_NOT_SET" },
       { status: 500 }
     );
   }
@@ -26,7 +24,7 @@ export async function GET(
 
   if (!res.ok) {
     return NextResponse.json(
-      { error: "Failed to fetch novel" },
+      { error: "FAILED_TO_FETCH_NOVEL", status: res.status },
       { status: res.status }
     );
   }
