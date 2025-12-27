@@ -10,11 +10,22 @@ if (!STORAGE_BASE) {
 }
 
 async function fetchNovel(id: string) {
-  // 🔴 임시 확인용: fetch 안 하고 params.id 그대로 화면에 표시
-  return {
-    title: id,
-    description: "DEBUG: params.id",
-  };
+  const res = await fetch(`${STORAGE_BASE}/novels/${id}`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    return null;
+  }
+
+  const data = await res.json();
+
+  // 🔴 핵심: id만 있어도 정상 취급
+  if (!data || !data.id) {
+    return null;
+  }
+
+  return data;
 }
 
 async function fetchEpisodes(id: string) {
@@ -53,9 +64,11 @@ export default async function Page({
         {novel.title}
       </h1>
 
-      <p style={{ color: "#666", marginBottom: 24 }}>
-        {novel.description}
-      </p>
+      {novel.description && (
+        <p style={{ color: "#666", marginBottom: 24 }}>
+          {novel.description}
+        </p>
+      )}
 
       <section>
         {episodes.map((ep: any) => (
