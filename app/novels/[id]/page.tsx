@@ -35,8 +35,10 @@ async function fetchNovel(id: string) {
 }
 
 async function fetchEpisodes(id: string) {
+  if (!STORAGE_BASE) return [];
+
   const res = await fetch(
-    `/api/novels/${encodeURIComponent(id)}/episodes`,
+    `${STORAGE_BASE}/novels/${encodeURIComponent(id)}/episodes`,
     { cache: "no-store" }
   );
 
