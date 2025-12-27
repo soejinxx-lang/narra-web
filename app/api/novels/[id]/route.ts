@@ -3,10 +3,10 @@ import { NextResponse, NextRequest } from "next/server";
 export async function GET(
   _req: NextRequest,
   context: {
-    params: { id: string };
+    params: Promise<{ id: string }>;
   }
 ) {
-  const { id } = context.params;
+  const { id } = await context.params;
 
   const base = process.env.NEXT_PUBLIC_STORAGE_BASE_URL;
 
