@@ -12,18 +12,20 @@ type PageProps = {
 };
 
 async function fetchNovel(id: string) {
-  const res = await fetch(`${STORAGE_BASE}/novels/${id}`, {
-    cache: "no-store",
-  });
+  const res = await fetch(
+    `${STORAGE_BASE}/novels/${encodeURIComponent(id)}`,
+    { cache: "no-store" }
+  );
 
   if (!res.ok) return null;
   return res.json();
 }
 
 async function fetchEpisodes(id: string) {
-  const res = await fetch(`${STORAGE_BASE}/novels/${id}/episodes`, {
-    cache: "no-store",
-  });
+  const res = await fetch(
+    `${STORAGE_BASE}/novels/${encodeURIComponent(id)}/episodes`,
+    { cache: "no-store" }
+  );
 
   if (!res.ok) return [];
   const data = await res.json();
@@ -32,8 +34,6 @@ async function fetchEpisodes(id: string) {
 
 export default async function Page({ params }: PageProps) {
   const id = params.id;
-
-  // ❌ Invalid novel id 검사 제거
 
   const novel = await fetchNovel(id);
 
