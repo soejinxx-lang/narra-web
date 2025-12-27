@@ -3,29 +3,21 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 
-const STORAGE_BASE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL;
+const STORAGE_BASE = "https://narra-storage-production.up.railway.app/api";
 
-if (!STORAGE_BASE) {
-  throw new Error("STORAGE BASE URL NOT SET");
-}
+type PageProps = {
+  params: {
+    id: string;
+  };
+};
 
 async function fetchNovel(id: string) {
   const res = await fetch(`${STORAGE_BASE}/novels/${id}`, {
     cache: "no-store",
   });
 
-  if (!res.ok) {
-    return null;
-  }
-
-  const data = await res.json();
-
-  // 🔴 핵심: id만 있어도 정상 취급
-  if (!data || !data.id) {
-    return null;
-  }
-
-  return data;
+  if (!res.ok) return null;
+  return res.json();
 }
 
 async function fetchEpisodes(id: string) {
@@ -33,20 +25,23 @@ async function fetchEpisodes(id: string) {
     cache: "no-store",
   });
 
-  if (!res.ok) {
-    return [];
-  }
-
+  if (!res.ok) return [];
   const data = await res.json();
   return data.episodes ?? data;
 }
 
-export default async function Page({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const novel = await fetchNovel(params.id);
+export default async function Page({ params }: PageProps) {
+  const id = params.id;
+
+  if (!id || typeof id !== "string") {
+    return (
+      <main style={{ padding: 24 }}>
+        <h1>Invalid novel id</h1>
+      </main>
+    );
+  }
+
+  const novel = await fetchNovel(id);
 
   if (!novel) {
     return (
@@ -56,13 +51,11 @@ export default async function Page({
     );
   }
 
-  const episodes = await fetchEpisodes(params.id);
+  const episodes = await fetchEpisodes(id);
 
   return (
     <main style={{ padding: 24 }}>
-      <h1 style={{ fontSize: 28, marginBottom: 8 }}>
-        {novel.title}
-      </h1>
+      <h1 style={{ fontSize: 28, marginBottom: 8 }}>{novel.title}</h1>
 
       {novel.description && (
         <p style={{ color: "#666", marginBottom: 24 }}>
@@ -74,7 +67,7 @@ export default async function Page({
         {episodes.map((ep: any) => (
           <Link
             key={ep.ep}
-            href={`/novels/${params.id}/episodes/${ep.ep}`}
+            href={`/novels/${id}/episodes/${ep.ep}`}
             style={{ textDecoration: "none", color: "inherit" }}
           >
             <div
