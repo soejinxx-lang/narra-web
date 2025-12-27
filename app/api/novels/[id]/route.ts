@@ -5,10 +5,10 @@ export async function GET(
   {
     params,
   }: {
-    params: { id: string };
+    params: Promise<{ id: string }>;
   }
 ) {
-  const { id } = params;
+  const { id } = await params;
 
   const base = process.env.NEXT_PUBLIC_STORAGE_BASE_URL;
 
