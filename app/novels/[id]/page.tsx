@@ -33,13 +33,7 @@ async function fetchEpisodes(id: string) {
 export default async function Page({ params }: PageProps) {
   const id = params.id;
 
-  if (!id || typeof id !== "string") {
-    return (
-      <main style={{ padding: 24 }}>
-        <h1>Invalid novel id</h1>
-      </main>
-    );
-  }
+  // ❌ Invalid novel id 검사 제거
 
   const novel = await fetchNovel(id);
 
