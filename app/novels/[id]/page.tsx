@@ -10,19 +10,35 @@ type PageProps = {
   };
 };
 
+const STORAGE_BASE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL;
+
 async function fetchNovel(id: string) {
+  if (!STORAGE_BASE) {
+    return {
+      __error: "STORAGE_BASE_UNDEFINED",
+    };
+  }
+
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/novels/${encodeURIComponent(id)}`,
+    `${STORAGE_BASE}/novels/${encodeURIComponent(id)}`,
     { cache: "no-store" }
   );
 
-  if (!res.ok) return null;
+  if (!res.ok) {
+    return {
+      __error: "FETCH_NOVEL_FAILED",
+      status: res.status,
+    };
+  }
+
   return res.json();
 }
 
 async function fetchEpisodes(id: string) {
+  if (!STORAGE_BASE) return [];
+
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/novels/${encodeURIComponent(id)}/episodes`,
+    `${STORAGE_BASE}/novels/${encodeURIComponent(id)}/episodes`,
     { cache: "no-store" }
   );
 
@@ -33,8 +49,34 @@ async function fetchEpisodes(id: string) {
 
 export default async function Page({ params }: PageProps) {
   const id = params.id;
-
   const novel = await fetchNovel(id);
+
+  /* 🔴 원인까지 같이 찍히는 디버그 */
+  if ((novel as any)?.__error) {
+    return (
+      <main style={{ padding: 24 }}>
+        <h2>DEBUG ERROR</h2>
+        <pre
+          style={{
+            background: "#111",
+            color: "#f55",
+            padding: 16,
+            whiteSpace: "pre-wrap",
+          }}
+        >
+{JSON.stringify(
+  {
+    paramsId: id,
+    env_STORAGE_BASE: STORAGE_BASE,
+    error: novel,
+  },
+  null,
+  2
+)}
+        </pre>
+      </main>
+    );
+  }
 
   if (!novel) {
     return (
@@ -80,4 +122,3 @@ export default async function Page({ params }: PageProps) {
     </main>
   );
 }
-
