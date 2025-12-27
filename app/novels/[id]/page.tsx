@@ -4,8 +4,6 @@ export const fetchCache = "force-no-store";
 
 import Link from "next/link";
 
-const STORAGE_BASE = "https://narra-storage-production.up.railway.app/api";
-
 type PageProps = {
   params: {
     id: string;
@@ -14,7 +12,7 @@ type PageProps = {
 
 async function fetchNovel(id: string) {
   const res = await fetch(
-    `${STORAGE_BASE}/novels/${encodeURIComponent(id)}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/novels/${encodeURIComponent(id)}`,
     { cache: "no-store" }
   );
 
@@ -24,7 +22,7 @@ async function fetchNovel(id: string) {
 
 async function fetchEpisodes(id: string) {
   const res = await fetch(
-    `${STORAGE_BASE}/novels/${encodeURIComponent(id)}/episodes`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/novels/${encodeURIComponent(id)}/episodes`,
     { cache: "no-store" }
   );
 
@@ -82,3 +80,4 @@ export default async function Page({ params }: PageProps) {
     </main>
   );
 }
+
