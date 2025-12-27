@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Page() {
   return (
     <main
@@ -7,12 +9,22 @@ export default function Page() {
         minHeight: "100vh",
       }}
     >
-      <div
-        className="narra-logo"
-        style={{ fontSize: "32px", marginBottom: "8px" }}
+      <Link
+        href="/novel"
+        style={{ textDecoration: "none", color: "inherit" }}
       >
-        NARRA
-      </div>
+        <div
+          className="narra-logo"
+          style={{
+            fontSize: "32px",
+            marginBottom: "8px",
+            cursor: "pointer",
+          }}
+        >
+          NARRA
+        </div>
+      </Link>
+
       <p style={{ marginBottom: "32px", color: "#666" }}>
         Web novel translation & reading platform
       </p>
