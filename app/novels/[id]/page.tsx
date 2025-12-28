@@ -20,7 +20,7 @@ export default async function Page({ params }: PageProps) {
   } catch (error: any) {
     return (
       <main style={{ padding: 24 }}>
-        <h2>DEBUG ERROR</h2>
+        <h2>DEBUG ERROR (FETCH NOVEL)</h2>
         <pre
           style={{
             background: "#111",
@@ -50,11 +50,32 @@ export default async function Page({ params }: PageProps) {
     );
   }
 
-  let episodes: any[] = [];
+  let episodes: any[];
   try {
     episodes = await fetchEpisodesByNovelId(id);
-  } catch {
-    episodes = [];
+  } catch (error: any) {
+    return (
+      <main style={{ padding: 24 }}>
+        <h2>DEBUG ERROR (FETCH EPISODES)</h2>
+        <pre
+          style={{
+            background: "#111",
+            color: "#f55",
+            padding: 16,
+            whiteSpace: "pre-wrap",
+          }}
+        >
+{JSON.stringify(
+  {
+    paramsId: id,
+    error: String(error),
+  },
+  null,
+  2
+)}
+        </pre>
+      </main>
+    );
   }
 
   return (
