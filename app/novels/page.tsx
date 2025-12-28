@@ -13,7 +13,7 @@ export default async function Page() {
           marginTop: 24,
           display: "grid",
           gridTemplateColumns: "repeat(5, 1fr)",
-          gap: "0.9cm",
+          gap: "1.2cm",
         }}
       >
         {novels.map((novel: any) => (
@@ -24,25 +24,29 @@ export default async function Page() {
           >
             <div
               style={{
-                width: "100%",
+                width: "93%",
+                margin: "0 auto",
                 aspectRatio: "2 / 3",
                 border: "1px solid #e5e5e5",
+                borderRadius: 12,
                 display: "flex",
                 flexDirection: "column",
                 cursor: "pointer",
+                background: "#fff",
               }}
             >
               <div
                 style={{
                   flex: "0 0 70%",
                   background: "#e5e5e5",
-                  borderRadius: 6,
+                  borderRadius: 10,
+                  margin: 10,
                 }}
               />
 
               <div
                 style={{
-                  paddingTop: 10,
+                  padding: "6px 10px 12px",
                   fontSize: 18,
                   fontWeight: 600,
                   textAlign: "center",
