@@ -8,7 +8,14 @@ export default async function Page() {
     <main style={{ padding: 24 }}>
       <h1>All Novels</h1>
 
-      <div style={{ marginTop: 24 }}>
+      <div
+        style={{
+          marginTop: 24,
+          display: "grid",
+          gridTemplateColumns: "repeat(5, 1fr)",
+          gap: 24,
+        }}
+      >
         {novels.map((novel: any) => (
           <Link
             key={novel.id}
@@ -17,19 +24,33 @@ export default async function Page() {
           >
             <div
               style={{
-                padding: "16px 0",
-                borderBottom: "1px solid #e5e5e5",
+                width: "100%",
+                aspectRatio: "3 / 5",
+                display: "flex",
+                flexDirection: "column",
                 cursor: "pointer",
               }}
             >
-              <div style={{ fontSize: 18, fontWeight: 600 }}>
+              <div
+                style={{
+                  flex: "0 0 65%",
+                  background: "#e5e5e5",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              />
+              <div
+                style={{
+                  flex: "1 1 auto",
+                  paddingTop: 8,
+                  fontSize: 16,
+                  fontWeight: 600,
+                  lineHeight: 1.4,
+                }}
+              >
                 {novel.title}
               </div>
-              {novel.description && (
-                <div style={{ marginTop: 4, color: "#666" }}>
-                  {novel.description}
-                </div>
-              )}
             </div>
           </Link>
         ))}
@@ -37,4 +58,3 @@ export default async function Page() {
     </main>
   );
 }
-
