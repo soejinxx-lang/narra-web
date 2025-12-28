@@ -13,8 +13,7 @@ export default async function Page() {
           marginTop: 24,
           display: "grid",
           gridTemplateColumns: "repeat(5, 1fr)",
-          borderTop: "1px solid #e5e5e5",
-          borderLeft: "1px solid #e5e5e5",
+          gap: "0.9cm",
         }}
       >
         {novels.map((novel: any) => (
@@ -25,10 +24,9 @@ export default async function Page() {
           >
             <div
               style={{
-                aspectRatio: "3 / 5",
-                borderRight: "1px solid #e5e5e5",
-                borderBottom: "1px solid #e5e5e5",
-                padding: 12,
+                width: "100%",
+                aspectRatio: "2 / 3",
+                border: "1px solid #e5e5e5",
                 display: "flex",
                 flexDirection: "column",
                 cursor: "pointer",
@@ -36,15 +34,18 @@ export default async function Page() {
             >
               <div
                 style={{
-                  flex: "0 0 65%",
-                  background: "#e0e0e0",
-                  marginBottom: 8,
+                  flex: "0 0 70%",
+                  background: "#e5e5e5",
+                  borderRadius: 6,
                 }}
               />
+
               <div
                 style={{
-                  fontSize: 14,
-                  fontWeight: 500,
+                  paddingTop: 10,
+                  fontSize: 18,
+                  fontWeight: 600,
+                  textAlign: "center",
                   lineHeight: 1.4,
                 }}
               >
