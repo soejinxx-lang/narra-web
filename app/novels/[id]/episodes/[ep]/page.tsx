@@ -2,20 +2,10 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 import { notFound } from "next/navigation";
+import { fetchEpisodesByNovelId } from "@/lib/api";
 
 async function fetchEpisode(id: string, ep: string) {
-  const res = await fetch(
-    `/api/novels/${encodeURIComponent(id)}/episodes`,
-    { cache: "no-store" }
-  );
-
-  if (!res.ok) {
-    return null;
-  }
-
-  const data = await res.json();
-  const episodes = data.episodes ?? data;
-
+  const episodes = await fetchEpisodesByNovelId(id);
   return episodes.find((e: any) => String(e.ep) === String(ep)) ?? null;
 }
 
