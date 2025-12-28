@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 import Link from "next/link";
+import { fetchNovelById, fetchEpisodesByNovelId } from "@/lib/api";
 
 type PageProps = {
   params: {
@@ -10,48 +11,13 @@ type PageProps = {
   };
 };
 
-const STORAGE_BASE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL;
-
-async function fetchNovel(id: string) {
-  if (!STORAGE_BASE) {
-    return {
-      __error: "STORAGE_BASE_UNDEFINED",
-    };
-  }
-
-  const res = await fetch(
-    `${STORAGE_BASE}/novels/${encodeURIComponent(id)}`,
-    { cache: "no-store" }
-  );
-
-  if (!res.ok) {
-    return {
-      __error: "FETCH_NOVEL_FAILED",
-      status: res.status,
-    };
-  }
-
-  return res.json();
-}
-
-async function fetchEpisodes(id: string) {
-  if (!STORAGE_BASE) return [];
-
-  const res = await fetch(
-    `${STORAGE_BASE}/novels/${encodeURIComponent(id)}/episodes`,
-    { cache: "no-store" }
-  );
-
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.episodes ?? data;
-}
-
 export default async function Page({ params }: PageProps) {
   const id = params.id;
-  const novel = await fetchNovel(id);
 
-  if ((novel as any)?.__error) {
+  let novel: any;
+  try {
+    novel = await fetchNovelById(id);
+  } catch (error: any) {
     return (
       <main style={{ padding: 24 }}>
         <h2>DEBUG ERROR</h2>
@@ -66,8 +32,7 @@ export default async function Page({ params }: PageProps) {
 {JSON.stringify(
   {
     paramsId: id,
-    env_STORAGE_BASE: STORAGE_BASE,
-    error: novel,
+    error: String(error),
   },
   null,
   2
@@ -85,7 +50,12 @@ export default async function Page({ params }: PageProps) {
     );
   }
 
-  const episodes = await fetchEpisodes(id);
+  let episodes: any[] = [];
+  try {
+    episodes = await fetchEpisodesByNovelId(id);
+  } catch {
+    episodes = [];
+  }
 
   return (
     <main style={{ padding: 24 }}>
