@@ -34,11 +34,14 @@ export default function RootLayout({
         }}
       >
         <Header />
-        <main>
+        <main
+          style={{
+            paddingTop: 56, // ✅ 헤더 높이만큼 밀어줌 (최소 수정)
+          }}
+        >
           {children}
         </main>
       </body>
     </html>
   );
 }
-
