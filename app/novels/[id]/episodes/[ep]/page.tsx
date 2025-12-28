@@ -12,9 +12,11 @@ async function fetchEpisode(id: string, ep: string) {
 export default async function Page({
   params,
 }: {
-  params: { id: string; ep: string };
+  params: Promise<{ id: string; ep: string }>;
 }) {
-  const episode = await fetchEpisode(params.id, params.ep);
+  const { id, ep } = await params;
+
+  const episode = await fetchEpisode(id, ep);
 
   if (!episode) {
     notFound();
