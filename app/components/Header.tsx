@@ -11,6 +11,11 @@ export default function Header() {
   return (
     <header
       style={{
+        position: "fixed",   // ✅ 상단 고정
+        top: 0,
+        left: 0,
+        width: "100%",
+        zIndex: 1000,
         borderBottom: "1px solid #e5e5e5",
         background: "#faf8f3",
       }}
@@ -59,6 +64,7 @@ export default function Header() {
             background: "#faf8f3",
             borderTop: "1px solid #e5e5e5",
             borderBottom: "1px solid #e5e5e5",
+            zIndex: 10,
           }}
         >
           {[
