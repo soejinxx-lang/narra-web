@@ -6,13 +6,13 @@ import Link from "next/link";
 import { fetchNovelById, fetchEpisodesByNovelId } from "@/lib/api";
 
 type PageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export default async function Page({ params }: PageProps) {
-  const id = params.id;
+  const { id } = await params;
 
   let novel: any;
   try {
