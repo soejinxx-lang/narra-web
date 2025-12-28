@@ -18,6 +18,8 @@ export async function fetchNovels() {
 }
 
 export async function fetchNovelById(id: string) {
+  console.log("FETCH NOVEL ID:", id);
+
   const base = process.env.NEXT_PUBLIC_STORAGE_BASE_URL;
 
   if (!base) {
