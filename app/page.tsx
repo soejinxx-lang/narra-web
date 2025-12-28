@@ -1,6 +1,10 @@
 import Link from "next/link";
+import { fetchNovels } from "@/lib/api";
 
-export default function Page() {
+export default async function Page() {
+  const novels = await fetchNovels();
+  const featured = novels.slice(0, 5);
+
   return (
     <main
       style={{
@@ -10,7 +14,7 @@ export default function Page() {
       }}
     >
       <Link
-        href="/novel"
+        href="/novels"
         style={{ textDecoration: "none", color: "inherit" }}
       >
         <div
@@ -25,9 +29,83 @@ export default function Page() {
         </div>
       </Link>
 
-      <p style={{ marginBottom: "32px", color: "#666" }}>
+      <p
+        style={{
+          marginBottom: "12px",
+          color: "#243A6E",
+          fontSize: "18px",
+          fontWeight: 500,
+        }}
+      >
+        Where system meets editorial judgment.
+      </p>
+
+      <p style={{ marginBottom: "40px", color: "#666" }}>
         Web novel translation & reading platform
       </p>
+
+      <section>
+        <div
+          style={{
+            marginBottom: "16px",
+            fontSize: "14px",
+            color: "#999",
+            letterSpacing: "0.04em",
+          }}
+        >
+          FEATURED NOVELS
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(5, 1fr)",
+            gap: "1.2cm",
+          }}
+        >
+          {featured.map((novel: any) => (
+            <Link
+              key={novel.id}
+              href={`/novels/${novel.id}`}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <div
+                style={{
+                  width: "93%",
+                  margin: "0 auto",
+                  aspectRatio: "2 / 3",
+                  border: "1px solid #e5e5e5",
+                  borderRadius: 12,
+                  background: "#fff",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <div
+                  style={{
+                    flex: "0 0 70%",
+                    background: "#e5e5e5",
+                    borderRadius: 10,
+                    margin: 10,
+                  }}
+                />
+
+                <div
+                  style={{
+                    padding: "6px 10px 12px",
+                    fontSize: 16,
+                    fontWeight: 600,
+                    textAlign: "center",
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {novel.title}
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
     </main>
   );
 }
