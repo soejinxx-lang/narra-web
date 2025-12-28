@@ -11,7 +11,6 @@ export default function Header() {
   return (
     <header
       style={{
-        position: "relative",
         borderBottom: "1px solid #e5e5e5",
         background: "#faf8f3",
       }}
@@ -89,4 +88,3 @@ export default function Header() {
     </header>
   );
 }
-
