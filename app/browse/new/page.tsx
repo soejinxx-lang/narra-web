@@ -40,13 +40,43 @@ export default async function NewNovelPage() {
             borderRadius: "8px",
             background: "#fff",
             display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-            padding: "12px",
+            flexDirection: "column",
           }}
         >
-          {latest.title}
+          <div
+            style={{
+              flex: "0 0 70%",
+              background: "#e5e5e5",
+              borderRadius: "6px",
+              margin: "10px",
+              overflow: "hidden",
+            }}
+          >
+            {latest.cover_url && (
+              <img
+                src={latest.cover_url}
+                alt={latest.title}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                }}
+              />
+            )}
+          </div>
+
+          <div
+            style={{
+              padding: "6px 10px 12px",
+              fontSize: 16,
+              fontWeight: 600,
+              textAlign: "center",
+              lineHeight: 1.4,
+            }}
+          >
+            {latest.title}
+          </div>
         </div>
       </a>
     </div>
