@@ -67,10 +67,10 @@ export default function Header() {
         >
           {[
             { href: "/novels", label: "All Novels" },
-            { href: "/browse", label: "Latest" },
-            { href: "/about", label: "Guide" },
+            { href: "/browse", label: "Browse" },
+            { href: "/guide", label: "Guide" },
             { href: "/notes", label: "Notes" },
-            { href: "/contact", label: "Support" },
+            { href: "/support", label: "Support" },
           ].map((item) => (
             <Link
               key={item.href}
