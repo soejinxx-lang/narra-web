@@ -37,7 +37,6 @@ export async function fetchNovelById(id: string) {
 
   const data = await res.json();
 
-  // Storage 응답 형태 흡수
   if (data?.novel) {
     return data.novel;
   }
