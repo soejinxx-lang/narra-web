@@ -68,9 +68,9 @@ export default function Header() {
           {[
             { href: "/novels", label: "All Novels" },
             { href: "/browse", label: "Browse" },
-            { href: "/guide", label: "About" },
-            { href: "/notes", label: "Editorial Notes" },
-            { href: "/support", label: "Contact" },
+            { href: "/guide", label: "Guide" },
+            { href: "/notes", label: "Notes" },
+            { href: "/support", label: "Support" },
           ].map((item) => (
             <Link
               key={item.href}
