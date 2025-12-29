@@ -104,19 +104,6 @@ export default async function Page({ params }: PageProps) {
         </div>
       )}
 
-      {/* 표지 업로드 */}
-      <form
-        action={`/api/novels/${id}/cover`}
-        method="POST"
-        encType="multipart/form-data"
-        style={{ marginBottom: 24 }}
-      >
-        <input type="file" name="file" accept="image/*" />
-        <div style={{ marginTop: 8 }}>
-          <button type="submit">표지 업로드</button>
-        </div>
-      </form>
-
       <h1 style={{ fontSize: 28, marginBottom: 8 }}>{novel.title}</h1>
 
       {novel.description && (
