@@ -50,9 +50,10 @@ export default async function Page({ params }: PageProps) {
     );
   }
 
-  let episodes: any[];
+  let episodes: any[] = [];
   try {
-    episodes = await fetchEpisodesByNovelId(id);
+    const result = await fetchEpisodesByNovelId(id);
+    episodes = Array.isArray(result) ? result : [];
   } catch (error: any) {
     return (
       <main style={{ padding: 24 }}>
@@ -80,12 +81,13 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <main style={{ padding: 24 }}>
+      {/* 표지 미리보기 */}
       {novel.cover_url && (
         <div
           style={{
             maxWidth: 320,
             aspectRatio: "2 / 3",
-            marginBottom: 24,
+            marginBottom: 16,
           }}
         >
           <img
@@ -102,6 +104,19 @@ export default async function Page({ params }: PageProps) {
         </div>
       )}
 
+      {/* 표지 업로드 */}
+      <form
+        action={`/api/novels/${id}/cover`}
+        method="POST"
+        encType="multipart/form-data"
+        style={{ marginBottom: 24 }}
+      >
+        <input type="file" name="file" accept="image/*" />
+        <div style={{ marginTop: 8 }}>
+          <button type="submit">표지 업로드</button>
+        </div>
+      </form>
+
       <h1 style={{ fontSize: 28, marginBottom: 8 }}>{novel.title}</h1>
 
       {novel.description && (
@@ -111,10 +126,14 @@ export default async function Page({ params }: PageProps) {
       )}
 
       <section>
+        {episodes.length === 0 && (
+          <div style={{ color: "#999" }}>등록된 에피소드가 없습니다.</div>
+        )}
+
         {episodes.map((ep: any) => (
           <Link
             key={ep.ep}
-            href={`/novels/${id}/episodes/${ep.ep}`}
+            href={`/novel/${id}/upload`}
             style={{ textDecoration: "none", color: "inherit" }}
           >
             <div
@@ -125,7 +144,7 @@ export default async function Page({ params }: PageProps) {
               }}
             >
               <div style={{ fontWeight: 500 }}>
-                EP {ep.ep} {ep.title}
+                EP {ep.ep} {ep.title ?? ""}
               </div>
             </div>
           </Link>
