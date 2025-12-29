@@ -80,6 +80,28 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <main style={{ padding: 24 }}>
+      {novel.cover_url && (
+        <div
+          style={{
+            maxWidth: 320,
+            aspectRatio: "2 / 3",
+            marginBottom: 24,
+          }}
+        >
+          <img
+            src={novel.cover_url}
+            alt={novel.title}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              borderRadius: 12,
+              display: "block",
+            }}
+          />
+        </div>
+      )}
+
       <h1 style={{ fontSize: 28, marginBottom: 8 }}>{novel.title}</h1>
 
       {novel.description && (
