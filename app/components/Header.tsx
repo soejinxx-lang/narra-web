@@ -11,7 +11,7 @@ export default function Header() {
   return (
     <header
       style={{
-        position: "fixed",   // ✅ 상단 고정
+        position: "fixed",
         top: 0,
         left: 0,
         width: "100%",
@@ -20,7 +20,6 @@ export default function Header() {
         background: "#faf8f3",
       }}
     >
-      {/* Top Bar */}
       <div
         style={{
           height: 56,
@@ -53,7 +52,6 @@ export default function Header() {
         </button>
       </div>
 
-      {/* Dropdown Menu */}
       {open && (
         <nav
           style={{
@@ -69,10 +67,10 @@ export default function Header() {
         >
           {[
             { href: "/novels", label: "All Novels" },
-            { href: "/browse", label: "Browse" },
-            { href: "/about", label: "About NARRA" },
-            { href: "/notes", label: "Translation Notes" },
-            { href: "/contact", label: "Contact" },
+            { href: "/browse", label: "Latest" },
+            { href: "/about", label: "Guide" },
+            { href: "/notes", label: "Notes" },
+            { href: "/contact", label: "Support" },
           ].map((item) => (
             <Link
               key={item.href}
