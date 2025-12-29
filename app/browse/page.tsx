@@ -27,7 +27,7 @@ export default function BrowsePage() {
       </Link>
 
       <Link
-        href="/browse/recommend"
+        href="/browse/recommended"
         style={{
           textDecoration: "none",
           color: "black",
