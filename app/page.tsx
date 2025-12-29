@@ -87,8 +87,22 @@ export default async function Page() {
                     background: "#e5e5e5",
                     borderRadius: 10,
                     margin: 10,
+                    overflow: "hidden",
                   }}
-                />
+                >
+                  {novel.cover_url && (
+                    <img
+                      src={novel.cover_url}
+                      alt={novel.title}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                    />
+                  )}
+                </div>
 
                 <div
                   style={{
