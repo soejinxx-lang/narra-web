@@ -48,6 +48,7 @@ export default async function Page() {
                   <img
                     src={novel.cover_url}
                     alt={novel.title}
+                    loading="lazy"
                     style={{
                       width: "100%",
                       height: "100%",
