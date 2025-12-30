@@ -81,7 +81,6 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <main style={{ padding: 24 }}>
-      {/* 표지 미리보기 */}
       {novel.cover_url && (
         <div
           style={{
@@ -120,7 +119,7 @@ export default async function Page({ params }: PageProps) {
         {episodes.map((ep: any) => (
           <Link
             key={ep.ep}
-            href={`/novel/${id}/${ep.ep}`}
+            href={`/novels/${id}/episodes/${ep.ep}`}
             style={{ textDecoration: "none", color: "inherit" }}
           >
             <div
