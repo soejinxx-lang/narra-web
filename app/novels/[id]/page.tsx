@@ -120,7 +120,7 @@ export default async function Page({ params }: PageProps) {
         {episodes.map((ep: any) => (
           <Link
             key={ep.ep}
-            href={`/novel/${id}/upload`}
+            href={`/novel/${id}/${ep.ep}`}
             style={{ textDecoration: "none", color: "inherit" }}
           >
             <div
