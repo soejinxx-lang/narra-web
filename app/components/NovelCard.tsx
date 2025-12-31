@@ -1,81 +1,50 @@
-import Link from "next/link";
-import { fetchNovels } from "@/lib/api";
-import NovelCard from "@/app/components/NovelCard"; // ✅ 추가
+type NovelCardProps = {
+  novel: any;
+};
 
-export default async function Page() {
-  const novels = await fetchNovels();
-  const featured = novels.slice(0, 5);
-
+export default function NovelCard({ novel }: NovelCardProps) {
   return (
-    <main
+    <div
       style={{
-        padding: "24px",
-        background: "#faf9f6",
-        minHeight: "100vh",
+        width: "93%",
+        margin: "0 auto",
+        aspectRatio: "2 / 3",
+        border: "1px solid #e5e5e5",
+        borderRadius: 16,
+        background: "#fff",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
       }}
     >
-      <Link
-        href="/novels"
-        style={{ textDecoration: "none", color: "inherit" }}
-      >
-        <div
-          className="narra-logo"
-          style={{
-            fontSize: "32px",
-            marginBottom: "8px",
-            cursor: "pointer",
-          }}
-        >
-          NARRA
-        </div>
-      </Link>
-
-      <p
+      <div
         style={{
-          marginBottom: "12px",
-          color: "#243A6E",
-          fontSize: "18px",
-          fontWeight: 500,
+          flex: 1,
+          margin: 12,
+          borderRadius: 14,
+          overflow: "hidden",
+          background: "#f3f3f3",
         }}
       >
-        Where system meets editorial judgment.
-      </p>
+        {novel.cover_url && (
+          <img
+            src={novel.cover_url}
+            alt={novel.title}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              display: "block",
+            }}
+          />
+        )}
+      </div>
 
-      <p style={{ marginBottom: "40px", color: "#666" }}>
-        Web novel translation & reading platform
-      </p>
-
-      <section>
-        <div
-          style={{
-            marginBottom: "16px",
-            fontSize: "14px",
-            color: "#999",
-            letterSpacing: "0.04em",
-          }}
-        >
-          FEATURED NOVELS
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
-            gap: "1.2cm",
-          }}
-        >
-          {featured.map((novel: any) => (
-            <Link
-              key={novel.id}
-              href={`/novels/${novel.id}`}
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
-              {/* ✅ 카드 구조 전부 NovelCard로 위임 */}
-              <NovelCard novel={novel} />
-            </Link>
-          ))}
-        </div>
-      </section>
-    </main>
-  );
-}
+      <div
+        style={{
+          padding: "10px 12px 14px",
+          fontSize: 16,
+          fontWeight: 600,
+          textAlign: "center",
+          lineHeight: 1.3,
+        }}
