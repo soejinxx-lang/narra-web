@@ -95,7 +95,7 @@ export default async function Page({ params }: PageProps) {
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "cover",
+              objectFit: "contain", // ← 여기만 변경
               borderRadius: 12,
               display: "block",
             }}
