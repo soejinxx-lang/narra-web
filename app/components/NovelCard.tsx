@@ -25,6 +25,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
           padding: 14,
           overflow: "hidden",
           flexShrink: 0,
+          borderRadius: 14, // ✅ 남색 패널도 부드럽게
         }}
       >
         {novel.cover_url && (
@@ -38,7 +39,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
               display: "block",
               borderRadius: 10,
               background: "#fff",
-              border: "0.1cm solid #ffffff", // ✅ 이미지 흰색 테두리
+              border: "0.1cm solid #ffffff",
             }}
           />
         )}
@@ -63,4 +64,3 @@ export default function NovelCard({ novel }: NovelCardProps) {
     </div>
   );
 }
-
