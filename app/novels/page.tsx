@@ -33,9 +33,6 @@ export default async function Page() {
                 flexDirection: "column",
                 cursor: "pointer",
                 background: "#fff",
-
-                padding: 10,        // ✅ 테두리 ↔ 이미지 여백
-                overflow: "hidden", // ✅ 절대 테두리 밖으로 안 나감
               }}
             >
               {/* cover */}
@@ -45,7 +42,8 @@ export default async function Page() {
                   aspectRatio: "2 / 3",
                   background: "#e5e5e5",
                   borderRadius: 10,
-                  overflow: "hidden",
+                  margin: 10,          // ← 테두리와 이미지 사이 여백 유지
+                  overflow: "hidden",  // ← 넘치는 부분 깔끔하게 컷
                 }}
               >
                 {novel.cover_url && (
@@ -56,7 +54,7 @@ export default async function Page() {
                     style={{
                       width: "100%",
                       height: "100%",
-                      objectFit: "contain", // 일부만 사용되는 구조 유지
+                      objectFit: "cover",   // 🔥 핵심 수정
                       display: "block",
                     }}
                   />
