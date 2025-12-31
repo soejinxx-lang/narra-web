@@ -26,7 +26,7 @@ export default async function Page() {
               style={{
                 width: "93%",
                 margin: "0 auto",
-                aspectRatio: "2 / 3",
+                aspectRatio: "2 / 3",          // ✅ 카드 비율 고정
                 border: "1px solid #e5e5e5",
                 borderRadius: 12,
                 display: "flex",
@@ -38,12 +38,11 @@ export default async function Page() {
               {/* cover */}
               <div
                 style={{
-                  width: "100%",
-                  aspectRatio: "2 / 3",
+                  flex: 1,                      // ✅ 남은 영역 전부 차지
                   background: "#e5e5e5",
                   borderRadius: 10,
-                  margin: 10,          // ← 테두리와 이미지 사이 여백 유지
-                  overflow: "hidden",  // ← 넘치는 부분 깔끔하게 컷
+                  margin: 10,                   // ✅ 테두리와 여백
+                  overflow: "hidden",           // ✅ 잘리는 부분 컷
                 }}
               >
                 {novel.cover_url && (
@@ -54,7 +53,7 @@ export default async function Page() {
                     style={{
                       width: "100%",
                       height: "100%",
-                      objectFit: "cover",   // 🔥 핵심 수정
+                      objectFit: "cover",        // 🔥 핵심
                       display: "block",
                     }}
                   />
