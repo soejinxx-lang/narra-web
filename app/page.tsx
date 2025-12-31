@@ -73,7 +73,7 @@ export default async function Page() {
                 style={{
                   width: "93%",
                   margin: "0 auto",
-                  aspectRatio: "2 / 3",
+                  /* ❌ aspectRatio 제거됨 */
                   border: "1px solid #e5e5e5",
                   borderRadius: 12,
                   background: "#fff",
@@ -81,7 +81,7 @@ export default async function Page() {
                   flexDirection: "column",
                 }}
               >
-                {/* ✅ cover (All Novels 기준 구조) */}
+                {/* cover */}
                 <div
                   style={{
                     width: "100%",
