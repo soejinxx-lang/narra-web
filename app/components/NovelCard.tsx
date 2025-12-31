@@ -38,7 +38,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
               display: "block",
               borderRadius: 10,
               background: "#fff",
-              border: "0.2cm solid #ffffff", // ✅ 이미지 흰색 테두리
+              border: "0.1cm solid #ffffff", // ✅ 이미지 흰색 테두리
             }}
           />
         )}
