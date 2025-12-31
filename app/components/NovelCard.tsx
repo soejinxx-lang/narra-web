@@ -8,10 +8,9 @@ export default function NovelCard({ novel }: NovelCardProps) {
       style={{
         width: "93%",
         margin: "0 auto",
-        aspectRatio: "2 / 3",
         border: "1px solid #e5e5e5",
         borderRadius: 16,
-        background: "#fff", // ← 카드 배경은 계속 흰색
+        background: "#fff", // 카드 배경은 흰색
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
@@ -20,21 +19,17 @@ export default function NovelCard({ novel }: NovelCardProps) {
       {/* 이미지 영역 */}
       <div
         style={{
-          flex: 1,
           margin: 12,
-          borderRadius: 14,
-          background: "#fff", // ← 여기도 흰색
-          padding: 4,          // ← 이 padding이 “사이 공간”
         }}
       >
-        {/* 남색 띠 전용 레이어 */}
+        {/* 남색 패널 (2:3 고정) */}
         <div
           style={{
-            width: "100%",
-            height: "100%",
-            background: "#243A6E", // ← 딱 이 레이어만 남색
-            padding: 3,
-            borderRadius: 12,
+            aspectRatio: "2 / 3",
+            background: "#243A6E", // 남색 패널
+            borderRadius: 14,
+            padding: 6, // 남색과 이미지 사이 여백
+            overflow: "hidden",
           }}
         >
           {novel.cover_url && (
@@ -46,7 +41,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
                 height: "100%",
                 objectFit: "cover",
                 display: "block",
-                borderRadius: 9,
+                borderRadius: 10,
                 background: "#fff",
               }}
             />
@@ -54,6 +49,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
         </div>
       </div>
 
+      {/* 제목 영역 */}
       <div
         style={{
           padding: "10px 12px 14px",
