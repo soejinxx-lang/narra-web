@@ -22,8 +22,10 @@ export default function NovelCard({ novel }: NovelCardProps) {
           flex: 1,
           margin: 12,
           borderRadius: 14,
+          padding: 4,
+          border: "1px solid #243A6E",
           overflow: "hidden",
-          background: "#f3f3f3",
+          background: "#fff",
         }}
       >
         {novel.cover_url && (
@@ -35,6 +37,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
               height: "100%",
               objectFit: "cover",
               display: "block",
+              borderRadius: 10,
             }}
           />
         )}
