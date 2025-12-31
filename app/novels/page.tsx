@@ -33,6 +33,9 @@ export default async function Page() {
                 flexDirection: "column",
                 cursor: "pointer",
                 background: "#fff",
+
+                padding: 10,        // ✅ 테두리 ↔ 이미지 여백
+                overflow: "hidden", // ✅ 절대 테두리 밖으로 안 나감
               }}
             >
               {/* cover */}
@@ -42,7 +45,6 @@ export default async function Page() {
                   aspectRatio: "2 / 3",
                   background: "#e5e5e5",
                   borderRadius: 10,
-                  margin: 10,
                   overflow: "hidden",
                 }}
               >
@@ -54,7 +56,7 @@ export default async function Page() {
                     style={{
                       width: "100%",
                       height: "100%",
-                      objectFit: "contain",
+                      objectFit: "contain", // 일부만 사용되는 구조 유지
                       display: "block",
                     }}
                   />
