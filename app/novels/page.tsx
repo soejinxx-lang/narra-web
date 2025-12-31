@@ -35,9 +35,11 @@ export default async function Page() {
                 background: "#fff",
               }}
             >
+              {/* cover */}
               <div
                 style={{
-                  flex: "0 0 70%",
+                  width: "100%",
+                  aspectRatio: "2 / 3",
                   background: "#e5e5e5",
                   borderRadius: 10,
                   margin: 10,
@@ -52,7 +54,7 @@ export default async function Page() {
                     style={{
                       width: "100%",
                       height: "100%",
-                      objectFit: "cover",
+                      objectFit: "contain",
                       display: "block",
                     }}
                   />
