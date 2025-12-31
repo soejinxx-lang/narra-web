@@ -1,6 +1,6 @@
 import { fetchNovels } from "@/lib/api";
 import Link from "next/link";
-import NovelCard from "@/components/NovelCard"; // ✅ 추가
+import NovelCard from "@/app/components/NovelCard"; // ✅ 경로만 수정
 
 export default async function Page() {
   const novels = await fetchNovels();
