@@ -48,3 +48,9 @@ export default function NovelCard({ novel }: NovelCardProps) {
           textAlign: "center",
           lineHeight: 1.3,
         }}
+      >
+        {novel.title}
+      </div>
+    </div>
+  );
+}
