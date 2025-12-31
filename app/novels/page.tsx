@@ -1,5 +1,6 @@
 import { fetchNovels } from "@/lib/api";
 import Link from "next/link";
+import NovelCard from "@/components/NovelCard"; // ✅ 추가
 
 export default async function Page() {
   const novels = await fetchNovels();
@@ -22,56 +23,8 @@ export default async function Page() {
             href={`/novels/${novel.id}`}
             style={{ textDecoration: "none", color: "inherit" }}
           >
-            <div
-              style={{
-                width: "93%",
-                margin: "0 auto",
-                aspectRatio: "2 / 3",          // ✅ 카드 비율 고정
-                border: "1px solid #e5e5e5",
-                borderRadius: 12,
-                display: "flex",
-                flexDirection: "column",
-                cursor: "pointer",
-                background: "#fff",
-              }}
-            >
-              {/* cover */}
-              <div
-                style={{
-                  flex: 1,                      // ✅ 남은 영역 전부 차지
-                  background: "#e5e5e5",
-                  borderRadius: 10,
-                  margin: 10,                   // ✅ 테두리와 여백
-                  overflow: "hidden",           // ✅ 잘리는 부분 컷
-                }}
-              >
-                {novel.cover_url && (
-                  <img
-                    src={novel.cover_url}
-                    alt={novel.title}
-                    loading="lazy"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",        // 🔥 핵심
-                      display: "block",
-                    }}
-                  />
-                )}
-              </div>
-
-              <div
-                style={{
-                  padding: "6px 10px 12px",
-                  fontSize: 18,
-                  fontWeight: 600,
-                  textAlign: "center",
-                  lineHeight: 1.4,
-                }}
-              >
-                {novel.title}
-              </div>
-            </div>
+            {/* ✅ 카드 구조는 NovelCard 단일 기준 */}
+            <NovelCard novel={novel} />
           </Link>
         ))}
       </div>
