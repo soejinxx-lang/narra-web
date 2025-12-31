@@ -8,7 +8,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
       style={{
         width: "93%",
         margin: "0 auto",
-        aspectRatio: "5 / 8", // ✅ 카드 전체 비율
+        aspectRatio: "5 / 9", // ✅ 카드 전체 비율
         border: "1px solid #e5e5e5",
         borderRadius: 16,
         background: "#fff",
@@ -22,7 +22,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
         style={{
           aspectRatio: "2 / 3",
           background: "#243A6E",
-          padding: 6, // ✅ 이미지와의 여백만 존재
+          padding: 14, // ✅ 충분한 여백 (보호용 아님, 공간감)
           overflow: "hidden",
           flexShrink: 0,
         }}
@@ -43,7 +43,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
         )}
       </div>
 
-      {/* 제목 영역 (흰색) */}
+      {/* 제목 영역 */}
       <div
         style={{
           padding: "10px 12px 14px",
