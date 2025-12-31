@@ -73,6 +73,7 @@ export default async function Page() {
                 style={{
                   width: "93%",
                   margin: "0 auto",
+                  /* ❌ aspectRatio 제거됨 */
                   border: "1px solid #e5e5e5",
                   borderRadius: 12,
                   background: "#fff",
@@ -80,11 +81,12 @@ export default async function Page() {
                   flexDirection: "column",
                 }}
               >
-                {/* ✅ cover */}
+                {/* cover */}
                 <div
                   style={{
                     width: "100%",
                     aspectRatio: "2 / 3",
+                    background: "#e5e5e5",
                     borderRadius: 10,
                     margin: 10,
                     overflow: "hidden",
@@ -98,7 +100,7 @@ export default async function Page() {
                       style={{
                         width: "100%",
                         height: "100%",
-                        objectFit: "cover", // 🔥 핵심
+                        objectFit: "cover",
                         display: "block",
                       }}
                     />
