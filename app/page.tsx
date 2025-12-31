@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { fetchNovels } from "@/lib/api";
+import NovelCard from "@/components/NovelCard"; // ✅ 추가
 
 export default async function Page() {
   const novels = await fetchNovels();
@@ -69,54 +70,8 @@ export default async function Page() {
               href={`/novels/${novel.id}`}
               style={{ textDecoration: "none", color: "inherit" }}
             >
-              <div
-                style={{
-                  width: "93%",
-                  margin: "0 auto",
-                  border: "1px solid #e5e5e5",
-                  borderRadius: 12,
-                  background: "#fff",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                {/* ✅ cover */}
-                <div
-                  style={{
-                    width: "100%",
-                    aspectRatio: "2 / 3",
-                    borderRadius: 10,
-                    margin: 10,
-                    overflow: "hidden",
-                  }}
-                >
-                  {novel.cover_url && (
-                    <img
-                      src={novel.cover_url}
-                      alt={novel.title}
-                      loading="lazy"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover", // 🔥 핵심
-                        display: "block",
-                      }}
-                    />
-                  )}
-                </div>
-
-                <div
-                  style={{
-                    padding: "6px 10px 12px",
-                    fontSize: 16,
-                    fontWeight: 600,
-                    textAlign: "center",
-                    lineHeight: 1.4,
-                  }}
-                >
-                  {novel.title}
-                </div>
-              </div>
+              {/* ✅ 카드 구조 전부 NovelCard로 위임 */}
+              <NovelCard novel={novel} />
             </Link>
           ))}
         </div>
