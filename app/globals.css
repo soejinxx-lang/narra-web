@@ -35,6 +35,13 @@ a {
   text-decoration: none;
 }
 
+/* ✅ 추가: 이미지 비율/크기 깨짐 방지용 전역 안전장치 */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* NARRA logo wordmark */
 .narra-logo {
   font-family: "KoPub Batang", serif;
@@ -48,4 +55,3 @@ a {
     color-scheme: dark;
   }
 }
-
