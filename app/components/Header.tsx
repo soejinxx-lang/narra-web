@@ -1,14 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import MobileMenu from "./MobileMenu";
+import { useState, useEffect, useRef } from "react";
 import SearchBar from "./SearchBar";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
 
   const closeMenu = () => setOpen(false);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleMouseLeave = (e: MouseEvent) => {
+      const navElement = navRef.current;
+      if (!navElement) return;
+      
+      const relatedTarget = e.relatedTarget as Node | null;
+      if (!relatedTarget || !navElement.contains(relatedTarget)) {
+        closeMenu();
+      }
+    };
+
+    const navElement = navRef.current;
+    if (navElement) {
+      navElement.addEventListener("mouseleave", handleMouseLeave);
+      return () => {
+        navElement.removeEventListener("mouseleave", handleMouseLeave);
+      };
+    }
+  }, [open, closeMenu]);
 
   return (
     <header
@@ -29,7 +51,6 @@ export default function Header() {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "0 16px",
-          gap: "16px",
         }}
       >
         <Link
@@ -38,14 +59,11 @@ export default function Header() {
           className="narra-logo"
           style={{
             textDecoration: "none",
-            flexShrink: 0,
           }}
         >
           NARRA
         </Link>
-        <div style={{ flex: 1, maxWidth: "400px" }}>
-          <SearchBar />
-        </div>
+        <SearchBar />
         <button
           onClick={() => setOpen(!open)}
           style={{
@@ -53,14 +71,50 @@ export default function Header() {
             background: "none",
             border: "none",
             cursor: "pointer",
-            flexShrink: 0,
           }}
         >
           ☰
         </button>
       </div>
 
-      <MobileMenu open={open} onClose={closeMenu} />
+      {open && (
+        <nav
+          ref={navRef}
+          style={{
+            position: "absolute",
+            top: 56,
+            left: 0,
+            width: "100%",
+            background: "#faf8f3",
+            borderTop: "1px solid #e5e5e5",
+            borderBottom: "1px solid #e5e5e5",
+            zIndex: 10,
+          }}
+        >
+          {[
+            { href: "/novels", label: "All Novels" },
+            { href: "/browse", label: "Browse" },
+            { href: "/guide", label: "Guide" },
+            { href: "/notes", label: "Notes" },
+            { href: "/support", label: "Support" },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={closeMenu}
+              style={{
+                display: "block",
+                padding: "16px",
+                borderBottom: "1px solid #e5e5e5",
+                textDecoration: "none",
+                color: "black",
+              }}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      )}
     </header>
   );
 }

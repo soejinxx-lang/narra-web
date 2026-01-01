@@ -6,12 +6,12 @@ export default async function Page() {
   const novels = await fetchNovels();
 
   return (
-    <main style={{ maxWidth: "1400px", margin: "0 auto", padding: "32px 24px" }}>
+    <main style={{ padding: 24 }}>
       <h1
         style={{
-          fontSize: "32px",
+          fontSize: "28px",
           fontWeight: 600,
-          marginBottom: "32px",
+          marginBottom: "24px",
           color: "#243A6E",
           fontFamily: '"KoPub Batang", serif',
         }}
@@ -19,15 +19,11 @@ export default async function Page() {
         All Novels
       </h1>
 
-      <div style={{ marginBottom: "20px", color: "#666", fontSize: "14px" }}>
-        {novels.length} novels
-      </div>
-
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
-          gap: "20px",
+          gridTemplateColumns: "repeat(5, 1fr)",
+          gap: "1.2cm",
         }}
       >
         {novels.map((novel: any) => (

@@ -23,6 +23,7 @@ export default function SearchBar() {
         flex: 1,
         maxWidth: "400px",
         position: "relative",
+        margin: "0 16px",
       }}
     >
       <input
@@ -67,4 +68,3 @@ export default function SearchBar() {
     </form>
   );
 }
-

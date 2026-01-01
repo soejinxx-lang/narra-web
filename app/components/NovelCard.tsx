@@ -1,3 +1,5 @@
+import styles from "./NovelCard.module.css";
+
 type NovelCardProps = {
   novel: any;
 };
@@ -5,12 +7,13 @@ type NovelCardProps = {
 export default function NovelCard({ novel }: NovelCardProps) {
   return (
     <div
+      className={styles.novelCard}
       style={{
-        width: "100%",
+        width: "93%",
         margin: "0 auto",
-        aspectRatio: "5 / 10",
-        border: "1.5px solid #e5e5e5",
-        borderRadius: 18,
+        aspectRatio: "5 / 10.5",
+        border: "1px solid #e5e5e5",
+        borderRadius: 16,
         background: "#fff",
         display: "flex",
         flexDirection: "column",
@@ -22,10 +25,10 @@ export default function NovelCard({ novel }: NovelCardProps) {
         style={{
           aspectRatio: "2 / 3",
           background: "#243A6E",
-          padding: "4px",
+          padding: 14,
           overflow: "hidden",
           flexShrink: 0,
-          borderRadius: 16,
+          borderRadius: 14,
         }}
       >
         {novel.cover_url && (
@@ -37,9 +40,9 @@ export default function NovelCard({ novel }: NovelCardProps) {
               height: "100%",
               objectFit: "cover",
               display: "block",
-              borderRadius: 14,
+              borderRadius: 10,
               background: "#fff",
-              border: "0.05cm solid #ffffff",
+              border: "0.15cm solid #ffffff",
             }}
           />
         )}
@@ -48,17 +51,15 @@ export default function NovelCard({ novel }: NovelCardProps) {
       {/* 제목 영역 */}
       <div
         style={{
-          padding: "14px 12px 18px",
+          padding: "10px 12px 14px",
           fontSize: 16,
           fontWeight: 600,
           textAlign: "center",
           lineHeight: 1.3,
           flexGrow: 1,
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex-start",
           justifyContent: "center",
-          wordBreak: "break-word",
-          overflow: "hidden",
         }}
       >
         {novel.title}
