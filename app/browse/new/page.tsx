@@ -1,6 +1,8 @@
 // app/browse/new/page.tsx
 
 import { fetchNovels } from "@/lib/api";
+import Link from "next/link";
+import NovelCard from "@/app/components/NovelCard";
 
 export const dynamic = "force-dynamic";
 
@@ -8,77 +10,50 @@ export default async function NewNovelPage() {
   const novels = await fetchNovels();
 
   if (!novels || novels.length === 0) {
-    return null;
+    return (
+      <div style={{ padding: "32px 24px", textAlign: "center", color: "#999" }}>
+        No novels available.
+      </div>
+    );
   }
 
   const latest = [...novels].sort((a, b) => {
     const ta = Number(a.id.replace("novel-", ""));
     const tb = Number(b.id.replace("novel-", ""));
     return tb - ta;
-  })[0];
+  });
 
   return (
-    <div
-      style={{
-        padding: "24px",
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
-      <a
-        href={`/novels/${latest.id}`}
+    <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "32px 24px" }}>
+      <h1
         style={{
-          textDecoration: "none",
-          color: "inherit",
+          fontSize: "32px",
+          fontWeight: 600,
+          marginBottom: "32px",
+          color: "#243A6E",
+          fontFamily: '"KoPub Batang", serif',
         }}
       >
-        <div
-          style={{
-            width: "220px",
-            aspectRatio: "2 / 3",
-            border: "1px solid #e5e5e5",
-            borderRadius: "8px",
-            background: "#fff",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <div
-            style={{
-              flex: "0 0 70%",
-              background: "#e5e5e5",
-              borderRadius: "6px",
-              margin: "10px",
-              overflow: "hidden",
-            }}
-          >
-            {latest.cover_url && (
-              <img
-                src={latest.cover_url}
-                alt={latest.title}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  display: "block",
-                }}
-              />
-            )}
-          </div>
+        New Novels
+      </h1>
 
-          <div
-            style={{
-              padding: "6px 10px 12px",
-              fontSize: 16,
-              fontWeight: 600,
-              textAlign: "center",
-              lineHeight: 1.4,
-            }}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
+          gap: "20px",
+        }}
+      >
+        {latest.map((novel: any) => (
+          <Link
+            key={novel.id}
+            href={`/novels/${novel.id}`}
+            style={{ textDecoration: "none", color: "inherit" }}
           >
-            {latest.title}
-          </div>
-        </div>
-      </a>
+            <NovelCard novel={novel} />
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

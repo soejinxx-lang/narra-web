@@ -1,20 +1,33 @@
 import { fetchNovels } from "@/lib/api";
 import Link from "next/link";
-import NovelCard from "@/app/components/NovelCard"; // ✅ 경로만 수정
+import NovelCard from "@/app/components/NovelCard";
 
 export default async function Page() {
   const novels = await fetchNovels();
 
   return (
-    <main style={{ padding: 24 }}>
-      <h1>All Novels</h1>
+    <main style={{ maxWidth: "1400px", margin: "0 auto", padding: "32px 24px" }}>
+      <h1
+        style={{
+          fontSize: "32px",
+          fontWeight: 600,
+          marginBottom: "32px",
+          color: "#243A6E",
+          fontFamily: '"KoPub Batang", serif',
+        }}
+      >
+        All Novels
+      </h1>
+
+      <div style={{ marginBottom: "20px", color: "#666", fontSize: "14px" }}>
+        {novels.length} novels
+      </div>
 
       <div
         style={{
-          marginTop: 24,
           display: "grid",
-          gridTemplateColumns: "repeat(5, 1fr)",
-          gap: "1.2cm",
+          gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
+          gap: "20px",
         }}
       >
         {novels.map((novel: any) => (
@@ -23,7 +36,6 @@ export default async function Page() {
             href={`/novels/${novel.id}`}
             style={{ textDecoration: "none", color: "inherit" }}
           >
-            {/* ✅ 카드 구조는 NovelCard 단일 기준 */}
             <NovelCard novel={novel} />
           </Link>
         ))}

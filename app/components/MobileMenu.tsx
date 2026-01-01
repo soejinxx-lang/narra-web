@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import NavMenu from "./NavMenu";
 
 export default function MobileMenu({
@@ -9,32 +10,40 @@ export default function MobileMenu({
   open: boolean;
   onClose: () => void;
 }) {
+  const navRef = useRef<HTMLNavElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open, onClose]);
+
   if (!open) return null;
 
   return (
-    <div
-      onClick={onClose}
+    <nav
+      ref={navRef}
       style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.2)",
-        zIndex: 1000,
+        position: "absolute",
+        top: 56,
+        left: 0,
+        width: "100%",
+        background: "#faf8f3",
+        borderTop: "1px solid #e5e5e5",
+        borderBottom: "1px solid #e5e5e5",
+        zIndex: 10,
       }}
     >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          position: "absolute",
-          top: 56,
-          right: 0,
-          width: "220px",
-          background: "#faf8f3",
-          borderLeft: "1px solid #e5e5e5",
-          borderBottom: "1px solid #e5e5e5",
-        }}
-      >
-        <NavMenu />
-      </div>
-    </div>
+      <NavMenu />
+    </nav>
   );
 }

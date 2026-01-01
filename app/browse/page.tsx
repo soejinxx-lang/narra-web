@@ -1,44 +1,18 @@
 // app/browse/page.tsx
 
-import Link from "next/link";
+import { fetchNovels } from "@/lib/api";
+import BrowseClient from "@/app/components/BrowseClient";
 
-export default function BrowsePage() {
-  return (
-    <div
-      style={{
-        padding: "24px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "16px",
-      }}
-    >
-      <Link
-        href="/browse/new"
-        style={{
-          textDecoration: "none",
-          color: "black",
-          border: "1px solid #e5e5e5",
-          padding: "16px",
-          borderRadius: "8px",
-          background: "#fff",
-        }}
-      >
-        New
-      </Link>
+export const dynamic = "force-dynamic";
 
-      <Link
-        href="/browse/recommended"
-        style={{
-          textDecoration: "none",
-          color: "black",
-          border: "1px solid #e5e5e5",
-          padding: "16px",
-          borderRadius: "8px",
-          background: "#fff",
-        }}
-      >
-        Recommend
-      </Link>
-    </div>
-  );
+export default async function BrowsePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const novels = await fetchNovels();
+  const params = await searchParams;
+  const query = params?.q || "";
+
+  return <BrowseClient novels={novels} initialQuery={query} />;
 }

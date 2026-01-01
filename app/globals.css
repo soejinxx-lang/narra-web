@@ -1,6 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=KoPub+Batang:wght@400;500;600&display=swap');
+
 :root {
-  --background: #ffffff;
+  --background: #faf9f6;
   --foreground: #171717;
+  --narra-blue: #243A6E;
+  --narra-light-blue: #e8ecf5;
+  --narra-hover-blue: #1e2f56;
+  --text-primary: #333;
+  --text-secondary: #666;
+  --text-tertiary: #999;
+  --border-color: #e5e5e5;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,9 +29,10 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
 }
 
 * {
@@ -47,11 +58,47 @@ img {
   font-family: "KoPub Batang", serif;
   font-weight: 500;
   letter-spacing: 0;
-  color: #243A6E;
+  color: var(--narra-blue);
+}
+
+/* 스크롤바 스타일링 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 버튼 기본 스타일 */
+button {
+  font-family: inherit;
+}
+
+/* 입력 필드 기본 스타일 */
+input, textarea {
+  font-family: inherit;
 }
 
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
+  }
+}
+
+/* 반응형 유틸리티 */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
   }
 }

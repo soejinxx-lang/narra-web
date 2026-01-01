@@ -6,11 +6,11 @@ export default function NovelCard({ novel }: NovelCardProps) {
   return (
     <div
       style={{
-        width: "93%",
+        width: "100%",
         margin: "0 auto",
-        aspectRatio: "5 / 9",
-        border: "1px solid #e5e5e5",
-        borderRadius: 16,
+        aspectRatio: "5 / 10",
+        border: "1.5px solid #e5e5e5",
+        borderRadius: 18,
         background: "#fff",
         display: "flex",
         flexDirection: "column",
@@ -22,10 +22,10 @@ export default function NovelCard({ novel }: NovelCardProps) {
         style={{
           aspectRatio: "2 / 3",
           background: "#243A6E",
-          padding: 14,
+          padding: "4px",
           overflow: "hidden",
           flexShrink: 0,
-          borderRadius: 14, // ✅ 남색 패널도 부드럽게
+          borderRadius: 16,
         }}
       >
         {novel.cover_url && (
@@ -37,9 +37,9 @@ export default function NovelCard({ novel }: NovelCardProps) {
               height: "100%",
               objectFit: "cover",
               display: "block",
-              borderRadius: 10,
+              borderRadius: 14,
               background: "#fff",
-              border: "0.1cm solid #ffffff",
+              border: "0.05cm solid #ffffff",
             }}
           />
         )}
@@ -48,15 +48,17 @@ export default function NovelCard({ novel }: NovelCardProps) {
       {/* 제목 영역 */}
       <div
         style={{
-          padding: "10px 12px 14px",
+          padding: "14px 12px 18px",
           fontSize: 16,
           fontWeight: 600,
           textAlign: "center",
           lineHeight: 1.3,
           flexGrow: 1,
           display: "flex",
-          alignItems: "flex-start",
+          alignItems: "center",
           justifyContent: "center",
+          wordBreak: "break-word",
+          overflow: "hidden",
         }}
       >
         {novel.title}

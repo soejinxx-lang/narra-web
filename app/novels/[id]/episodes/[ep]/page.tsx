@@ -2,7 +2,9 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 import { notFound } from "next/navigation";
-import { fetchEpisodesByNovelId } from "@/lib/api";
+import Link from "next/link";
+import { fetchEpisodesByNovelId, fetchNovelById } from "@/lib/api";
+import EpisodeReader from "@/app/components/EpisodeReader";
 
 async function fetchEpisode(id: string, ep: string) {
   const episodes = await fetchEpisodesByNovelId(id);
@@ -16,21 +18,27 @@ export default async function Page({
 }) {
   const { id, ep } = await params;
 
-  const episode = await fetchEpisode(id, ep);
+  const [episode, novel, allEpisodes] = await Promise.all([
+    fetchEpisode(id, ep),
+    fetchNovelById(id).catch(() => null),
+    fetchEpisodesByNovelId(id).catch(() => []),
+  ]);
 
   if (!episode) {
     notFound();
   }
 
-  return (
-    <main style={{ padding: 24 }}>
-      <h1 style={{ fontSize: 22, marginBottom: 16 }}>
-        EP {episode.ep} {episode.title}
-      </h1>
+  const currentIndex = allEpisodes.findIndex((e: any) => String(e.ep) === String(ep));
+  const prevEpisode = currentIndex > 0 ? allEpisodes[currentIndex - 1] : null;
+  const nextEpisode = currentIndex < allEpisodes.length - 1 ? allEpisodes[currentIndex + 1] : null;
 
-      <div style={{ lineHeight: 1.8, whiteSpace: "pre-wrap" }}>
-        {episode.content}
-      </div>
-    </main>
+  return (
+    <EpisodeReader
+      episode={episode}
+      novel={novel}
+      novelId={id}
+      prevEpisode={prevEpisode}
+      nextEpisode={nextEpisode}
+    />
   );
 }
