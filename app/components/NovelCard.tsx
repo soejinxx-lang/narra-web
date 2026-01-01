@@ -1,3 +1,5 @@
+import styles from "./NovelCard.module.css";
+
 type NovelCardProps = {
   novel: any;
 };
@@ -5,10 +7,11 @@ type NovelCardProps = {
 export default function NovelCard({ novel }: NovelCardProps) {
   return (
     <div
+      className={styles.novelCard}
       style={{
         width: "93%",
         margin: "0 auto",
-        aspectRatio: "5 / 9",
+        aspectRatio: "5 / 10.5",
         border: "1px solid #e5e5e5",
         borderRadius: 16,
         background: "#fff",
@@ -39,7 +42,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
               display: "block",
               borderRadius: 10,
               background: "#fff",
-              border: "0.1cm solid #ffffff",
+              border: "0.15cm solid #ffffff",
             }}
           />
         )}

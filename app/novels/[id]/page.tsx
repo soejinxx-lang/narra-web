@@ -103,7 +103,15 @@ export default async function Page({ params }: PageProps) {
         </div>
       )}
 
-      <h1 style={{ fontSize: 28, marginBottom: 8 }}>{novel.title}</h1>
+      <h1
+        style={{
+          fontSize: 28,
+          marginBottom: 8,
+          fontFamily: '"KoPub Batang", serif',
+        }}
+      >
+        {novel.title}
+      </h1>
 
       {novel.description && (
         <p style={{ color: "#666", marginBottom: 24 }}>

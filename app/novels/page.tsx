@@ -7,7 +7,17 @@ export default async function Page() {
 
   return (
     <main style={{ padding: 24 }}>
-      <h1>All Novels</h1>
+      <h1
+        style={{
+          fontSize: "28px",
+          fontWeight: 600,
+          marginBottom: "24px",
+          color: "#243A6E",
+          fontFamily: '"KoPub Batang", serif',
+        }}
+      >
+        All Novels
+      </h1>
 
       <div
         style={{

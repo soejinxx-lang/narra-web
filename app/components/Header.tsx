@@ -1,12 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import SearchBar from "./SearchBar";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
 
   const closeMenu = () => setOpen(false);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleMouseLeave = (e: MouseEvent) => {
+      const navElement = navRef.current;
+      if (!navElement) return;
+      
+      const relatedTarget = e.relatedTarget as Node | null;
+      if (!relatedTarget || !navElement.contains(relatedTarget)) {
+        closeMenu();
+      }
+    };
+
+    const navElement = navRef.current;
+    if (navElement) {
+      navElement.addEventListener("mouseleave", handleMouseLeave);
+      return () => {
+        navElement.removeEventListener("mouseleave", handleMouseLeave);
+      };
+    }
+  }, [open, closeMenu]);
 
   return (
     <header
@@ -39,6 +63,7 @@ export default function Header() {
         >
           NARRA
         </Link>
+        <SearchBar />
         <button
           onClick={() => setOpen(!open)}
           style={{
@@ -54,6 +79,7 @@ export default function Header() {
 
       {open && (
         <nav
+          ref={navRef}
           style={{
             position: "absolute",
             top: 56,
