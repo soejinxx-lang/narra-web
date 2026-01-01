@@ -145,7 +145,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
                   width: "100%",
                   height: "100%",
                   background: "#243A6E",
-                  padding: "4px",
+                  padding: "7px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -162,7 +162,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
                       display: "block",
                       borderRadius: "14px",
                       background: "#fff",
-                      border: "0.05cm solid #ffffff",
+                      border: "0.08cm solid #ffffff",
                     }}
                   />
                 )}
@@ -205,24 +205,24 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
                 width: "100%",
                 height: "100%",
                 background: "#243A6E",
-                padding: "4px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {getNovelByOffset(0).cover_url && (
-                <img
-                  src={getNovelByOffset(0).cover_url}
-                  alt={getNovelByOffset(0).title}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    display: "block",
-                    borderRadius: "14px",
-                    background: "#fff",
-                    border: "0.05cm solid #ffffff",
+                padding: "7px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {getNovelByOffset(0).cover_url && (
+                  <img
+                    src={getNovelByOffset(0).cover_url}
+                    alt={getNovelByOffset(0).title}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                      borderRadius: "14px",
+                      background: "#fff",
+                      border: "0.08cm solid #ffffff",
                   }}
                 />
               )}
@@ -266,7 +266,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
                   width: "100%",
                   height: "100%",
                   background: "#243A6E",
-                  padding: "4px",
+                  padding: "7px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -283,7 +283,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
                       display: "block",
                       borderRadius: "14px",
                       background: "#fff",
-                      border: "0.05cm solid #ffffff",
+                      border: "0.08cm solid #ffffff",
                     }}
                   />
                 )}

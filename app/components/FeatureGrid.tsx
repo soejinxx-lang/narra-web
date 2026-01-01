@@ -3,13 +3,13 @@
 import Link from "next/link";
 
 export default function FeatureGrid() {
-  const features = [
-    { title: "Author", href: "/novels" },
-    { title: "Daily Check-in", href: "/browse" },
+      const features = [
+        { title: "Author", href: "/authors" },
+    { title: "Daily Check-in", href: "/daily-checkin" },
     { title: "Fan Art", href: "/browse" },
     { title: "Philosophy", href: "/guide" },
-    { title: "Community", href: "/notes" },
-    { title: "Music", href: "/support" },
+    { title: "Community", href: "/community" },
+    { title: "Music", href: "/music" },
     { title: "Browse All", href: "/novels" },
     { title: "Search", href: "/browse" },
     { title: "Popular", href: "/browse" },

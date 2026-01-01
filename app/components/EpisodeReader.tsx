@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import ReadingSettings, { ReadingSettings as ReadingSettingsType } from "./ReadingSettings";
+import ShareButton from "./ShareButton";
 
 type EpisodeReaderProps = {
   episode: any;
@@ -37,7 +38,25 @@ export default function EpisodeReader({
         // 기본값 사용
       }
     }
-  }, []);
+
+    // Track episode read for daily missions
+    if (typeof window !== "undefined") {
+      const today = new Date().toISOString().split("T")[0];
+      const readKey = `episodesRead_${today}`;
+      
+      // Check if this episode was already read today
+      const readEpisodesKey = `readEpisodes_${today}`;
+      const readEpisodes = JSON.parse(localStorage.getItem(readEpisodesKey) || "[]");
+      const episodeId = `${novelId}_${episode.ep}`;
+      
+      if (!readEpisodes.includes(episodeId)) {
+        readEpisodes.push(episodeId);
+        localStorage.setItem(readEpisodesKey, JSON.stringify(readEpisodes));
+        const currentReads = parseInt(localStorage.getItem(readKey) || "0", 10);
+        localStorage.setItem(readKey, String(currentReads + 1));
+      }
+    }
+  }, [novelId, episode]);
 
   const handleSettingsChange = (newSettings: ReadingSettingsType) => {
     setSettings(newSettings);
@@ -104,7 +123,10 @@ export default function EpisodeReader({
           >
             ← Back to Contents
           </Link>
-          <ReadingSettings onSettingsChange={handleSettingsChange} />
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            {novel && <ShareButton novelId={novelId} novelTitle={novel.title || "Novel"} />}
+            <ReadingSettings onSettingsChange={handleSettingsChange} />
+          </div>
         </div>
       </div>
 

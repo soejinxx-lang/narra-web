@@ -4,6 +4,7 @@ export const fetchCache = "force-no-store";
 
 import Link from "next/link";
 import { fetchNovelById, fetchEpisodesByNovelId } from "@/lib/api";
+import ShareButton from "@/app/components/ShareButton";
 
 type PageProps = {
   params: Promise<{
@@ -103,15 +104,18 @@ export default async function Page({ params }: PageProps) {
         </div>
       )}
 
-      <h1
-        style={{
-          fontSize: 28,
-          marginBottom: 8,
-          fontFamily: '"KoPub Batang", serif',
-        }}
-      >
-        {novel.title}
-      </h1>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: 16, flexWrap: "wrap" }}>
+        <h1
+          style={{
+            fontSize: 28,
+            marginBottom: 0,
+            fontFamily: '"KoPub Batang", serif',
+          }}
+        >
+          {novel.title}
+        </h1>
+        <ShareButton novelId={id} novelTitle={novel.title} />
+      </div>
 
       {novel.description && (
         <p style={{ color: "#666", marginBottom: 24 }}>

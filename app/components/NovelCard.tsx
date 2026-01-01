@@ -25,7 +25,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
         style={{
           aspectRatio: "2 / 3",
           background: "#243A6E",
-          padding: 14,
+          padding: 6,
           overflow: "hidden",
           flexShrink: 0,
           borderRadius: 14,
@@ -42,7 +42,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
               display: "block",
               borderRadius: 10,
               background: "#fff",
-              border: "0.15cm solid #ffffff",
+              border: "0.1cm solid #ffffff",
             }}
           />
         )}
