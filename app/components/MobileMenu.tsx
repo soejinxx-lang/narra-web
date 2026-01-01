@@ -10,7 +10,7 @@ export default function MobileMenu({
   open: boolean;
   onClose: () => void;
 }) {
-  const navRef = useRef<HTMLNavElement>(null);
+  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (!open) return;
