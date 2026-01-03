@@ -628,6 +628,7 @@ export default function CommunityPage() {
                     borderRadius: "8px",
                     border: "1px solid #e5e5e5",
                     transition: "background 0.2s",
+                    cursor: "pointer",
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = "#f0f0f0";
@@ -636,7 +637,6 @@ export default function CommunityPage() {
                     e.currentTarget.style.background = "#faf9f6";
                   }}
                   onClick={() => handlePostClick(post)}
-                  style={{ cursor: "pointer" }}
                 >
                   <div style={{ fontWeight: 500, marginBottom: "8px", color: "#243A6E", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
