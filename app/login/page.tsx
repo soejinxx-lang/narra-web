@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { checkLoginAttempts, recordLoginFailure, clearLoginAttempts, sanitizeInput, isValidInput } from "@/app/utils/security";
 
 interface User {
   id: string;
@@ -31,8 +32,25 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    if (!username.trim() || !password.trim()) {
+    // 입력 검증 및 sanitization
+    const sanitizedUsername = sanitizeInput(username.trim());
+    const sanitizedPassword = password.trim();
+
+    if (!sanitizedUsername || !sanitizedPassword) {
       setError("Please enter both ID and password");
+      return;
+    }
+
+    // 입력 유효성 검사
+    if (!isValidInput(sanitizedUsername, 50) || !isValidInput(sanitizedPassword, 128)) {
+      setError("Invalid input detected");
+      return;
+    }
+
+    // 로그인 시도 제한 확인
+    const attemptCheck = checkLoginAttempts(sanitizedUsername);
+    if (!attemptCheck.allowed) {
+      setError(`Too many login attempts. Please try again in ${attemptCheck.remainingTime} seconds.`);
       return;
     }
 
@@ -43,27 +61,33 @@ export default function LoginPage() {
       return;
     }
 
-    const users: User[] = JSON.parse(usersData);
-    const user = users.find(
-      (u) => u.username === username && u.password === password
-    );
+    try {
+      const users: User[] = JSON.parse(usersData);
+      const user = users.find(
+        (u) => u.username === sanitizedUsername && u.password === sanitizedPassword
+      );
 
-    if (!user) {
-      setError("Invalid ID or password");
-      return;
+      if (!user) {
+        recordLoginFailure(sanitizedUsername);
+        setError("Invalid ID or password");
+        return;
+      }
+
+      // 로그인 성공
+      clearLoginAttempts(sanitizedUsername);
+      localStorage.setItem("currentUser", JSON.stringify({
+        id: user.id,
+        username: user.username,
+        name: user.name,
+      }));
+
+      // 헤더 업데이트를 위한 이벤트 발생
+      window.dispatchEvent(new Event("storage"));
+
+      router.push("/daily-checkin");
+    } catch (error) {
+      setError("An error occurred. Please try again.");
     }
-
-    // 로그인 성공
-    localStorage.setItem("currentUser", JSON.stringify({
-      id: user.id,
-      username: user.username,
-      name: user.name,
-    }));
-
-    // 헤더 업데이트를 위한 이벤트 발생
-    window.dispatchEvent(new Event("storage"));
-
-    router.push("/daily-checkin");
   };
 
   if (isLoggedIn) {

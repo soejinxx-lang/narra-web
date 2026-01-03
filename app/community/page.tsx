@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { sanitizeInput, isValidInput } from "@/app/utils/security";
 
 interface Comment {
   id: string;
@@ -125,15 +126,26 @@ export default function CommunityPage() {
 
   const handleSubmitPost = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPostTitle.trim() || !newPostContent.trim() || !newPostAuthor.trim()) {
+    
+    // 입력 sanitization 및 검증
+    const sanitizedTitle = sanitizeInput(newPostTitle.trim());
+    const sanitizedContent = sanitizeInput(newPostContent.trim());
+    const sanitizedAuthor = sanitizeInput(newPostAuthor.trim());
+
+    if (!sanitizedTitle || !sanitizedContent || !sanitizedAuthor) {
+      return;
+    }
+
+    // 입력 유효성 검사
+    if (!isValidInput(sanitizedTitle, 200) || !isValidInput(sanitizedContent, 10000) || !isValidInput(sanitizedAuthor, 100)) {
       return;
     }
 
     const newPost: Post = {
       id: Date.now().toString(),
-      title: newPostTitle,
-      content: newPostContent,
-      author: newPostAuthor,
+      title: sanitizedTitle,
+      content: sanitizedContent,
+      author: sanitizedAuthor,
       time: "just now",
       likes: 0,
       likedBy: [],
@@ -265,12 +277,22 @@ export default function CommunityPage() {
 
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComment.trim() || !newCommentAuthor.trim() || !selectedPost) return;
+    
+    // 입력 sanitization 및 검증
+    const sanitizedComment = sanitizeInput(newComment.trim());
+    const sanitizedAuthor = sanitizeInput(newCommentAuthor.trim());
+    
+    if (!sanitizedComment || !sanitizedAuthor || !selectedPost) return;
+
+    // 입력 유효성 검사
+    if (!isValidInput(sanitizedComment, 5000) || !isValidInput(sanitizedAuthor, 100)) {
+      return;
+    }
 
     const comment: Comment = {
       id: Date.now().toString(),
-      author: newCommentAuthor,
-      content: newComment,
+      author: sanitizedAuthor,
+      content: sanitizedComment,
       time: new Date().toISOString(),
       replies: [],
     };
@@ -302,7 +324,17 @@ export default function CommunityPage() {
 
   const handleSubmitReply = (commentId: string, e: React.FormEvent) => {
     e.preventDefault();
-    if (!newReply.trim() || !newReplyAuthor.trim() || !selectedPost) return;
+    
+    // 입력 sanitization 및 검증
+    const sanitizedReply = sanitizeInput(newReply.trim());
+    const sanitizedAuthor = sanitizeInput(newReplyAuthor.trim());
+    
+    if (!sanitizedReply || !sanitizedAuthor || !selectedPost) return;
+
+    // 입력 유효성 검사
+    if (!isValidInput(sanitizedReply, 5000) || !isValidInput(sanitizedAuthor, 100)) {
+      return;
+    }
 
     // 대댓글인지 확인 (댓글의 replies 배열에 있는지 확인)
     const isReplyingToReply = (post: Post, commentId: string): boolean => {
@@ -323,8 +355,8 @@ export default function CommunityPage() {
 
     const reply: Comment = {
       id: Date.now().toString(),
-      author: newReplyAuthor,
-      content: newReply,
+      author: sanitizedAuthor,
+      content: sanitizedReply,
       time: new Date().toISOString(),
       replies: [], // 대댓글은 항상 빈 replies 배열을 가짐
     };
@@ -382,6 +414,30 @@ export default function CommunityPage() {
     setNewReply("");
     setNewReplyAuthor("");
     setReplyingTo(null);
+  };
+
+  // 포스트 삭제 함수
+  const handleDeletePost = (postId: string) => {
+    if (!isMaster) return;
+
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      const updatedPosts = posts.filter((post) => post.id !== postId);
+      setPosts(updatedPosts);
+      localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
+
+      // 카테고리별 포스트 수 업데이트
+      setTopics((prevTopics) =>
+        prevTopics.map((topic) => {
+          const count = updatedPosts.filter((post: Post) => post.topic === topic.id).length;
+          return { ...topic, count };
+        })
+      );
+
+      // 선택된 포스트가 삭제된 경우 모달 닫기
+      if (selectedPost && selectedPost.id === postId) {
+        setSelectedPost(null);
+      }
+    }
   };
 
   // 댓글 삭제 함수
@@ -582,12 +638,34 @@ export default function CommunityPage() {
                   onClick={() => handlePostClick(post)}
                   style={{ cursor: "pointer" }}
                 >
-                  <div style={{ fontWeight: 500, marginBottom: "8px", color: "#243A6E", display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span>{post.title}</span>
-                    {post.comments && post.comments.length > 0 && (
-                      <span style={{ fontSize: "13px", color: "#243A6E", fontWeight: 600, background: "#f0f0f0", padding: "2px 8px", borderRadius: "12px" }}>
-                        {post.comments.length}
-                      </span>
+                  <div style={{ fontWeight: 500, marginBottom: "8px", color: "#243A6E", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span>{post.title}</span>
+                      {post.comments && post.comments.length > 0 && (
+                        <span style={{ fontSize: "13px", color: "#243A6E", fontWeight: 600, background: "#f0f0f0", padding: "2px 8px", borderRadius: "12px" }}>
+                          {post.comments.length}
+                        </span>
+                      )}
+                    </div>
+                    {isMaster && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeletePost(post.id);
+                        }}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "#e74c3c",
+                          fontSize: "18px",
+                          cursor: "pointer",
+                          padding: "4px 8px",
+                          lineHeight: "1",
+                        }}
+                        title="Delete post"
+                      >
+                        ×
+                      </button>
                     )}
                   </div>
                   <div style={{ fontSize: "13px", color: "#666", marginBottom: "8px", lineHeight: 1.5 }}>
@@ -691,27 +769,48 @@ export default function CommunityPage() {
               >
                 {selectedPost.title}
               </h2>
-              <button
-                onClick={() => {
-                  setSelectedPost(null);
-                  setReplyingTo(null);
-                }}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: "24px",
-                  cursor: "pointer",
-                  color: "#666",
-                  padding: "0",
-                  width: "32px",
-                  height: "32px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                ×
-              </button>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                {isMaster && (
+                  <button
+                    onClick={() => {
+                      handleDeletePost(selectedPost.id);
+                    }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      fontSize: "20px",
+                      cursor: "pointer",
+                      color: "#e74c3c",
+                      padding: "4px 8px",
+                      lineHeight: "1",
+                    }}
+                    title="Delete post"
+                  >
+                    🗑️
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    setSelectedPost(null);
+                    setReplyingTo(null);
+                  }}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    fontSize: "24px",
+                    cursor: "pointer",
+                    color: "#666",
+                    padding: "0",
+                    width: "32px",
+                    height: "32px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  ×
+                </button>
+              </div>
             </div>
             
             <div style={{ marginBottom: "16px", color: "#666", fontSize: "14px" }}>

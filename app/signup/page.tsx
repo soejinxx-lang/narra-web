@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { sanitizeInput, isValidInput, validatePasswordStrength, validateUsername } from "@/app/utils/security";
 
 interface User {
   id: string;
@@ -23,18 +24,38 @@ export default function SignUpPage() {
     e.preventDefault();
     setError("");
 
-    if (!name.trim() || !username.trim() || !password.trim()) {
+    // 입력 sanitization
+    const sanitizedName = sanitizeInput(name.trim());
+    const sanitizedUsername = sanitizeInput(username.trim());
+    const sanitizedPassword = password.trim();
+
+    if (!sanitizedName || !sanitizedUsername || !sanitizedPassword) {
       setError("Please fill in all fields");
       return;
     }
 
-    if (password !== confirmPassword) {
+    // 입력 유효성 검사
+    if (!isValidInput(sanitizedName, 100) || !isValidInput(sanitizedUsername, 50) || !isValidInput(sanitizedPassword, 128)) {
+      setError("Invalid input detected");
+      return;
+    }
+
+    // 사용자명 검증
+    const usernameValidation = validateUsername(sanitizedUsername);
+    if (!usernameValidation.valid) {
+      setError(usernameValidation.reason || "Invalid username");
+      return;
+    }
+
+    if (sanitizedPassword !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
-    if (password.length < 4) {
-      setError("Password must be at least 4 characters");
+    // 비밀번호 강도 검증
+    const passwordValidation = validatePasswordStrength(sanitizedPassword);
+    if (!passwordValidation.valid) {
+      setError(passwordValidation.reason || "Invalid password");
       return;
     }
 
@@ -43,7 +64,7 @@ export default function SignUpPage() {
     const users: User[] = usersData ? JSON.parse(usersData) : [];
 
     // 중복 아이디 확인
-    if (users.some((u) => u.username === username)) {
+    if (users.some((u) => u.username === sanitizedUsername)) {
       setError("ID already exists");
       return;
     }
@@ -51,9 +72,9 @@ export default function SignUpPage() {
     // 새 사용자 생성
     const newUser: User = {
       id: Date.now().toString(),
-      username,
-      password,
-      name,
+      username: sanitizedUsername,
+      password: sanitizedPassword,
+      name: sanitizedName,
     };
 
     users.push(newUser);

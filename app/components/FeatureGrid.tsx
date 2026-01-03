@@ -6,7 +6,7 @@ export default function FeatureGrid() {
       const features = [
         { title: "Author", href: "/authors" },
     { title: "Daily Check-in", href: "/daily-checkin" },
-    { title: "Fan Art", href: "/browse" },
+    { title: "Fan Art", href: "/fanart" },
     { title: "Philosophy", href: "/guide" },
     { title: "Community", href: "/community" },
     { title: "Music", href: "/music" },
