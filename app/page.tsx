@@ -4,6 +4,7 @@ import NovelCardWithTracking from "@/app/components/NovelCardWithTracking";
 import NovelCarousel from "@/app/components/NovelCarousel";
 import FeatureGrid from "@/app/components/FeatureGrid";
 import PopularRankings from "@/app/components/PopularRankings";
+import styles from "@/app/components/HomeLayout.module.css";
 
 export default async function Page() {
   const novels = await fetchNovels();
@@ -14,16 +15,16 @@ export default async function Page() {
   return (
     <main
       style={{
-        padding: "32px 24px",
+        padding: "32px 24px 80px 24px",
         background: "#faf9f6",
         minHeight: "100vh",
         maxWidth: "1400px",
         margin: "0 auto",
       }}
     >
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", alignItems: "start", marginBottom: "60px" }}>
+      <div className={styles.homeGrid}>
         {/* 왼쪽: 로고, 문구, 기능 그리드 */}
-        <div style={{ marginRight: "auto", maxWidth: "600px", marginLeft: "-1.3cm" }}>
+        <div className={styles.leftSection}>
           <Link
             href="/novels"
             style={{ textDecoration: "none", color: "inherit" }}
@@ -61,7 +62,7 @@ export default async function Page() {
         </div>
 
         {/* 오른쪽: 캐러셀 */}
-        <div style={{ position: "sticky", top: "80px" }}>
+        <div className={styles.carouselSection}>
           <NovelCarousel novels={carouselNovels} />
         </div>
       </div>

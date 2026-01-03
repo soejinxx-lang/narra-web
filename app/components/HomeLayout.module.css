@@ -1,0 +1,36 @@
+.homeGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+  margin-bottom: 60px;
+}
+
+.leftSection {
+  margin-right: auto;
+  max-width: 600px;
+  margin-left: -1.3cm;
+}
+
+.carouselSection {
+  position: sticky;
+  top: 80px;
+}
+
+@media (max-width: 768px) {
+  .homeGrid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .leftSection {
+    margin-left: 0;
+    max-width: 100%;
+  }
+
+  .carouselSection {
+    position: relative;
+    top: 0;
+  }
+}
+

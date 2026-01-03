@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface Mission {
@@ -17,49 +18,85 @@ const dailyMissions: Mission[] = [
   { id: "checkin", title: "Daily Check-in", description: "Check in today", target: 1, type: "checkin" },
 ];
 
+// 미국 동부 시간(EST/EDT) 기준 날짜 가져오기 (컴포넌트 외부에서 정의)
+const getUSEasternDate = (): Date => {
+  const now = new Date();
+  // 미국 동부 시간대는 UTC-5 (EST) 또는 UTC-4 (EDT)
+  // Intl API를 사용하여 정확한 시간대 변환
+  const usEasternTimeString = now.toLocaleString("en-US", { timeZone: "America/New_York" });
+  // 문자열을 파싱하여 Date 객체 생성
+  const usEasternTime = new Date(usEasternTimeString);
+  return usEasternTime;
+};
+
 export default function DailyCheckInPage() {
+  const router = useRouter();
   const [checkIns, setCheckIns] = useState<Set<string>>(new Set());
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(() => getUSEasternDate());
   const [streak, setStreak] = useState(0);
   const [totalDays, setTotalDays] = useState(0);
   const [todayChecked, setTodayChecked] = useState(false);
   const [missionProgress, setMissionProgress] = useState<{ [key: string]: number }>({});
   const [completedMissions, setCompletedMissions] = useState<Set<string>>(new Set());
+  const [currentUser, setCurrentUser] = useState<{ id: string; username: string; name?: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const today = formatDate(new Date());
-    
-    // Load check-ins
-    const saved = localStorage.getItem("dailyCheckIns");
-    if (saved) {
-      const savedCheckIns = JSON.parse(saved);
-      setCheckIns(new Set(savedCheckIns));
-      
-      // Calculate streak
-      let currentStreak = 0;
-      const todayDate = new Date();
-      todayDate.setHours(0, 0, 0, 0);
-      
-      for (let i = 0; i < 365; i++) {
-        const checkDate = new Date(todayDate);
-        checkDate.setDate(todayDate.getDate() - i);
-        const dateStr = formatDate(checkDate);
-        
-        if (savedCheckIns.includes(dateStr)) {
-          currentStreak++;
-        } else {
-          break;
-        }
-      }
-      setStreak(currentStreak);
-      setTotalDays(savedCheckIns.length);
-      
-      const todayStr = formatDate(todayDate);
-      setTodayChecked(savedCheckIns.includes(todayStr));
+    // 로그인 확인
+    const userData = localStorage.getItem("currentUser");
+    if (!userData) {
+      router.push("/login");
+      return;
     }
 
-    // Load mission progress for today
-    const missionKey = `dailyMissions_${today}`;
+    const user = JSON.parse(userData);
+    setCurrentUser(user);
+    setIsLoading(false);
+
+    // 미국 동부 시간 기준 오늘 날짜
+    const today = getUSEasternDateString();
+    const todayDate = getUSEasternDate();
+    todayDate.setHours(0, 0, 0, 0);
+    const todayStr = formatDate(todayDate);
+    
+    // 사용자별 체크인 데이터 키
+    const checkInKey = `dailyCheckIns_${user.id}`;
+    
+    // Load check-ins
+    const saved = localStorage.getItem(checkInKey);
+    let savedCheckIns: string[] = [];
+    if (saved) {
+      savedCheckIns = JSON.parse(saved);
+    }
+    
+    // 오늘 체크인이 안 되어 있으면 자동으로 체크인
+    if (!savedCheckIns.includes(todayStr)) {
+      const newCheckIns = [...savedCheckIns, todayStr];
+      localStorage.setItem(checkInKey, JSON.stringify(newCheckIns));
+      savedCheckIns = newCheckIns;
+    }
+    
+    setCheckIns(new Set(savedCheckIns));
+    setTodayChecked(true);
+    
+    // Calculate streak
+    let currentStreak = 0;
+    for (let i = 0; i < 365; i++) {
+      const checkDate = new Date(todayDate);
+      checkDate.setDate(todayDate.getDate() - i);
+      const dateStr = formatDate(checkDate);
+      
+      if (savedCheckIns.includes(dateStr)) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+    setStreak(currentStreak);
+    setTotalDays(savedCheckIns.length);
+
+    // 사용자별 미션 진행도 키
+    const missionKey = `dailyMissions_${user.id}_${today}`;
     const savedMissions = localStorage.getItem(missionKey);
     if (savedMissions) {
       const data = JSON.parse(savedMissions);
@@ -67,21 +104,12 @@ export default function DailyCheckInPage() {
       setCompletedMissions(new Set(data.completed || []));
     }
 
-    // Check mission progress from other sources
-    updateMissionProgress();
-    
-    // Set up interval to check mission progress
-    const interval = setInterval(updateMissionProgress, 2000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const updateMissionProgress = () => {
-    const today = formatDate(new Date());
+    // Check mission progress from other sources (user 객체 직접 사용)
     const progress: { [key: string]: number } = {};
     const completed = new Set<string>();
 
     // Check share missions
-    const shareKey = `novelShares_${today}`;
+    const shareKey = `novelShares_${user.id}_${today}`;
     const shares = parseInt(localStorage.getItem(shareKey) || "0", 10);
     progress.share = shares;
     if (shares >= dailyMissions.find(m => m.id === "share")!.target) {
@@ -89,31 +117,101 @@ export default function DailyCheckInPage() {
     }
 
     // Check read missions
-    const readKey = `episodesRead_${today}`;
+    const readKey = `episodesRead_${user.id}_${today}`;
     const reads = parseInt(localStorage.getItem(readKey) || "0", 10);
     progress.read5 = reads;
     if (reads >= dailyMissions.find(m => m.id === "read5")!.target) {
       completed.add("read5");
     }
 
-    // Check check-in mission
-    const todayDate = new Date();
-    todayDate.setHours(0, 0, 0, 0);
-    const todayStr = formatDate(todayDate);
-    if (checkIns.has(todayStr)) {
-      progress.checkin = 1;
-      completed.add("checkin");
-    }
+    // Check check-in mission (접속 시 자동 체크인되므로 항상 완료)
+    progress.checkin = 1;
+    completed.add("checkin");
 
     setMissionProgress(progress);
     setCompletedMissions(completed);
 
     // Save mission progress
-    const missionKey = `dailyMissions_${today}`;
     localStorage.setItem(missionKey, JSON.stringify({
       progress,
       completed: Array.from(completed),
     }));
+
+    // 3개 미션 모두 완료되었는지 확인하고 저장
+    if (completed.has("checkin") && completed.has("share") && completed.has("read5")) {
+      const allCompletedKey = `allMissionsCompleted_${user.id}`;
+      const completedDates = JSON.parse(localStorage.getItem(allCompletedKey) || "[]");
+      if (!completedDates.includes(today)) {
+        completedDates.push(today);
+        localStorage.setItem(allCompletedKey, JSON.stringify(completedDates));
+      }
+    }
+    
+    // Set up interval to check mission progress
+    const interval = setInterval(() => {
+      if (user) {
+        updateMissionProgress();
+      }
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [router]);
+
+  const updateMissionProgress = () => {
+    if (!currentUser) return;
+
+    // 미국 동부 시간 기준 오늘 날짜
+    const today = getUSEasternDateString();
+    const progress: { [key: string]: number } = {};
+    const completed = new Set<string>();
+
+    // 사용자별 미션 진행도 키
+    const userId = currentUser.id;
+
+    // Check share missions
+    const shareKey = `novelShares_${userId}_${today}`;
+    const shares = parseInt(localStorage.getItem(shareKey) || "0", 10);
+    progress.share = shares;
+    if (shares >= dailyMissions.find(m => m.id === "share")!.target) {
+      completed.add("share");
+    }
+
+    // Check read missions
+    const readKey = `episodesRead_${userId}_${today}`;
+    const reads = parseInt(localStorage.getItem(readKey) || "0", 10);
+    progress.read5 = reads;
+    if (reads >= dailyMissions.find(m => m.id === "read5")!.target) {
+      completed.add("read5");
+    }
+
+    // Check check-in mission (접속 시 자동 체크인되므로 항상 완료)
+    progress.checkin = 1;
+    completed.add("checkin");
+
+    setMissionProgress(progress);
+    setCompletedMissions(completed);
+
+    // Save mission progress
+    const missionKey = `dailyMissions_${userId}_${today}`;
+    localStorage.setItem(missionKey, JSON.stringify({
+      progress,
+      completed: Array.from(completed),
+    }));
+
+    // 3개 미션 모두 완료되었는지 확인하고 저장
+    if (completed.has("checkin") && completed.has("share") && completed.has("read5")) {
+      const allCompletedKey = `allMissionsCompleted_${userId}`;
+      const completedDates = JSON.parse(localStorage.getItem(allCompletedKey) || "[]");
+      if (!completedDates.includes(today)) {
+        completedDates.push(today);
+        localStorage.setItem(allCompletedKey, JSON.stringify(completedDates));
+      }
+    }
+  };
+
+  // 미국 동부 시간 기준 오늘 날짜 문자열 반환
+  const getUSEasternDateString = (): string => {
+    const usDate = getUSEasternDate();
+    return formatDate(usDate);
   };
 
   const formatDate = (date: Date): string => {
@@ -121,7 +219,10 @@ export default function DailyCheckInPage() {
   };
 
   const handleCheckIn = () => {
-    const today = new Date();
+    if (!currentUser) return;
+
+    // 미국 동부 시간 기준 오늘 날짜
+    const today = getUSEasternDate();
     today.setHours(0, 0, 0, 0);
     const todayStr = formatDate(today);
     
@@ -135,7 +236,8 @@ export default function DailyCheckInPage() {
     setTodayChecked(true);
     
     const checkInsArray = Array.from(newCheckIns);
-    localStorage.setItem("dailyCheckIns", JSON.stringify(checkInsArray));
+    const checkInKey = `dailyCheckIns_${currentUser.id}`;
+    localStorage.setItem(checkInKey, JSON.stringify(checkInsArray));
     
     // Update streak
     let currentStreak = 1;
@@ -156,6 +258,23 @@ export default function DailyCheckInPage() {
     // Update check-in mission
     updateMissionProgress();
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem("currentUser");
+    router.push("/login");
+  };
+
+  if (isLoading) {
+    return (
+      <main style={{ padding: "32px 24px", maxWidth: "1000px", margin: "0 auto", textAlign: "center" }}>
+        <div style={{ color: "#666" }}>Loading...</div>
+      </main>
+    );
+  }
+
+  if (!currentUser) {
+    return null;
+  }
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -185,12 +304,31 @@ export default function DailyCheckInPage() {
 
   const isToday = (date: Date | null): boolean => {
     if (!date) return false;
-    const today = new Date();
+    const today = getUSEasternDate();
     return (
       date.getDate() === today.getDate() &&
       date.getMonth() === today.getMonth() &&
       date.getFullYear() === today.getFullYear()
     );
+  };
+
+  // 해당 날짜에 3개 미션을 모두 완료했는지 확인
+  const areAllMissionsCompleted = (date: Date | null): boolean => {
+    if (!date || !currentUser) return false;
+    const dateStr = formatDate(date);
+    const missionKey = `dailyMissions_${currentUser.id}_${dateStr}`;
+    const savedMissions = localStorage.getItem(missionKey);
+    
+    if (!savedMissions) return false;
+    
+    try {
+      const data = JSON.parse(savedMissions);
+      const completed = new Set(data.completed || []);
+      // 3개 미션 모두 완료되었는지 확인
+      return completed.has("checkin") && completed.has("share") && completed.has("read5");
+    } catch (e) {
+      return false;
+    }
   };
 
   const goToPreviousMonth = () => {
@@ -220,17 +358,45 @@ export default function DailyCheckInPage() {
 
   return (
     <main style={{ padding: "32px 24px", maxWidth: "1000px", margin: "0 auto" }}>
-      <h1
-        style={{
-          fontSize: "32px",
-          fontWeight: 600,
-          marginBottom: "32px",
-          color: "#243A6E",
-          fontFamily: '"KoPub Batang", serif',
-        }}
-      >
-        Daily Check-in
-      </h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
+        <h1
+          style={{
+            fontSize: "32px",
+            fontWeight: 600,
+            color: "#243A6E",
+            fontFamily: '"KoPub Batang", serif',
+            margin: 0,
+          }}
+        >
+          Daily Check-in
+        </h1>
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <span style={{ color: "#666", fontSize: "14px" }}>
+            Welcome, {currentUser.name || currentUser.username}!
+          </span>
+          <button
+            onClick={handleLogout}
+            style={{
+              padding: "8px 16px",
+              background: "transparent",
+              border: "1px solid #e5e5e5",
+              borderRadius: "8px",
+              fontSize: "14px",
+              color: "#666",
+              cursor: "pointer",
+              transition: "background 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#f0f0f0";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+            }}
+          >
+            Logout
+          </button>
+        </div>
+      </div>
 
       {/* Stats */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px", marginBottom: "32px" }}>
@@ -490,6 +656,7 @@ export default function DailyCheckInPage() {
           {days.map((date, index) => {
             const checked = isChecked(date);
             const today = isToday(date);
+            const allMissionsCompleted = areAllMissionsCompleted(date);
             
             return (
               <div
@@ -500,8 +667,8 @@ export default function DailyCheckInPage() {
                   alignItems: "center",
                   justifyContent: "center",
                   borderRadius: "8px",
-                  background: checked ? "#e8ecf5" : today ? "#fff3cd" : "#faf9f6",
-                  border: today ? "2px solid #243A6E" : checked ? "2px solid #243A6E" : "1px solid #e5e5e5",
+                  background: allMissionsCompleted ? "#d4edda" : checked ? "#e8ecf5" : today ? "#fff3cd" : "#faf9f6",
+                  border: allMissionsCompleted ? "2px solid #28a745" : today ? "2px solid #243A6E" : checked ? "2px solid #243A6E" : "1px solid #e5e5e5",
                   position: "relative",
                   cursor: date ? "pointer" : "default",
                 }}
@@ -511,13 +678,34 @@ export default function DailyCheckInPage() {
                     <div
                       style={{
                         fontSize: "14px",
-                        fontWeight: today ? 600 : checked ? 500 : 400,
-                        color: today ? "#243A6E" : checked ? "#243A6E" : "#666",
+                        fontWeight: today ? 600 : checked || allMissionsCompleted ? 500 : 400,
+                        color: allMissionsCompleted ? "#28a745" : today ? "#243A6E" : checked ? "#243A6E" : "#666",
+                        zIndex: allMissionsCompleted ? 1 : "auto",
+                        position: "relative",
                       }}
                     >
                       {date.getDate()}
                     </div>
-                    {checked && (
+                    {allMissionsCompleted && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          transform: "translate(-50%, -50%)",
+                          fontSize: "48px",
+                          color: "#28a745",
+                          fontWeight: "bold",
+                          lineHeight: "1",
+                          zIndex: 2,
+                          opacity: 0.8,
+                        }}
+                        title="All missions completed!"
+                      >
+                        ✓
+                      </div>
+                    )}
+                    {checked && !allMissionsCompleted && (
                       <div
                         style={{
                           position: "absolute",

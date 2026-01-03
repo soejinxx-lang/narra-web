@@ -9,46 +9,209 @@ type NovelCarouselProps = {
 
 export default function NovelCarousel({ novels }: NovelCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [rotationAngle, setRotationAngle] = useState(0); // 회전 각도 state
   const [direction, setDirection] = useState(1); // 1 for next, -1 for prev
-  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isDragging, setIsDragging] = useState(false); // 드래그 중인지 state
+  const manualIntervalRef = useRef<NodeJS.Timeout | null>(null); // 수동 클릭 시 interval
+  const autoIntervalRef = useRef<NodeJS.Timeout | null>(null); // 자동 넘어가기 interval
+  const mouseActivityTimeoutRef = useRef<NodeJS.Timeout | null>(null); // 마우스 움직임 감지 timeout
+  const isChangingRef = useRef(false); // 현재 변경 중인지 추적
+  const lastMouseMoveRef = useRef<number>(Date.now()); // 마지막 마우스 움직임 시간
+  const touchStartXRef = useRef<number | null>(null); // 터치 시작 X 좌표
+  const touchStartAngleRef = useRef<number>(0); // 터치 시작 시 각도
+  const isDraggingRef = useRef(false); // 드래그 중인지 추적
 
+  // 모바일 감지
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // currentIndex가 변경될 때 rotationAngle 업데이트 (드래그 중이 아닐 때만)
+  useEffect(() => {
+    if (novels.length === 0 || isDraggingRef.current) return;
+    
+    const angleStep = 360 / novels.length;
+    const targetAngle = -(currentIndex * angleStep);
+    
+    setRotationAngle((prevAngle) => {
+      // 이전 각도와 목표 각도의 차이 계산
+      let diff = targetAngle - prevAngle;
+      
+      // 최단 경로 선택 (360도 차이를 -0도 또는 +0도로 조정)
+      if (diff > 180) diff -= 360;
+      if (diff < -180) diff += 360;
+      
+      return prevAngle + diff;
+    });
+  }, [currentIndex, novels.length]);
+
+  // 모바일 터치 이벤트 핸들러
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!isMobile) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    touchStartXRef.current = touch.clientX;
+    touchStartAngleRef.current = rotationAngle;
+    isDraggingRef.current = true;
+    setIsDragging(true);
+    stopAllRotate(); // 자동 회전 중지
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isMobile || touchStartXRef.current === null) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - touchStartXRef.current;
+    
+    // 회전목마처럼 앞에서 보는 느낌: 오른쪽으로 드래그하면 오른쪽으로 회전
+    // 손가락 방향과 일치하도록 부호 반전
+    const sensitivity = 0.8; // 회전 속도 조정
+    const newAngle = touchStartAngleRef.current + (deltaX * sensitivity);
+    setRotationAngle(newAngle);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!isMobile || touchStartXRef.current === null) return;
+    e.preventDefault();
+    
+    setIsDragging(false);
+    isDraggingRef.current = false;
+    
+    // 현재 각도에 가장 가까운 소설의 인덱스 계산
+    const angleStep = 360 / novels.length;
+    // rotationAngle은 음수로 저장되므로 절댓값을 사용
+    const normalizedAngle = ((Math.abs(rotationAngle) % 360) + 360) % 360;
+    // 가장 가까운 인덱스 계산 (0부터 시작)
+    let closestIndex = Math.round(normalizedAngle / angleStep) % novels.length;
+    
+    // 각도가 정확히 경계에 있을 때 처리
+    if (closestIndex >= novels.length) {
+      closestIndex = 0;
+    }
+    
+    // 가장 가까운 소설로 스냅
+    setCurrentIndex(closestIndex);
+    
+    touchStartXRef.current = null;
+    
+    // 3초 후 자동 회전 재시작
+    setTimeout(() => {
+      if (!isDraggingRef.current) {
+        startAutoRotate();
+      }
+    }, 3000);
+  };
+
+  // 안전하게 인덱스 변경 (한 개씩만)
+  const moveToNext = (dir: number) => {
+    if (isChangingRef.current) return; // 이미 변경 중이면 무시
+    
+    isChangingRef.current = true;
+    setDirection(dir);
+    
+    setCurrentIndex((prev) => {
+      const newIndex = dir === 1 
+        ? (prev + 1) % novels.length
+        : (prev - 1 + novels.length) % novels.length;
+      
+      return newIndex;
+    });
+
+    // transition 완료 후 플래그 해제
+    setTimeout(() => {
+      isChangingRef.current = false;
+    }, 1600); // transition 1.5s + 여유 0.1s
+  };
+
+  // 클릭 중일 때만 1초마다 1개씩 넘어가는 함수
+  const startManualRotate = (dir: number) => {
+    stopAllRotate(); // 모든 자동 넘어가기 중지
+    onMouseActivity(); // 마우스 활동 감지
+    
+    if (isChangingRef.current) return;
+    
+    // 즉시 한 번 이동
+    moveToNext(dir);
+
+    // 1초마다 반복
+    manualIntervalRef.current = setInterval(() => {
+      if (!isChangingRef.current) {
+        moveToNext(dir);
+      }
+    }, 1000);
+  };
+
+  const stopManualRotate = () => {
+    if (manualIntervalRef.current) {
+      clearInterval(manualIntervalRef.current);
+      manualIntervalRef.current = null;
+    }
+  };
+
+  // 자동 넘어가기 시작 (마우스 움직임이 없을 때)
+  const startAutoRotate = () => {
+    if (autoIntervalRef.current) return; // 이미 실행 중이면 무시
+    
+    autoIntervalRef.current = setInterval(() => {
+      if (!isChangingRef.current) {
+        moveToNext(1); // 자동으로는 다음으로
+      }
+    }, 3000);
+  };
+
+  const stopAutoRotate = () => {
+    if (autoIntervalRef.current) {
+      clearInterval(autoIntervalRef.current);
+      autoIntervalRef.current = null;
+    }
+  };
+
+  const stopAllRotate = () => {
+    stopManualRotate();
+    stopAutoRotate();
+  };
+
+  // 마우스 활동 감지
+  const onMouseActivity = () => {
+    lastMouseMoveRef.current = Date.now();
+    stopAutoRotate(); // 자동 넘어가기 중지
+    
+    // 마우스 활동이 없으면 3초 후 자동 넘어가기 재시작
+    if (mouseActivityTimeoutRef.current) {
+      clearTimeout(mouseActivityTimeoutRef.current);
+    }
+    
+    mouseActivityTimeoutRef.current = setTimeout(() => {
+      // 3초 동안 마우스 움직임이 없으면 자동 넘어가기 시작
+      if (Date.now() - lastMouseMoveRef.current >= 3000) {
+        startAutoRotate();
+      }
+    }, 3000);
+  };
+
+  // 초기 자동 넘어가기 설정
   useEffect(() => {
     if (novels.length === 0) return;
-
-    if (intervalRef.current) clearInterval(intervalRef.current);
     
-    intervalRef.current = setInterval(() => {
-      setCurrentIndex((prev) => {
-        if (direction === 1) {
-          return (prev + 1) % novels.length;
-        } else {
-          return (prev - 1 + novels.length) % novels.length;
-        }
-      });
+    // 3초 후 자동 넘어가기 시작
+    const initialTimeout = setTimeout(() => {
+      startAutoRotate();
     }, 3000);
 
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+      clearTimeout(initialTimeout);
+      stopAllRotate();
+      if (mouseActivityTimeoutRef.current) {
+        clearTimeout(mouseActivityTimeoutRef.current);
+      }
     };
-  }, [novels.length, direction]);
-
-  const handleMouseEnterLeft = () => {
-    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-    setDirection(-1);
-    setCurrentIndex((prev) => (prev - 1 + novels.length) % novels.length);
-  };
-
-  const handleMouseEnterRight = () => {
-    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-    setDirection(1);
-    setCurrentIndex((prev) => (prev + 1) % novels.length);
-  };
-
-  const handleMouseLeave = () => {
-    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-  };
+  }, [novels.length]);
 
   if (novels.length === 0) return null;
 
@@ -57,24 +220,35 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
     return novels[index];
   };
 
-  // 회전 각도 계산: currentIndex에 따라 회전
-  const rotationAngle = -(currentIndex * (360 / novels.length));
+  const containerSize = isMobile ? 330 : 600;
+  const radius = isMobile ? 165 : 300;
+  const cardSize = isMobile ? 165 : 315;
+  const cardSizeSmall = isMobile ? 143 : 280;
+  const height = isMobile ? 440 : 700;
 
   return (
     <div
       style={{
         width: "100%",
         position: "relative",
-        height: "700px",
+        height: `${height}px`,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
         marginTop: "20px",
+        marginBottom: isMobile ? "189px" : "0px",
         perspective: "1500px", // 3D 효과를 위한 원근감
+        touchAction: isMobile ? "pan-y" : "auto", // 모바일에서 수직 스크롤만 허용
       }}
+      onMouseMove={onMouseActivity}
+      onMouseEnter={onMouseActivity}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      className="novel-carousel"
     >
-      {/* 왼쪽 호버 영역 */}
+      {/* 왼쪽 클릭 영역 */}
       <div
         style={{
           position: "absolute",
@@ -85,15 +259,12 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
           zIndex: 5,
           cursor: "pointer",
         }}
-        onMouseEnter={handleMouseEnterLeft}
-        onMouseLeave={handleMouseLeave}
-        onClick={() => {
-          setCurrentIndex((prev) => (prev - 1 + novels.length) % novels.length);
-          setDirection(-1);
-        }}
+        onMouseDown={() => startManualRotate(-1)}
+        onMouseUp={stopManualRotate}
+        onMouseLeave={stopManualRotate}
       />
 
-      {/* 오른쪽 호버 영역 */}
+      {/* 오른쪽 클릭 영역 */}
       <div
         style={{
           position: "absolute",
@@ -104,12 +275,9 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
           zIndex: 5,
           cursor: "pointer",
         }}
-        onMouseEnter={handleMouseEnterRight}
-        onMouseLeave={handleMouseLeave}
-        onClick={() => {
-          setCurrentIndex((prev) => (prev + 1) % novels.length);
-          setDirection(1);
-        }}
+        onMouseDown={() => startManualRotate(1)}
+        onMouseUp={stopManualRotate}
+        onMouseLeave={stopManualRotate}
       />
 
       {/* 회전목마 컨테이너 */}
@@ -119,17 +287,17 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
           left: "50%",
           top: "50%",
           transform: `translate(-50%, -50%) rotateY(${rotationAngle}deg)`,
-          width: "600px",
-          height: "600px",
+          width: `${containerSize}px`,
+          height: `${containerSize}px`,
           transformStyle: "preserve-3d",
-          transition: "transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
+          transition: isMobile && isDragging ? "none" : "transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
+          pointerEvents: "none",
         }}
       >
         {/* 모든 소설을 원형으로 배치 */}
         {novels.map((novel, index) => {
           // 각 소설의 원형 경로상 위치 계산
           const angle = (index * 360) / novels.length;
-          const radius = 300; // 원의 반지름
           const x = Math.sin((angle * Math.PI) / 180) * radius;
           const z = Math.cos((angle * Math.PI) / 180) * radius;
           
@@ -171,18 +339,23 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
                   scale(${scale})
                 `,
                 transformStyle: "preserve-3d",
-                transition: "all 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
+                transition: isMobile && isDragging ? "none" : "all 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
                 opacity: opacity,
                 zIndex: isCurrent ? 3 : isLeft || isRight ? 1 : 0,
                 cursor: isLeft || isRight ? "pointer" : "default",
+                pointerEvents: "auto",
               }}
-              onMouseEnter={() => {
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 if (isLeft) {
-                  handleMouseEnterLeft();
+                  startManualRotate(-1);
                 } else if (isRight) {
-                  handleMouseEnterRight();
+                  startManualRotate(1);
                 }
               }}
+              onMouseUp={stopManualRotate}
+              onMouseLeave={stopManualRotate}
             >
               <Link
                 href={`/novels/${novel.id}`}
@@ -194,7 +367,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
               >
                 <div
                   style={{
-                    width: isCurrent ? "350px" : "280px",
+                    width: isCurrent ? `${cardSize}px` : `${cardSizeSmall}px`,
                     aspectRatio: "2 / 3",
                     background: "#fff",
                     borderRadius: "16px",
@@ -238,7 +411,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
         })}
       </div>
 
-      {novels.length > 1 && (
+      {novels.length > 1 && !isMobile && (
         <div
           style={{
             position: "absolute",
@@ -255,7 +428,79 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
               key={index}
               onClick={(e) => {
                 e.preventDefault();
+                if (isChangingRef.current || index === currentIndex) return;
+                
+                const angleStep = 360 / novels.length;
+                isChangingRef.current = true;
+                
+                setRotationAngle((prevAngle) => {
+                  const targetAngle = -(index * angleStep);
+                  let diff = targetAngle - prevAngle;
+                  
+                  // 최단 경로 선택
+                  if (diff > 180) diff -= 360;
+                  if (diff < -180) diff += 360;
+                  
+                  return prevAngle + diff;
+                });
+                
                 setCurrentIndex(index);
+                
+                setTimeout(() => {
+                  isChangingRef.current = false;
+                }, 1600);
+              }}
+              style={{
+                width: "8px",
+                height: "8px",
+                borderRadius: "50%",
+                border: "none",
+                background: index === currentIndex ? "#243A6E" : "#ccc",
+                cursor: "pointer",
+                transition: "background 0.3s",
+              }}
+            />
+          ))}
+        </div>
+      )}
+      {novels.length > 1 && isMobile && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "189px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            gap: "8px",
+            zIndex: 10,
+          }}
+        >
+          {novels.map((_, index) => (
+            <button
+              key={index}
+              onClick={(e) => {
+                e.preventDefault();
+                if (isChangingRef.current || index === currentIndex) return;
+                
+                const angleStep = 360 / novels.length;
+                isChangingRef.current = true;
+                
+                setRotationAngle((prevAngle) => {
+                  const targetAngle = -(index * angleStep);
+                  let diff = targetAngle - prevAngle;
+                  
+                  // 최단 경로 선택
+                  if (diff > 180) diff -= 360;
+                  if (diff < -180) diff += 360;
+                  
+                  return prevAngle + diff;
+                });
+                
+                setCurrentIndex(index);
+                
+                setTimeout(() => {
+                  isChangingRef.current = false;
+                }, 1600);
               }}
               style={{
                 width: "8px",

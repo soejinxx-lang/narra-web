@@ -1,13 +1,66 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import SearchBar from "./SearchBar";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState<{ id: string; username: string; name?: string } | null>(null);
+  const router = useRouter();
+
+  const checkLoginStatus = () => {
+    const loggedInUser = localStorage.getItem("loggedInUser") || localStorage.getItem("currentUser");
+    if (loggedInUser) {
+      try {
+        setUser(JSON.parse(loggedInUser));
+      } catch (e) {
+        setUser(null);
+      }
+    } else {
+      setUser(null);
+    }
+  };
+
+  useEffect(() => {
+    // 초기 로그인 상태 확인
+    checkLoginStatus();
+
+    // storage 이벤트 리스너 추가 (다른 탭에서 로그인/로그아웃 시 감지)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "currentUser" || e.key === "loggedInUser") {
+        checkLoginStatus();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    // 페이지 포커스 시 상태 확인
+    const handleFocus = () => {
+      checkLoginStatus();
+    };
+
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, []);
 
   const closeMenu = () => setOpen(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem("loggedInUser");
+    localStorage.removeItem("currentUser");
+    setUser(null);
+    // 상태 업데이트를 위해 약간의 지연 후 리다이렉트
+    setTimeout(() => {
+      router.push("/");
+      router.refresh();
+    }, 100);
+  };
 
   return (
     <header
@@ -41,18 +94,64 @@ export default function Header() {
           NARRA
         </Link>
         <SearchBar />
-            <div
-              onMouseEnter={() => setOpen(true)}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          {user ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ fontSize: "14px", color: "#243A6E", fontWeight: 500 }}>
+                {user.name || user.username}
+              </span>
+              <button
+                onClick={handleLogout}
+                style={{
+                  padding: "6px 12px",
+                  background: "#243A6E",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontSize: "12px",
+                  cursor: "pointer",
+                  fontWeight: 500,
+                  transition: "background 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#1e2f56";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#243A6E";
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/login"
               style={{
-                fontSize: 20,
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: "8px",
+                padding: "6px 12px",
+                background: "#243A6E",
+                color: "#fff",
+                textDecoration: "none",
+                borderRadius: "6px",
+                fontSize: "12px",
+                fontWeight: 500,
               }}
             >
-              ☰
-            </div>
+              Login
+            </Link>
+          )}
+          <div
+            onMouseEnter={() => setOpen(true)}
+            style={{
+              fontSize: 20,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: "8px",
+            }}
+          >
+            ☰
+          </div>
+        </div>
       </div>
 
       {open && (

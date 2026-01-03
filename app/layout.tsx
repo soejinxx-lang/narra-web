@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
 import MusicPlayer from "./components/MusicPlayer";
+import BottomBar from "./components/BottomBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,6 +44,7 @@ export default function RootLayout({
           {children}
         </main>
         <MusicPlayer />
+        <BottomBar />
       </body>
     </html>
   );

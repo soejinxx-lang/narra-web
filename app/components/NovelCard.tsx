@@ -9,8 +9,8 @@ export default function NovelCard({ novel }: NovelCardProps) {
     <div
       className={styles.novelCard}
       style={{
-        width: "93%",
-        margin: "0 auto",
+        width: "100%",
+        margin: 0,
         aspectRatio: "5 / 10.5",
         border: "1px solid #e5e5e5",
         borderRadius: 16,
@@ -18,6 +18,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
+        minWidth: 0,
       }}
     >
       {/* 남색 패널 */}
@@ -60,9 +61,21 @@ export default function NovelCard({ novel }: NovelCardProps) {
           display: "flex",
           alignItems: "flex-start",
           justifyContent: "center",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          minHeight: 0,
         }}
       >
-        {novel.title}
+        <div style={{ 
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          display: "-webkit-box",
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: "vertical",
+          wordBreak: "break-word",
+        }}>
+          {novel.title}
+        </div>
       </div>
     </div>
   );

@@ -78,10 +78,10 @@ export default function ReadingSettings({ onSettingsChange }: ReadingSettingsPro
           fontWeight: 500,
           display: "flex",
           alignItems: "center",
-          gap: "8px",
+          gap: "0",
         }}
       >
-        ⚙️ Reading Settings
+        ⚙️
       </button>
 
       {isOpen && (

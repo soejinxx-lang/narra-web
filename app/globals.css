@@ -101,4 +101,25 @@ input, textarea {
   body {
     font-size: 14px;
   }
+
+  .novel-carousel {
+    height: 500px !important;
+  }
+
+  .novel-carousel > div {
+    width: 400px !important;
+    height: 400px !important;
+  }
+
+  .novel-carousel > div > div {
+    width: 200px !important;
+  }
+
+  .novel-carousel > div > div[style*="315px"] {
+    width: 200px !important;
+  }
+
+  .novel-carousel > div > div[style*="280px"] {
+    width: 180px !important;
+  }
 }

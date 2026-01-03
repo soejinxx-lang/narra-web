@@ -20,8 +20,8 @@ export default function FeatureGrid() {
       style={{
         display: "grid",
         gridTemplateColumns: "repeat(3, 1fr)",
-        gap: "16px",
-        marginLeft: "-0.5cm",
+        gap: "12px",
+        marginLeft: "-0.1cm",
       }}
     >
       {features.map((feature, index) => (
@@ -37,7 +37,7 @@ export default function FeatureGrid() {
             style={{
               background: "#fff",
               borderRadius: "12px",
-              padding: "24px",
+              padding: "16px",
               textAlign: "center",
               boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
               transition: "transform 0.2s, box-shadow 0.2s",
@@ -47,6 +47,7 @@ export default function FeatureGrid() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              minHeight: "0",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-2px)";

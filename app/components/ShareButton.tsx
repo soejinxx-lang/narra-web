@@ -19,10 +19,21 @@ export default function ShareButton({ novelId, novelTitle }: ShareButtonProps) {
     
     // Track share for daily missions
     if (typeof window !== "undefined") {
-      const today = new Date().toISOString().split("T")[0];
-      const shareKey = `novelShares_${today}`;
-      const currentShares = parseInt(localStorage.getItem(shareKey) || "0", 10);
-      localStorage.setItem(shareKey, String(currentShares + 1));
+      const currentUser = localStorage.getItem("currentUser");
+      if (!currentUser) return; // 로그인하지 않은 경우 카운트하지 않음
+      
+      try {
+        const user = JSON.parse(currentUser);
+        const userId = user.id;
+        // 미국 동부 시간 기준 오늘 날짜
+        const usEasternDate = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
+        const today = `${usEasternDate.getFullYear()}-${String(usEasternDate.getMonth() + 1).padStart(2, "0")}-${String(usEasternDate.getDate()).padStart(2, "0")}`;
+        const shareKey = `novelShares_${userId}_${today}`;
+        const currentShares = parseInt(localStorage.getItem(shareKey) || "0", 10);
+        localStorage.setItem(shareKey, String(currentShares + 1));
+      } catch (e) {
+        console.error("Failed to track share:", e);
+      }
     }
     
     // Try using Web Share API if available (mobile devices)
@@ -70,8 +81,8 @@ export default function ShareButton({ novelId, novelTitle }: ShareButtonProps) {
       style={{
         display: "flex",
         alignItems: "center",
-        gap: "8px",
-        padding: "10px 16px",
+        gap: "0",
+        padding: "10px 12px",
         background: copied ? "#4CAF50" : "#243A6E",
         color: "#fff",
         border: "none",
@@ -92,7 +103,7 @@ export default function ShareButton({ novelId, novelTitle }: ShareButtonProps) {
         }
       }}
     >
-      {copied ? "✓ Link Copied!" : "🔗 Share"}
+      {copied ? "✓" : "🔗"}
     </button>
   );
 }

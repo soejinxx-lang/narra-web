@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import NovelCardWithTracking from "./NovelCardWithTracking";
 import Link from "next/link";
 import { getNovelClicks } from "@/app/utils/clickTracking";
@@ -10,6 +10,17 @@ type PopularRankingsProps = {
 };
 
 export default function PopularRankings({ novels }: PopularRankingsProps) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const popular = useMemo(() => {
     const clicks = getNovelClicks();
     
@@ -66,12 +77,12 @@ export default function PopularRankings({ novels }: PopularRankingsProps) {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
-          gap: "20px",
+          gridTemplateColumns: isMobile ? "repeat(3, minmax(0, 1fr))" : "repeat(auto-fill, minmax(140px, 1fr))",
+          gap: isMobile ? "16px" : "20px",
         }}
       >
         {popular.map((novel: any, index: number) => (
-          <div key={novel.id} style={{ position: "relative" }}>
+          <div key={novel.id} style={{ position: "relative", width: "100%", minWidth: 0, display: "flex", flexDirection: "column" }}>
             <div
               style={{
                 position: "absolute",
@@ -93,7 +104,9 @@ export default function PopularRankings({ novels }: PopularRankingsProps) {
             >
               {index + 1}
             </div>
-            <NovelCardWithTracking novel={novel} />
+            <div style={{ width: "100%", height: "100%" }}>
+              <NovelCardWithTracking novel={novel} />
+            </div>
           </div>
         ))}
       </div>
