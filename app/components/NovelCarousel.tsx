@@ -224,11 +224,12 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
     return novels[index];
   };
 
-  const containerSize = isMobile ? 330 : 600;
-  const radius = isMobile ? 165 : 300;
-  const cardSize = isMobile ? 165 : 315;
-  const cardSizeSmall = isMobile ? 143 : 280;
-  const height = isMobile ? 440 : 700;
+  // 마운트되지 않았으면 기본값 사용 (hydration 방지)
+  const containerSize = mounted && isMobile ? 330 : 600;
+  const radius = mounted && isMobile ? 165 : 300;
+  const cardSize = mounted && isMobile ? 165 : 315;
+  const cardSizeSmall = mounted && isMobile ? 143 : 280;
+  const height = mounted && isMobile ? 440 : 700;
 
   return (
     <div
@@ -241,9 +242,9 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
         justifyContent: "center",
         overflow: "hidden",
         marginTop: "20px",
-        marginBottom: isMobile ? "189px" : "0px",
+        marginBottom: mounted && isMobile ? "189px" : "0px",
         perspective: "1500px", // 3D 효과를 위한 원근감
-        touchAction: isMobile ? "pan-y" : "auto", // 모바일에서 수직 스크롤만 허용
+        touchAction: mounted && isMobile ? "pan-y" : "auto", // 모바일에서 수직 스크롤만 허용
       }}
       onMouseMove={onMouseActivity}
       onMouseEnter={onMouseActivity}
@@ -343,7 +344,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
                   scale(${scale})
                 `,
                 transformStyle: "preserve-3d",
-                transition: isMobile && isDragging ? "none" : "all 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
+                transition: mounted && isMobile && isDragging ? "none" : "all 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
                 opacity: opacity,
                 zIndex: isCurrent ? 3 : isLeft || isRight ? 1 : 0,
                 cursor: isLeft || isRight ? "pointer" : "default",
@@ -415,7 +416,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
         })}
       </div>
 
-      {novels.length > 1 && !isMobile && (
+      {novels.length > 1 && mounted && !isMobile && (
         <div
           style={{
             position: "absolute",
@@ -467,7 +468,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
           ))}
         </div>
       )}
-      {novels.length > 1 && isMobile && (
+      {novels.length > 1 && mounted && isMobile && (
         <div
           style={{
             position: "absolute",
