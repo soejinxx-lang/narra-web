@@ -3,14 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { sanitizeInput, isValidInput, validatePasswordStrength, validateUsername } from "@/app/utils/security";
-
-interface User {
-  id: string;
-  username: string;
-  password: string;
-  name: string;
-}
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -19,78 +11,64 @@ export default function SignUpPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    // 입력 sanitization
-    const sanitizedName = sanitizeInput(name.trim());
-    const sanitizedUsername = sanitizeInput(username.trim());
-    const sanitizedPassword = password.trim();
-
-    if (!sanitizedName || !sanitizedUsername || !sanitizedPassword) {
+    if (!name || !username || !password) {
       setError("Please fill in all fields");
       return;
     }
 
-    // 입력 유효성 검사
-    if (!isValidInput(sanitizedName, 100) || !isValidInput(sanitizedUsername, 50) || !isValidInput(sanitizedPassword, 128)) {
-      setError("Invalid input detected");
-      return;
-    }
-
-    // 사용자명 검증
-    const usernameValidation = validateUsername(sanitizedUsername);
-    if (!usernameValidation.valid) {
-      setError(usernameValidation.reason || "Invalid username");
-      return;
-    }
-
-    if (sanitizedPassword !== confirmPassword) {
+    if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
-    // 비밀번호 강도 검증
-    const passwordValidation = validatePasswordStrength(sanitizedPassword);
-    if (!passwordValidation.valid) {
-      setError(passwordValidation.reason || "Invalid password");
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
       return;
     }
 
-    // 사용자 데이터 불러오기
-    const usersData = localStorage.getItem("users");
-    const users: User[] = usersData ? JSON.parse(usersData) : [];
+    setLoading(true);
 
-    // 중복 아이디 확인
-    if (users.some((u) => u.username === sanitizedUsername)) {
-      setError("ID already exists");
-      return;
+    try {
+      const storageBase = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace('/api', '');
+      const response = await fetch(`${storageBase}/api/auth/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          password,
+          name,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Signup failed");
+        setLoading(false);
+        return;
+      }
+
+      // 토큰과 사용자 정보 저장
+      localStorage.setItem("authToken", data.token);
+      localStorage.setItem("currentUser", JSON.stringify(data.user));
+
+      // 헤더 업데이트를 위한 이벤트 발생
+      window.dispatchEvent(new Event("storage"));
+
+      router.push("/daily-checkin");
+    } catch (error) {
+      console.error("Signup error:", error);
+      setError("Network error. Please try again.");
+      setLoading(false);
     }
-
-    // 새 사용자 생성
-    const newUser: User = {
-      id: Date.now().toString(),
-      username: sanitizedUsername,
-      password: sanitizedPassword,
-      name: sanitizedName,
-    };
-
-    users.push(newUser);
-    localStorage.setItem("users", JSON.stringify(users));
-
-    // 자동 로그인
-    localStorage.setItem("currentUser", JSON.stringify({
-      id: newUser.id,
-      username: newUser.username,
-      name: newUser.name,
-    }));
-
-    // 헤더 업데이트를 위한 이벤트 발생
-    window.dispatchEvent(new Event("storage"));
-
-    router.push("/daily-checkin");
   };
 
   return (
@@ -135,6 +113,7 @@ export default function SignUpPage() {
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
               required
+              disabled={loading}
               style={{
                 width: "100%",
                 padding: "12px",
@@ -163,6 +142,7 @@ export default function SignUpPage() {
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter your ID"
               required
+              disabled={loading}
               style={{
                 width: "100%",
                 padding: "12px",
@@ -191,6 +171,7 @@ export default function SignUpPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
+              disabled={loading}
               style={{
                 width: "100%",
                 padding: "12px",
@@ -219,6 +200,7 @@ export default function SignUpPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm your password"
               required
+              disabled={loading}
               style={{
                 width: "100%",
                 padding: "12px",
@@ -247,26 +229,27 @@ export default function SignUpPage() {
 
           <button
             type="submit"
+            disabled={loading}
             style={{
               width: "100%",
               padding: "12px",
-              background: "#243A6E",
+              background: loading ? "#9ca3af" : "#243A6E",
               color: "#fff",
               border: "none",
               borderRadius: "8px",
               fontSize: "16px",
               fontWeight: 600,
-              cursor: "pointer",
+              cursor: loading ? "not-allowed" : "pointer",
               transition: "background 0.2s",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#1e2f56";
+              if (!loading) e.currentTarget.style.background = "#1e2f56";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = "#243A6E";
+              if (!loading) e.currentTarget.style.background = "#243A6E";
             }}
           >
-            Sign Up
+            {loading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
 
@@ -289,4 +272,3 @@ export default function SignUpPage() {
     </main>
   );
 }
-

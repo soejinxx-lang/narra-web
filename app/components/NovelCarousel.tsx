@@ -300,7 +300,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
           width: mounted ? `${containerSize}px` : `${initialContainerSize}px`,
           height: mounted ? `${containerSize}px` : `${initialContainerSize}px`,
           transformStyle: "preserve-3d",
-          transition: mounted && isMobile && isDragging ? "none" : "transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
+          transition: mounted && isMobile && isDragging ? "none" : (mounted ? "transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)" : "none"),
           pointerEvents: "none",
         }}
       >
@@ -350,7 +350,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
                   scale(${scale})
                 `,
                 transformStyle: "preserve-3d",
-                transition: mounted && isMobile && isDragging ? "none" : "all 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
+                transition: mounted && isMobile && isDragging ? "none" : (mounted ? "all 1.5s cubic-bezier(0.4, 0, 0.2, 1)" : "none"),
                 opacity: opacity,
                 zIndex: isCurrent ? 3 : isLeft || isRight ? 1 : 0,
                 cursor: isLeft || isRight ? "pointer" : "default",

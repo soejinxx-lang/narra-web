@@ -7,7 +7,6 @@ import { fetchNovelById, fetchEpisodesByNovelId } from "@/lib/api";
 import ShareButton from "@/app/components/ShareButton";
 import ContinueReadingButton from "@/app/components/ContinueReadingButton";
 import EpisodeProgress from "@/app/components/EpisodeProgress";
-import FavoriteButton from "@/app/components/FavoriteButton";
 
 type PageProps = {
   params: Promise<{
@@ -118,7 +117,6 @@ export default async function Page({ params }: PageProps) {
           {novel.title}
         </h1>
         <ShareButton novelId={id} novelTitle={novel.title} />
-        <FavoriteButton novelId={id} />
       </div>
 
       {novel.description && (

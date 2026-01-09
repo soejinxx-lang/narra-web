@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getCurrentUserId, isFavorite, addToFavorites, removeFromFavorites } from "@/app/utils/library";
+import { getCurrentUserId } from "@/app/utils/readingProgress";
+import { isFavorite, addToFavorites, removeFromFavorites } from "@/app/utils/library";
 
 type FavoriteButtonProps = {
   novelId: string;

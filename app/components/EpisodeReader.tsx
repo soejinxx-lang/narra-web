@@ -143,11 +143,10 @@ export default function EpisodeReader({
     }
   }, [novelId, episode]);
 
-  // 읽은 위치 복원 및 추적
+  // 읽은 위치 복원 및 추적 (페이지 전체 스크롤)
   useEffect(() => {
-    if (!contentRef.current) return;
+    if (viewMode !== "single") return;
 
-    const contentElement = contentRef.current;
     const userId = getCurrentUserId();
     const currentEpisodeEp = String(episode.ep);
     
@@ -171,12 +170,13 @@ export default function EpisodeReader({
       }
     }
     
-    // 저장된 스크롤 위치로 복원
+    // 저장된 스크롤 위치로 복원 (페이지 전체)
     if (savedScrollPosition > 0) {
-      // 콘텐츠가 로드된 후 스크롤 복원
       const restoreScroll = () => {
-        if (contentElement.scrollHeight > savedScrollPosition) {
-          contentElement.scrollTop = savedScrollPosition;
+        if (contentRef.current) {
+          const elementTop = contentRef.current.offsetTop;
+          const targetPosition = elementTop + savedScrollPosition;
+          window.scrollTo({ top: targetPosition, behavior: "auto" });
         }
       };
       
@@ -185,24 +185,41 @@ export default function EpisodeReader({
       setTimeout(restoreScroll, 500);
     }
 
-    // 스크롤 위치 추적 및 저장
+    // 스크롤 위치 추적 및 저장 (페이지 전체)
     let saveTimeout: NodeJS.Timeout;
 
     const handleScroll = () => {
+      if (!contentRef.current) return;
+      
       // 디바운싱: 스크롤 이벤트가 너무 많이 발생하지 않도록
       clearTimeout(saveTimeout);
       saveTimeout = setTimeout(() => {
-        const scrollTop = contentElement.scrollTop;
-        const scrollHeight = contentElement.scrollHeight;
-        const clientHeight = contentElement.clientHeight;
+        if (!contentRef.current) return;
+        
+        const elementTop = contentRef.current.offsetTop;
+        const elementBottom = elementTop + contentRef.current.offsetHeight;
+        const windowTop = window.scrollY;
+        const windowBottom = windowTop + window.innerHeight;
+        
+        // 본문 영역이 화면에 보이는 부분 계산
+        const visibleTop = Math.max(windowTop, elementTop);
+        const visibleBottom = Math.min(windowBottom, elementBottom);
+        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+        
+        // 본문 영역의 전체 높이
+        const totalHeight = contentRef.current.offsetHeight;
         
         // 화면 중간 위치 기준으로 진도 계산
-        const middleScrollPosition = scrollTop + (clientHeight / 2);
-        const progress = Math.min(100, Math.max(0, Math.round((middleScrollPosition / scrollHeight) * 100)));
+        const middlePosition = windowTop + (window.innerHeight / 2);
+        const relativePosition = Math.max(0, middlePosition - elementTop);
+        const progress = Math.min(100, Math.max(0, Math.round((relativePosition / totalHeight) * 100)));
+        
+        // 스크롤 위치는 본문 영역 기준으로 저장
+        const scrollPosition = Math.max(0, windowTop - elementTop);
         
         // 진도 및 스크롤 위치 저장
         if (userId) {
-          saveReadingProgress(userId, novelId, currentEpisodeEp, progress, scrollTop);
+          saveReadingProgress(userId, novelId, currentEpisodeEp, progress, scrollPosition);
           
           // 100% 달성 시 완독으로 표시
           if (progress >= 100) {
@@ -210,21 +227,19 @@ export default function EpisodeReader({
           }
         } else {
           // 비로그인 사용자: sessionStorage에 저장
-          saveSessionScrollPosition(novelId, currentEpisodeEp, scrollTop, progress);
+          saveSessionScrollPosition(novelId, currentEpisodeEp, scrollPosition, progress);
         }
       }, 500); // 0.5초마다 저장
     };
 
-    contentElement.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll);
     
-    // 초기 진도 저장 (스크롤이 없을 때)
-    if (savedScrollPosition === 0) {
-      handleScroll();
-    }
+    // 초기 진도 저장
+    handleScroll();
 
     return () => {
       clearTimeout(saveTimeout);
-      contentElement.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [novelId, episode.ep, viewMode]);
 
@@ -578,29 +593,6 @@ export default function EpisodeReader({
               >
                 ▭▭
               </button>
-              {/* 햄버거 메뉴 스타일 버튼 (기능 없음) */}
-              <button
-                style={{
-                  padding: "8px 16px",
-                  border: "none",
-                  borderRadius: "6px",
-                  background: "transparent",
-                  color: "#333",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "3px",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "all 0.2s",
-                }}
-              >
-                <div style={{ width: "16px", height: "2px", background: "#333", borderRadius: "1px" }}></div>
-                <div style={{ width: "16px", height: "2px", background: "#333", borderRadius: "1px" }}></div>
-                <div style={{ width: "16px", height: "2px", background: "#333", borderRadius: "1px" }}></div>
-              </button>
             </div>
           </div>
         </div>
@@ -615,8 +607,6 @@ export default function EpisodeReader({
               fontFamily: settings.fontFamily,
               color: settings.backgroundColor === "#1a1a1a" ? "#e0e0e0" : "#333",
               minHeight: "400px",
-              maxHeight: "calc(100vh - 300px)",
-              overflowY: "auto",
             }}
           >
             {getContent(singleLanguage)}

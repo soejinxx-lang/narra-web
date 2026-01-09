@@ -3,90 +3,68 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { checkLoginAttempts, recordLoginFailure, clearLoginAttempts, sanitizeInput, isValidInput } from "@/app/utils/security";
-
-interface User {
-  id: string;
-  username: string;
-  password: string;
-  name?: string;
-}
 
 export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     // 이미 로그인되어 있는지 확인
-    const currentUser = localStorage.getItem("currentUser");
-    if (currentUser) {
+    const token = localStorage.getItem("authToken");
+    if (token) {
       setIsLoggedIn(true);
       router.push("/daily-checkin");
     }
   }, [router]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    // 입력 검증 및 sanitization
-    const sanitizedUsername = sanitizeInput(username.trim());
-    const sanitizedPassword = password.trim();
-
-    if (!sanitizedUsername || !sanitizedPassword) {
+    if (!username || !password) {
       setError("Please enter both ID and password");
       return;
     }
 
-    // 입력 유효성 검사
-    if (!isValidInput(sanitizedUsername, 50) || !isValidInput(sanitizedPassword, 128)) {
-      setError("Invalid input detected");
-      return;
-    }
-
-    // 로그인 시도 제한 확인
-    const attemptCheck = checkLoginAttempts(sanitizedUsername);
-    if (!attemptCheck.allowed) {
-      setError(`Too many login attempts. Please try again in ${attemptCheck.remainingTime} seconds.`);
-      return;
-    }
-
-    // 사용자 데이터 불러오기
-    const usersData = localStorage.getItem("users");
-    if (!usersData) {
-      setError("No account found. Please sign up first.");
-      return;
-    }
+    setLoading(true);
 
     try {
-      const users: User[] = JSON.parse(usersData);
-      const user = users.find(
-        (u) => u.username === sanitizedUsername && u.password === sanitizedPassword
-      );
+      const storageBase = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace('/api', '');
+      const response = await fetch(`${storageBase}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
 
-      if (!user) {
-        recordLoginFailure(sanitizedUsername);
-        setError("Invalid ID or password");
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Login failed");
+        setLoading(false);
         return;
       }
 
-      // 로그인 성공
-      clearLoginAttempts(sanitizedUsername);
-      localStorage.setItem("currentUser", JSON.stringify({
-        id: user.id,
-        username: user.username,
-        name: user.name,
-      }));
+      // 토큰과 사용자 정보 저장
+      localStorage.setItem("authToken", data.token);
+      localStorage.setItem("currentUser", JSON.stringify(data.user));
 
       // 헤더 업데이트를 위한 이벤트 발생
       window.dispatchEvent(new Event("storage"));
 
       router.push("/daily-checkin");
     } catch (error) {
-      setError("An error occurred. Please try again.");
+      console.error("Login error:", error);
+      setError("Network error. Please try again.");
+      setLoading(false);
     }
   };
 
@@ -136,6 +114,7 @@ export default function LoginPage() {
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter your ID"
               required
+              disabled={loading}
               style={{
                 width: "100%",
                 padding: "12px",
@@ -164,6 +143,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
+              disabled={loading}
               style={{
                 width: "100%",
                 padding: "12px",
@@ -192,26 +172,27 @@ export default function LoginPage() {
 
           <button
             type="submit"
+            disabled={loading}
             style={{
               width: "100%",
               padding: "12px",
-              background: "#243A6E",
+              background: loading ? "#9ca3af" : "#243A6E",
               color: "#fff",
               border: "none",
               borderRadius: "8px",
               fontSize: "16px",
               fontWeight: 600,
-              cursor: "pointer",
+              cursor: loading ? "not-allowed" : "pointer",
               transition: "background 0.2s",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#1e2f56";
+              if (!loading) e.currentTarget.style.background = "#1e2f56";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = "#243A6E";
+              if (!loading) e.currentTarget.style.background = "#243A6E";
             }}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
@@ -234,4 +215,3 @@ export default function LoginPage() {
     </main>
   );
 }
-
