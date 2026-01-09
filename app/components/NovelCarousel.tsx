@@ -225,11 +225,16 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
   };
 
   // 마운트되지 않았으면 기본값 사용 (hydration 방지)
+  // 초기 렌더링에서는 항상 데스크톱 값을 사용하여 서버/클라이언트 일치 보장
   const containerSize = mounted && isMobile ? 330 : 600;
   const radius = mounted && isMobile ? 165 : 300;
   const cardSize = mounted && isMobile ? 165 : 315;
   const cardSizeSmall = mounted && isMobile ? 143 : 280;
   const height = mounted && isMobile ? 440 : 700;
+  
+  // 초기 렌더링용 고정 값 (hydration 에러 방지)
+  const initialContainerSize = 600;
+  const initialRadius = 300;
 
   return (
     <div
@@ -292,8 +297,8 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
           left: "50%",
           top: "50%",
           transform: `translate(-50%, -50%) rotateY(${rotationAngle}deg)`,
-          width: `${containerSize}px`,
-          height: `${containerSize}px`,
+          width: mounted ? `${containerSize}px` : `${initialContainerSize}px`,
+          height: mounted ? `${containerSize}px` : `${initialContainerSize}px`,
           transformStyle: "preserve-3d",
           transition: mounted && isMobile && isDragging ? "none" : "transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
           pointerEvents: "none",
@@ -303,8 +308,9 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
         {novels.map((novel, index) => {
           // 각 소설의 원형 경로상 위치 계산
           const angle = (index * 360) / novels.length;
-          const x = Math.sin((angle * Math.PI) / 180) * radius;
-          const z = Math.cos((angle * Math.PI) / 180) * radius;
+          const currentRadius = mounted ? radius : initialRadius;
+          const x = Math.sin((angle * Math.PI) / 180) * currentRadius;
+          const z = Math.cos((angle * Math.PI) / 180) * currentRadius;
           
           // 현재 인덱스와의 차이 계산
           const offset = (index - currentIndex + novels.length) % novels.length;

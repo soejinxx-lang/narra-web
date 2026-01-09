@@ -171,10 +171,11 @@ export default function Header() {
           {[
             { href: "/novels", label: "All Novels" },
             { href: "/browse", label: "Browse" },
+            { href: "/library", label: "My Library", requireLogin: true },
             { href: "/guide", label: "Guide" },
             { href: "/notes", label: "Notes" },
             { href: "/support", label: "Support" },
-          ].map((item) => (
+          ].filter((item) => !item.requireLogin || user).map((item) => (
             <Link
               key={item.href}
               href={item.href}

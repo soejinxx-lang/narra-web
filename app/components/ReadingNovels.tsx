@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { getReadingNovels, getCurrentUserId } from "@/app/utils/readingProgress";
+import { getReadingNovels, getCurrentUserId, getSessionReadingProgress } from "@/app/utils/readingProgress";
+import { getSessionClickedNovels } from "@/app/utils/clickTracking";
 import { fetchNovels } from "@/lib/api";
+import NovelCard from "@/app/components/NovelCard";
 
 type ReadingNovelsProps = {
   allNovels?: any[];
@@ -11,6 +13,7 @@ type ReadingNovelsProps = {
 
 export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
   const [readingNovels, setReadingNovels] = useState<Array<{ novelId: string; episodeEp: string; progress: number; lastReadAt: number }>>([]);
+  const [sessionClickedNovels, setSessionClickedNovels] = useState<Array<{ novelId: string; lastClickedAt: number }>>([]);
   const [novels, setNovels] = useState<any[]>(allNovels);
   const [isMobile, setIsMobile] = useState(false);
   const [showAll, setShowAll] = useState(false);
@@ -32,25 +35,60 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
     // 마운트되지 않았으면 실행하지 않음
     if (!mounted) return;
     
+    // 세션 기반 클릭한 소설 목록 가져오기 (로그인 여부와 관계없이)
+    const sessionClicked = getSessionClickedNovels();
+    setSessionClickedNovels(sessionClicked);
+    
     const userId = getCurrentUserId();
-    if (!userId) {
-      setReadingNovels([]);
-      return;
+    if (userId) {
+      // 로그인한 사용자: 읽은 진도 가져오기
+      const reading = getReadingNovels(userId, 10);
+      setReadingNovels(reading);
+    } else {
+      // 로그인하지 않은 사용자: sessionStorage에서 읽은 진도 가져오기
+      const sessionProgress = getSessionReadingProgress();
+      const sessionReadingList = Object.entries(sessionProgress)
+        .map(([novelId, data]) => ({
+          novelId,
+          episodeEp: data.episodeEp,
+          progress: data.progress,
+          lastReadAt: data.lastReadAt,
+        }))
+        .sort((a, b) => b.lastReadAt - a.lastReadAt)
+        .slice(0, 10);
+      setReadingNovels(sessionReadingList);
     }
-
-    // 읽고 있는 작품 목록 가져오기
-    const reading = getReadingNovels(userId, 10);
-    setReadingNovels(reading);
 
     // 작품 정보가 없으면 가져오기
     if (novels.length === 0) {
       fetchNovels().then(setNovels).catch(() => {});
     }
+    
+    // sessionStorage 변경 감지 (다른 탭에서 클릭해도 반영)
+    const handleStorageChange = () => {
+      const updated = getSessionClickedNovels();
+      setSessionClickedNovels(updated);
+    };
+    
+    window.addEventListener("storage", handleStorageChange);
+    
+    // 주기적으로 세션 클릭 목록 확인 (같은 탭 내에서도)
+    const interval = setInterval(() => {
+      const updated = getSessionClickedNovels();
+      if (JSON.stringify(updated) !== JSON.stringify(sessionClickedNovels)) {
+        setSessionClickedNovels(updated);
+      }
+    }, 1000);
+    
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(interval);
+    };
   }, [mounted, novels.length]);
 
-  // 읽고 있는 작품과 작품 정보 매칭
-  const readingNovelsWithInfo = useMemo(() => {
-    const filtered = readingNovels
+  // 읽고 있는 작품과 작품 정보 매칭 (로그인한 사용자)
+  const loggedInNovelsWithInfo = useMemo(() => {
+    return readingNovels
       .map((reading) => {
         const novel = novels.find((n) => n.id === reading.novelId);
         if (!novel) return null;
@@ -59,27 +97,66 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
           episodeEp: reading.episodeEp,
           progress: reading.progress,
           lastReadAt: reading.lastReadAt,
+          hasProgress: true,
         };
       })
       .filter((item) => item !== null && item.progress > 0) // 진도가 있는 것만
       .sort((a, b) => (b?.lastReadAt || 0) - (a?.lastReadAt || 0)); // 최근 읽은 순으로 정렬
-    
-    // showAll이 false면 최대 3개만, true면 모두 표시
-    return showAll ? filtered : filtered.slice(0, 3);
-  }, [readingNovels, novels, showAll]);
-
-  // 전체 작품 개수 확인
-  const allReadingNovelsCount = useMemo(() => {
-    return readingNovels.filter((r) => {
-      const novel = novels.find((n) => n.id === r.novelId);
-      return novel && r.progress > 0;
-    }).length;
   }, [readingNovels, novels]);
 
-  // 서버 사이드 렌더링 시에는 아무것도 렌더링하지 않음 (hydration 방지)
-  if (!mounted) {
-    return null;
-  }
+  // 세션 기반 클릭한 소설과 작품 정보 매칭 (로그인하지 않은 사용자 또는 로그인한 사용자의 추가)
+  const sessionNovelsWithInfo = useMemo(() => {
+    const userId = getCurrentUserId();
+    const loggedInNovelIds = new Set(readingNovels.map(r => r.novelId));
+    
+    // 세션에서 읽은 진도 가져오기
+    const sessionProgress = getSessionReadingProgress();
+    
+    return sessionClickedNovels
+      .map((clicked) => {
+        // 로그인한 사용자의 경우 이미 진도가 있는 소설은 제외
+        if (userId && loggedInNovelIds.has(clicked.novelId)) {
+          return null;
+        }
+        
+        const novel = novels.find((n) => n.id === clicked.novelId);
+        if (!novel) return null;
+        
+        // 세션에서 읽은 진도가 있는지 확인
+        const sessionData = sessionProgress[clicked.novelId];
+        if (sessionData && sessionData.progress > 0) {
+          return {
+            ...novel,
+            episodeEp: sessionData.episodeEp,
+            progress: sessionData.progress,
+            lastReadAt: Math.max(sessionData.lastReadAt, clicked.lastClickedAt),
+            hasProgress: true,
+          };
+        }
+        
+        return {
+          ...novel,
+          episodeEp: null,
+          progress: 0,
+          lastReadAt: clicked.lastClickedAt,
+          hasProgress: false,
+        };
+      })
+      .filter((item) => item !== null)
+      .sort((a, b) => (b?.lastReadAt || 0) - (a?.lastReadAt || 0)); // 최근 클릭 순으로 정렬
+  }, [sessionClickedNovels, novels, readingNovels]);
+
+  // 두 목록 합치기 (로그인한 사용자의 진도 있는 소설 우선, 그 다음 세션 클릭한 소설)
+  const readingNovelsWithInfo = useMemo(() => {
+    const combined = [...loggedInNovelsWithInfo, ...sessionNovelsWithInfo];
+    // showAll이 false면 최대 3개만, true면 모두 표시
+    return showAll ? combined : combined.slice(0, 3);
+  }, [loggedInNovelsWithInfo, sessionNovelsWithInfo, showAll]);
+
+  // 전체 작품 개수 확인 (진도 있는 것 + 세션 클릭한 것)
+  const allReadingNovelsCount = useMemo(() => {
+    return loggedInNovelsWithInfo.length + sessionNovelsWithInfo.length;
+  }, [loggedInNovelsWithInfo.length, sessionNovelsWithInfo.length]);
 
   return (
     <section style={{ marginBottom: "60px" }}>
@@ -104,9 +181,9 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
             fontFamily: '"KoPub Batang", serif',
           }}
         >
-          이어서 읽기
+          Continue Reading
         </div>
-        {allReadingNovelsCount > 3 && readingNovelsWithInfo.length > 0 && (
+        {mounted && allReadingNovelsCount > 3 && readingNovelsWithInfo.length > 0 && (
           <button
             onClick={() => setShowAll(!showAll)}
             style={{
@@ -119,12 +196,12 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
               textDecoration: "none",
             }}
           >
-            {showAll ? "접기" : `더보기 (${allReadingNovelsCount}개) →`}
+            {showAll ? "Show Less" : `View All (${allReadingNovelsCount}) →`}
           </button>
         )}
       </div>
       
-      {readingNovelsWithInfo.length === 0 ? (
+      {!mounted ? (
         <div
           style={{
             padding: "40px 20px",
@@ -133,94 +210,85 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
             fontSize: "16px",
           }}
         >
-          최근에 읽은 소설이 없습니다.
+          Loading...
+        </div>
+      ) : readingNovelsWithInfo.length === 0 ? (
+        <div
+          style={{
+            padding: "40px 20px",
+            textAlign: "center",
+            color: "#999",
+            fontSize: "16px",
+          }}
+        >
+          No recent reading history.
         </div>
       ) : (
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: mounted && isMobile ? "repeat(3, minmax(0, 1fr))" : "repeat(auto-fill, minmax(140px, 1fr))",
-            gap: mounted && isMobile ? "16px" : "20px",
+            display: "flex",
+            flexDirection: "column",
+            gap: isMobile ? "16px" : "20px",
           }}
         >
           {readingNovelsWithInfo.map((novel: any) => (
-          <Link
-            key={novel.id}
-            href={`/novels/${novel.id}`}
-            style={{ textDecoration: "none", color: "inherit" }}
-          >
-            <div
-              style={{
-                position: "relative",
-                width: "100%",
-                cursor: "pointer",
-                transition: "transform 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-4px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-              }}
-            >
-              {/* 표지 이미지 */}
-              <div
-                style={{
-                  width: "100%",
-                  aspectRatio: "2 / 3",
-                  background: "#243A6E",
-                  borderRadius: "12px",
-                  overflow: "hidden",
-                  marginBottom: "8px",
-                  position: "relative",
-                }}
-              >
-                {novel.cover_url && (
-                  <img
-                    src={novel.cover_url}
-                    alt={novel.title}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                )}
-                
-                {/* 진도 표시 오버레이 */}
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    background: "linear-gradient(to top, rgba(0,0,0,0.7), transparent)",
-                    padding: "8px",
-                    color: "#fff",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                  }}
+            <div key={novel.id} style={{ width: "100%", display: "flex", flexDirection: "row", gap: "16px", alignItems: "flex-start" }}>
+              {/* NovelCard */}
+              <div style={{ flexShrink: 0, width: isMobile ? "100px" : "140px" }}>
+                <Link
+                  href={novel.hasProgress && novel.progress > 0 ? `/novels/${novel.id}/episodes/${novel.episodeEp}` : `/novels/${novel.id}`}
+                  style={{ textDecoration: "none", color: "inherit", display: "block" }}
                 >
-                  {novel.episodeEp}화 {novel.progress}%
-                </div>
+                  <NovelCard novel={novel} />
+                </Link>
               </div>
               
-              {/* 제목 */}
-              <div
-                style={{
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  color: "#333",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {novel.title}
-              </div>
+              {/* 진도 정보 표시 (NovelCard 옆) */}
+              {novel.hasProgress && novel.progress > 0 ? (
+                <div
+                  style={{
+                    flex: 1,
+                    padding: "12px 16px",
+                    background: "#fff",
+                    borderRadius: "8px",
+                    border: "1px solid #e5e5e5",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    minHeight: isMobile ? "100px" : "140px",
+                  }}
+                >
+                  <div style={{ fontSize: "14px", fontWeight: 600, color: "#243A6E", marginBottom: "8px", lineHeight: 1.4 }}>
+                    {novel.title}
+                  </div>
+                  <div style={{ fontSize: "13px", color: "#666", marginBottom: "4px" }}>
+                    EP {novel.episodeEp}
+                  </div>
+                  <div style={{ fontSize: "13px", color: "#666", fontWeight: 500 }}>
+                    {novel.progress}%
+                  </div>
+                </div>
+              ) : (
+                <div
+                  style={{
+                    flex: 1,
+                    padding: "12px 16px",
+                    background: "#fff",
+                    borderRadius: "8px",
+                    border: "1px solid #e5e5e5",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    minHeight: isMobile ? "100px" : "140px",
+                  }}
+                >
+                  <div style={{ fontSize: "14px", fontWeight: 600, color: "#243A6E", lineHeight: 1.4 }}>
+                    {novel.title}
+                  </div>
+                </div>
+              )}
             </div>
-          </Link>
-        ))}
+          ))}
         </div>
       )}
     </section>

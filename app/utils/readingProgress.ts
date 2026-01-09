@@ -12,7 +12,8 @@ export function saveReadingProgress(
   userId: string,
   novelId: string,
   episodeEp: string,
-  progress: number
+  progress: number,
+  scrollPosition?: number // 스크롤 위치 추가
 ): void {
   if (typeof window === "undefined") return;
 
@@ -25,6 +26,7 @@ export function saveReadingProgress(
     [novelId]: {
       episodeEp,
       progress,
+      scrollPosition: scrollPosition || existing[novelId]?.scrollPosition || 0, // 스크롤 위치 저장
       lastReadAt: Date.now(),
     },
   };
@@ -33,7 +35,7 @@ export function saveReadingProgress(
 }
 
 // 사용자별 읽은 위치 불러오기
-export function getReadingProgress(userId: string): Record<string, { episodeEp: string; progress: number; lastReadAt: number }> {
+export function getReadingProgress(userId: string): Record<string, { episodeEp: string; progress: number; scrollPosition?: number; lastReadAt: number }> {
   if (typeof window === "undefined") return {};
 
   const key = `readingProgress_${userId}`;
@@ -49,13 +51,13 @@ export function getReadingProgress(userId: string): Record<string, { episodeEp: 
 }
 
 // 특정 작품의 읽은 위치 불러오기
-export function getNovelProgress(userId: string, novelId: string): { episodeEp: string; progress: number; lastReadAt: number } | null {
+export function getNovelProgress(userId: string, novelId: string): { episodeEp: string; progress: number; scrollPosition?: number; lastReadAt: number } | null {
   const allProgress = getReadingProgress(userId);
   return allProgress[novelId] || null;
 }
 
 // 읽고 있는 작품 목록 가져오기 (최근 읽은 순)
-export function getReadingNovels(userId: string, limit: number = 10): Array<{ novelId: string; episodeEp: string; progress: number; lastReadAt: number }> {
+export function getReadingNovels(userId: string, limit: number = 10): Array<{ novelId: string; episodeEp: string; progress: number; scrollPosition?: number; lastReadAt: number }> {
   const allProgress = getReadingProgress(userId);
   
   return Object.entries(allProgress)
@@ -65,6 +67,42 @@ export function getReadingNovels(userId: string, limit: number = 10): Array<{ no
     }))
     .sort((a, b) => b.lastReadAt - a.lastReadAt)
     .slice(0, limit);
+}
+
+// 스크롤 위치 저장 (비로그인 사용자용 세션 스토리지)
+export function saveSessionScrollPosition(
+  novelId: string,
+  episodeEp: string,
+  scrollPosition: number,
+  progress: number
+): void {
+  if (typeof window === "undefined") return;
+  
+  const key = `sessionReadingProgress`;
+  const existing = JSON.parse(sessionStorage.getItem(key) || "{}");
+  
+  existing[novelId] = {
+    episodeEp,
+    progress,
+    scrollPosition,
+    lastReadAt: Date.now(),
+  };
+  
+  sessionStorage.setItem(key, JSON.stringify(existing));
+}
+
+// 세션 스토리지에서 읽은 위치 불러오기
+export function getSessionReadingProgress(): Record<string, { episodeEp: string; progress: number; scrollPosition?: number; lastReadAt: number }> {
+  if (typeof window === "undefined") return {};
+  
+  const data = sessionStorage.getItem("sessionReadingProgress");
+  if (!data) return {};
+  
+  try {
+    return JSON.parse(data);
+  } catch {
+    return {};
+  }
 }
 
 // 현재 로그인한 사용자 ID 가져오기

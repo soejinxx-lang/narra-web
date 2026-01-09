@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import ReadingSettings, { ReadingSettings as ReadingSettingsType } from "./ReadingSettings";
 import ShareButton from "./ShareButton";
-import { saveReadingProgress, getCurrentUserId } from "@/app/utils/readingProgress";
+import { saveReadingProgress, getCurrentUserId, getNovelProgress, saveSessionScrollPosition, getSessionReadingProgress } from "@/app/utils/readingProgress";
+import { markAsCompleted } from "@/app/utils/library";
 
 type EpisodeReaderProps = {
   episode: any;
@@ -142,12 +143,49 @@ export default function EpisodeReader({
     }
   }, [novelId, episode]);
 
-  // 읽은 위치 추적 및 저장
+  // 읽은 위치 복원 및 추적
   useEffect(() => {
-    const userId = getCurrentUserId();
-    if (!userId || !contentRef.current) return;
+    if (!contentRef.current) return;
 
     const contentElement = contentRef.current;
+    const userId = getCurrentUserId();
+    const currentEpisodeEp = String(episode.ep);
+    
+    // 저장된 스크롤 위치 불러오기
+    let savedScrollPosition = 0;
+    let savedProgress = 0;
+    
+    if (userId) {
+      // 로그인한 사용자: localStorage에서 불러오기
+      const progress = getNovelProgress(userId, novelId);
+      if (progress && progress.episodeEp === currentEpisodeEp && progress.scrollPosition !== undefined) {
+        savedScrollPosition = progress.scrollPosition;
+        savedProgress = progress.progress;
+      }
+    } else {
+      // 비로그인 사용자: sessionStorage에서 불러오기
+      const sessionProgress = getSessionReadingProgress();
+      if (sessionProgress[novelId] && sessionProgress[novelId].episodeEp === currentEpisodeEp && sessionProgress[novelId].scrollPosition !== undefined) {
+        savedScrollPosition = sessionProgress[novelId].scrollPosition || 0;
+        savedProgress = sessionProgress[novelId].progress || 0;
+      }
+    }
+    
+    // 저장된 스크롤 위치로 복원
+    if (savedScrollPosition > 0) {
+      // 콘텐츠가 로드된 후 스크롤 복원
+      const restoreScroll = () => {
+        if (contentElement.scrollHeight > savedScrollPosition) {
+          contentElement.scrollTop = savedScrollPosition;
+        }
+      };
+      
+      // 약간의 지연을 두어 콘텐츠가 렌더링된 후 복원
+      setTimeout(restoreScroll, 100);
+      setTimeout(restoreScroll, 500);
+    }
+
+    // 스크롤 위치 추적 및 저장
     let saveTimeout: NodeJS.Timeout;
 
     const handleScroll = () => {
@@ -158,18 +196,31 @@ export default function EpisodeReader({
         const scrollHeight = contentElement.scrollHeight;
         const clientHeight = contentElement.clientHeight;
         
-        // 읽은 진도 계산 (0-100)
-        const progress = Math.min(100, Math.max(0, Math.round((scrollTop / (scrollHeight - clientHeight)) * 100)));
+        // 화면 중간 위치 기준으로 진도 계산
+        const middleScrollPosition = scrollTop + (clientHeight / 2);
+        const progress = Math.min(100, Math.max(0, Math.round((middleScrollPosition / scrollHeight) * 100)));
         
-        // 진도 저장
-        saveReadingProgress(userId, novelId, String(episode.ep), progress);
+        // 진도 및 스크롤 위치 저장
+        if (userId) {
+          saveReadingProgress(userId, novelId, currentEpisodeEp, progress, scrollTop);
+          
+          // 100% 달성 시 완독으로 표시
+          if (progress >= 100) {
+            markAsCompleted(userId, novelId, currentEpisodeEp);
+          }
+        } else {
+          // 비로그인 사용자: sessionStorage에 저장
+          saveSessionScrollPosition(novelId, currentEpisodeEp, scrollTop, progress);
+        }
       }, 500); // 0.5초마다 저장
     };
 
     contentElement.addEventListener("scroll", handleScroll);
     
-    // 초기 진도 저장
-    handleScroll();
+    // 초기 진도 저장 (스크롤이 없을 때)
+    if (savedScrollPosition === 0) {
+      handleScroll();
+    }
 
     return () => {
       clearTimeout(saveTimeout);
