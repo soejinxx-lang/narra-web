@@ -11,8 +11,12 @@ type PopularRankingsProps = {
 
 export default function PopularRankings({ novels }: PopularRankingsProps) {
   const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // 클라이언트에서만 실행되도록 마운트 상태 설정
+    setMounted(true);
+    
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
@@ -22,6 +26,11 @@ export default function PopularRankings({ novels }: PopularRankingsProps) {
   }, []);
 
   const popular = useMemo(() => {
+    // 마운트되지 않았으면 서버 사이드에서는 원본 순서 유지
+    if (!mounted) {
+      return novels;
+    }
+    
     const clicks = getNovelClicks();
     
     return [...novels].sort((a, b) => {
@@ -35,7 +44,7 @@ export default function PopularRankings({ novels }: PopularRankingsProps) {
       // 클릭 수가 같으면 ID 기반 정렬
       return Number(b.id.replace("novel-", "")) - Number(a.id.replace("novel-", ""));
     });
-  }, [novels]);
+  }, [novels, mounted]);
 
   return (
     <section>
@@ -77,8 +86,8 @@ export default function PopularRankings({ novels }: PopularRankingsProps) {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "repeat(3, minmax(0, 1fr))" : "repeat(auto-fill, minmax(140px, 1fr))",
-          gap: isMobile ? "16px" : "20px",
+          gridTemplateColumns: mounted && isMobile ? "repeat(3, minmax(0, 1fr))" : "repeat(auto-fill, minmax(140px, 1fr))",
+          gap: mounted && isMobile ? "16px" : "20px",
         }}
       >
         {popular.map((novel: any, index: number) => (

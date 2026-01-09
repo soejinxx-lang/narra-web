@@ -5,6 +5,8 @@ export const fetchCache = "force-no-store";
 import Link from "next/link";
 import { fetchNovelById, fetchEpisodesByNovelId } from "@/lib/api";
 import ShareButton from "@/app/components/ShareButton";
+import ContinueReadingButton from "@/app/components/ContinueReadingButton";
+import EpisodeProgress from "@/app/components/EpisodeProgress";
 
 type PageProps = {
   params: Promise<{
@@ -123,6 +125,9 @@ export default async function Page({ params }: PageProps) {
         </p>
       )}
 
+      {/* 이어서 읽기 버튼 */}
+      <ContinueReadingButton novelId={id} />
+
       <section>
         {episodes.length === 0 && (
           <div style={{ color: "#999" }}>등록된 에피소드가 없습니다.</div>
@@ -141,8 +146,9 @@ export default async function Page({ params }: PageProps) {
                 cursor: "pointer",
               }}
             >
-              <div style={{ fontWeight: 500 }}>
+              <div style={{ fontWeight: 500, display: "flex", alignItems: "center" }}>
                 EP {ep.ep} {ep.title ?? ""}
+                <EpisodeProgress novelId={id} episodeEp={String(ep.ep)} />
               </div>
             </div>
           </Link>

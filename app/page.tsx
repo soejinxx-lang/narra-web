@@ -4,6 +4,7 @@ import NovelCardWithTracking from "@/app/components/NovelCardWithTracking";
 import NovelCarousel from "@/app/components/NovelCarousel";
 import FeatureGrid from "@/app/components/FeatureGrid";
 import PopularRankings from "@/app/components/PopularRankings";
+import ReadingNovels from "@/app/components/ReadingNovels";
 import styles from "@/app/components/HomeLayout.module.css";
 
 export default async function Page() {
@@ -66,6 +67,9 @@ export default async function Page() {
           <NovelCarousel novels={carouselNovels} />
         </div>
       </div>
+
+      {/* 읽고 있는 작품 */}
+      <ReadingNovels allNovels={novels} />
 
       {/* 인기 순위 */}
       <PopularRankings novels={novels} />

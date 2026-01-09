@@ -32,6 +32,10 @@ const fontFamilies = [
   { name: "Sans", value: '"Noto Sans KR", sans-serif' },
   { name: "Serif", value: '"Noto Serif KR", serif' },
   { name: "Batang", value: '"KoPub Batang", serif' },
+  { name: "Nanum Gothic", value: '"Nanum Gothic", sans-serif' },
+  { name: "Nanum Myeongjo", value: '"Nanum Myeongjo", serif' },
+  { name: "Gowun Batang", value: '"Gowun Batang", serif' },
+  { name: "Gowun Dodum", value: '"Gowun Dodum", sans-serif' },
 ];
 
 export default function ReadingSettings({ onSettingsChange }: ReadingSettingsProps) {

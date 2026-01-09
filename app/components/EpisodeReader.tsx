@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import ReadingSettings, { ReadingSettings as ReadingSettingsType } from "./ReadingSettings";
 import ShareButton from "./ShareButton";
+import { saveReadingProgress, getCurrentUserId } from "@/app/utils/readingProgress";
 
 type EpisodeReaderProps = {
   episode: any;
@@ -33,12 +34,16 @@ export default function EpisodeReader({
   const [viewMode, setViewMode] = useState<ViewMode>("single");
   // 기본 8개 언어로 초기화
   const [availableLanguages, setAvailableLanguages] = useState<Language[]>(["ko", "en", "ja", "zh", "es", "fr", "de", "pt"]);
+  const [singleLanguage, setSingleLanguage] = useState<Language>("ko"); // 단일 모드용 언어
   const [leftLanguage, setLeftLanguage] = useState<Language>("ko");
   const [rightLanguage, setRightLanguage] = useState<Language>("en");
   // 번역 데이터 캐시 (클라이언트 사이드에서 로드)
   const [translations, setTranslations] = useState<Record<string, any>>({
     ko: episode, // 기본 한국어는 서버에서 가져온 데이터
   });
+  
+  // 읽은 위치 추적을 위한 ref
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // 로컬 스토리지에서 설정 불러오기
@@ -95,6 +100,9 @@ export default function EpisodeReader({
       setAvailableLanguages(languages);
       
       // 기본 언어 설정 (첫 번째와 두 번째 언어)
+      if (languages.length >= 1) {
+        setSingleLanguage(languages[0]);
+      }
       if (languages.length >= 2) {
         setLeftLanguage(languages[0]);
         setRightLanguage(languages[1]);
@@ -133,6 +141,41 @@ export default function EpisodeReader({
       }
     }
   }, [novelId, episode]);
+
+  // 읽은 위치 추적 및 저장
+  useEffect(() => {
+    const userId = getCurrentUserId();
+    if (!userId || !contentRef.current) return;
+
+    const contentElement = contentRef.current;
+    let saveTimeout: NodeJS.Timeout;
+
+    const handleScroll = () => {
+      // 디바운싱: 스크롤 이벤트가 너무 많이 발생하지 않도록
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        const scrollTop = contentElement.scrollTop;
+        const scrollHeight = contentElement.scrollHeight;
+        const clientHeight = contentElement.clientHeight;
+        
+        // 읽은 진도 계산 (0-100)
+        const progress = Math.min(100, Math.max(0, Math.round((scrollTop / (scrollHeight - clientHeight)) * 100)));
+        
+        // 진도 저장
+        saveReadingProgress(userId, novelId, String(episode.ep), progress);
+      }, 500); // 0.5초마다 저장
+    };
+
+    contentElement.addEventListener("scroll", handleScroll);
+    
+    // 초기 진도 저장
+    handleScroll();
+
+    return () => {
+      clearTimeout(saveTimeout);
+      contentElement.removeEventListener("scroll", handleScroll);
+    };
+  }, [novelId, episode.ep, viewMode]);
 
   const handleSettingsChange = (newSettings: ReadingSettingsType) => {
     setSettings(newSettings);
@@ -250,12 +293,16 @@ export default function EpisodeReader({
       }
     };
 
+    // 단일 모드일 때 선택한 언어 로드
+    if (viewMode === "single") {
+      loadTranslation(singleLanguage);
+    }
     // 듀얼 모드일 때 양쪽 언어 모두 로드
     if (viewMode === "dual") {
       loadTranslation(leftLanguage);
       loadTranslation(rightLanguage);
     }
-  }, [viewMode, leftLanguage, rightLanguage, novelId, episode.ep, translations]);
+  }, [viewMode, singleLanguage, leftLanguage, rightLanguage, novelId, episode.ep, translations]);
 
   // 언어별 콘텐츠 가져오기
   const getContent = (lang: Language) => {
@@ -411,6 +458,33 @@ export default function EpisodeReader({
           </div>
           
           <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            {/* 단일 모드 언어 선택 */}
+            {viewMode === "single" && (
+              <select
+                value={singleLanguage}
+                onChange={(e) => setSingleLanguage(e.target.value as Language)}
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: "6px",
+                  border: "1px solid #e5e5e5",
+                  background: "#fff",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                  maxWidth: "200px",
+                }}
+              >
+                {availableLanguages && availableLanguages.length > 0 ? (
+                  availableLanguages.map((lang) => (
+                    <option key={lang} value={lang}>
+                      {getLanguageName(lang)}
+                    </option>
+                  ))
+                ) : (
+                  <option value="ko">Korean</option>
+                )}
+              </select>
+            )}
+            
             {/* 단일/듀얼 모드 전환 */}
             <div
               style={{
@@ -453,12 +527,36 @@ export default function EpisodeReader({
               >
                 ▭▭
               </button>
+              {/* 햄버거 메뉴 스타일 버튼 (기능 없음) */}
+              <button
+                style={{
+                  padding: "8px 16px",
+                  border: "none",
+                  borderRadius: "6px",
+                  background: "transparent",
+                  color: "#333",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "3px",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.2s",
+                }}
+              >
+                <div style={{ width: "16px", height: "2px", background: "#333", borderRadius: "1px" }}></div>
+                <div style={{ width: "16px", height: "2px", background: "#333", borderRadius: "1px" }}></div>
+                <div style={{ width: "16px", height: "2px", background: "#333", borderRadius: "1px" }}></div>
+              </button>
             </div>
           </div>
         </div>
 
         {viewMode === "single" ? (
           <div
+            ref={contentRef}
             style={{
               lineHeight: settings.lineHeight,
               whiteSpace: "pre-wrap",
@@ -466,9 +564,11 @@ export default function EpisodeReader({
               fontFamily: settings.fontFamily,
               color: settings.backgroundColor === "#1a1a1a" ? "#e0e0e0" : "#333",
               minHeight: "400px",
+              maxHeight: "calc(100vh - 300px)",
+              overflowY: "auto",
             }}
           >
-            {episode.content}
+            {getContent(singleLanguage)}
           </div>
         ) : (
           <div>

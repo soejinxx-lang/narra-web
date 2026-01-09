@@ -12,6 +12,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
   const [rotationAngle, setRotationAngle] = useState(0); // 회전 각도 state
   const [direction, setDirection] = useState(1); // 1 for next, -1 for prev
   const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [isDragging, setIsDragging] = useState(false); // 드래그 중인지 state
   const manualIntervalRef = useRef<NodeJS.Timeout | null>(null); // 수동 클릭 시 interval
   const autoIntervalRef = useRef<NodeJS.Timeout | null>(null); // 자동 넘어가기 interval
@@ -24,6 +25,9 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
 
   // 모바일 감지
   useEffect(() => {
+    // 클라이언트에서만 실행되도록 마운트 상태 설정
+    setMounted(true);
+    
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
@@ -290,7 +294,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
           width: `${containerSize}px`,
           height: `${containerSize}px`,
           transformStyle: "preserve-3d",
-          transition: isMobile && isDragging ? "none" : "transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
+          transition: mounted && isMobile && isDragging ? "none" : "transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
           pointerEvents: "none",
         }}
       >
