@@ -68,16 +68,6 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
     return showAll ? filtered : filtered.slice(0, 3);
   }, [readingNovels, novels, showAll]);
 
-  // 서버 사이드 렌더링 시에는 아무것도 렌더링하지 않음 (hydration 방지)
-  if (!mounted) {
-    return null;
-  }
-
-  // 로그인하지 않았거나 읽고 있는 작품이 없으면 표시하지 않음
-  if (readingNovelsWithInfo.length === 0) {
-    return null;
-  }
-
   // 전체 작품 개수 확인
   const allReadingNovelsCount = useMemo(() => {
     return readingNovels.filter((r) => {
@@ -86,6 +76,11 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
     }).length;
   }, [readingNovels, novels]);
 
+  // 서버 사이드 렌더링 시에는 아무것도 렌더링하지 않음 (hydration 방지)
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <section style={{ marginBottom: "60px" }}>
       <div
@@ -93,20 +88,25 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "24px",
+          marginBottom: "20px",
+          flexWrap: "wrap",
+          gap: "12px",
         }}
       >
-        <h2
+        <div
           style={{
-            fontSize: isMobile ? "20px" : "24px",
+            fontSize: "20px",
             fontWeight: 600,
             color: "#243A6E",
-            margin: 0,
+            marginBottom: "20px",
+            paddingBottom: "12px",
+            borderBottom: "2px solid #243A6E",
+            fontFamily: '"KoPub Batang", serif',
           }}
         >
-          📖 읽고 있는 작품
-        </h2>
-        {allReadingNovelsCount > 3 && (
+          이어서 읽기
+        </div>
+        {allReadingNovelsCount > 3 && readingNovelsWithInfo.length > 0 && (
           <button
             onClick={() => setShowAll(!showAll)}
             style={{
@@ -124,14 +124,26 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
         )}
       </div>
       
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "repeat(3, minmax(0, 1fr))" : "repeat(auto-fill, minmax(140px, 1fr))",
-          gap: isMobile ? "16px" : "20px",
-        }}
-      >
-        {readingNovelsWithInfo.map((novel: any) => (
+      {readingNovelsWithInfo.length === 0 ? (
+        <div
+          style={{
+            padding: "40px 20px",
+            textAlign: "center",
+            color: "#999",
+            fontSize: "16px",
+          }}
+        >
+          최근에 읽은 소설이 없습니다.
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: mounted && isMobile ? "repeat(3, minmax(0, 1fr))" : "repeat(auto-fill, minmax(140px, 1fr))",
+            gap: mounted && isMobile ? "16px" : "20px",
+          }}
+        >
+          {readingNovelsWithInfo.map((novel: any) => (
           <Link
             key={novel.id}
             href={`/novels/${novel.id}`}
@@ -209,7 +221,8 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
             </div>
           </Link>
         ))}
-      </div>
+        </div>
+      )}
     </section>
   );
 }
