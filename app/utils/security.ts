@@ -60,12 +60,18 @@ export function checkLoginAttempts(username: string): { allowed: boolean; remain
   // 잠금 상태 확인
   const lockData = localStorage.getItem(lockKey);
   if (lockData) {
-    const lock = JSON.parse(lockData);
-    const now = Date.now();
-    if (now < lock.until) {
-      return { allowed: false, remainingTime: Math.ceil((lock.until - now) / 1000) };
-    } else {
-      // 잠금 시간이 지났으면 해제
+    try {
+      const lock = JSON.parse(lockData);
+      const now = Date.now();
+      if (now < lock.until) {
+        return { allowed: false, remainingTime: lock.until - now };
+      } else {
+        // 잠금 시간이 지났으면 해제
+        localStorage.removeItem(lockKey);
+        localStorage.removeItem(key);
+      }
+    } catch (error) {
+      // 파싱 에러 시 잠금 해제
       localStorage.removeItem(lockKey);
       localStorage.removeItem(key);
     }
@@ -74,10 +80,17 @@ export function checkLoginAttempts(username: string): { allowed: boolean; remain
   return { allowed: true };
 }
 
-// 로그인 실패 기록
-export function recordLoginFailure(username: string): void {
+// 로그인 시도 기록 (성공/실패)
+export function recordLoginAttempt(username: string, success: boolean): void {
   if (typeof window === "undefined") return;
   
+  if (success) {
+    // 성공 시 기록 초기화
+    clearLoginAttempts(username);
+    return;
+  }
+  
+  // 실패 시 기록
   const key = `loginAttempts_${username}`;
   const attempts = JSON.parse(localStorage.getItem(key) || "[]");
   
@@ -100,6 +113,11 @@ export function recordLoginFailure(username: string): void {
   }
 }
 
+// 로그인 실패 기록 (하위 호환성)
+export function recordLoginFailure(username: string): void {
+  recordLoginAttempt(username, false);
+}
+
 // 로그인 성공 시 시도 기록 초기화
 export function clearLoginAttempts(username: string): void {
   if (typeof window === "undefined") return;
@@ -110,17 +128,32 @@ export function clearLoginAttempts(username: string): void {
 
 // 비밀번호 강도 검증 (사용자에게는 보이지 않게)
 export function validatePasswordStrength(password: string): { valid: boolean; reason?: string } {
-  if (password.length < 4) {
-    return { valid: false, reason: "Password must be at least 4 characters" };
+  if (!password || password.length < 6) {
+    return { valid: false, reason: "Password must be at least 6 characters" };
   }
   
   if (password.length > 128) {
     return { valid: false, reason: "Password is too long" };
   }
   
-  // 너무 단순한 비밀번호 방지 (예: 1111, aaaa 등)
+  // 너무 단순한 비밀번호 방지 (예: 111111, aaaaaa 등)
   if (/^(.)\1+$/.test(password)) {
     return { valid: false, reason: "Password is too simple" };
+  }
+  
+  // 연속된 문자 패턴 방지 (예: 123456, abcdef 등)
+  const sequences = [
+    "0123456789",
+    "9876543210",
+    "abcdefghijklmnopqrstuvwxyz",
+    "zyxwvutsrqponmlkjihgfedcba",
+  ];
+  
+  const lowerPassword = password.toLowerCase();
+  for (const seq of sequences) {
+    if (seq.includes(lowerPassword) || seq.includes(lowerPassword.split("").reverse().join(""))) {
+      return { valid: false, reason: "Password contains common sequences" };
+    }
   }
   
   return { valid: true };

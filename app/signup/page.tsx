@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { sanitizeInput, isValidInput, validateUsername, validatePasswordStrength } from "@/app/utils/security";
+import { secureSetItem } from "@/app/utils/localStorageSecurity";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -17,8 +19,25 @@ export default function SignUpPage() {
     e.preventDefault();
     setError("");
 
-    if (!name || !username || !password) {
+    // 입력 sanitization
+    const sanitizedName = sanitizeInput(name.trim());
+    const sanitizedUsername = sanitizeInput(username.trim());
+
+    if (!sanitizedName || !sanitizedUsername || !password) {
       setError("Please fill in all fields");
+      return;
+    }
+
+    // 입력 검증
+    if (!isValidInput(sanitizedName, 100) || !isValidInput(sanitizedUsername, 50)) {
+      setError("Invalid input detected");
+      return;
+    }
+
+    // 사용자명 검증
+    const usernameValidation = validateUsername(sanitizedUsername);
+    if (!usernameValidation.valid) {
+      setError(usernameValidation.reason || "Invalid username");
       return;
     }
 
@@ -27,8 +46,10 @@ export default function SignUpPage() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+    // 비밀번호 강도 검증
+    const passwordValidation = validatePasswordStrength(password);
+    if (!passwordValidation.valid) {
+      setError(passwordValidation.reason || "Password is too weak");
       return;
     }
 
@@ -36,16 +57,23 @@ export default function SignUpPage() {
 
     try {
       const storageBase = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace('/api', '');
+      if (!storageBase || typeof storageBase !== "string" || !storageBase.startsWith("http")) {
+        setError("Invalid server configuration");
+        setLoading(false);
+        return;
+      }
+      
       const response = await fetch(`${storageBase}/api/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username,
+          username: sanitizedUsername,
           password,
-          name,
+          name: sanitizedName,
         }),
+        credentials: "same-origin",
       });
 
       const data = await response.json();
@@ -56,9 +84,11 @@ export default function SignUpPage() {
         return;
       }
 
-      // 토큰과 사용자 정보 저장
-      localStorage.setItem("authToken", data.token);
-      localStorage.setItem("currentUser", JSON.stringify(data.user));
+      // 토큰과 사용자 정보 안전하게 저장
+      if (data.token && data.user) {
+        secureSetItem("authToken", data.token);
+        secureSetItem("currentUser", data.user);
+      }
 
       // 헤더 업데이트를 위한 이벤트 발생
       window.dispatchEvent(new Event("storage"));
@@ -139,10 +169,19 @@ export default function SignUpPage() {
             <input
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                // 실시간 입력 제한 (최대 50자, 특수문자 제한)
+                const sanitized = value.replace(/[^a-zA-Z0-9_-]/g, "");
+                if (sanitized.length <= 50) {
+                  setUsername(sanitized);
+                }
+              }}
               placeholder="Enter your ID"
               required
               disabled={loading}
+              maxLength={50}
+              pattern="[a-zA-Z0-9_-]+"
               style={{
                 width: "100%",
                 padding: "12px",
@@ -168,10 +207,18 @@ export default function SignUpPage() {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                // 실시간 입력 제한 (최대 128자)
+                if (value.length <= 128) {
+                  setPassword(value);
+                }
+              }}
               placeholder="Enter your password"
               required
               disabled={loading}
+              maxLength={128}
+              minLength={6}
               style={{
                 width: "100%",
                 padding: "12px",
@@ -197,10 +244,18 @@ export default function SignUpPage() {
             <input
               type="password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                // 실시간 입력 제한 (최대 128자)
+                if (value.length <= 128) {
+                  setConfirmPassword(value);
+                }
+              }}
               placeholder="Confirm your password"
               required
               disabled={loading}
+              maxLength={128}
+              minLength={6}
               style={{
                 width: "100%",
                 padding: "12px",

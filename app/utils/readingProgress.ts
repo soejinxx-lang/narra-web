@@ -1,5 +1,8 @@
 // 읽은 위치 저장 및 불러오기 유틸리티
 
+import { secureSetItem, secureGetItem, secureParseJSON } from "./localStorageSecurity";
+import { isValidInput } from "./security";
+
 export interface ReadingProgress {
   novelId: string;
   episodeEp: string;
@@ -17,6 +20,19 @@ export function saveReadingProgress(
 ): void {
   if (typeof window === "undefined") return;
 
+  // 입력 검증
+  if (!userId || !novelId || !episodeEp || !isValidInput(userId, 100) || !isValidInput(novelId, 100) || !isValidInput(episodeEp, 50)) {
+    return;
+  }
+  
+  if (typeof progress !== "number" || progress < 0 || progress > 100) {
+    return;
+  }
+  
+  if (scrollPosition !== undefined && (typeof scrollPosition !== "number" || scrollPosition < 0)) {
+    return;
+  }
+
   const key = `readingProgress_${userId}`;
   const existing = getReadingProgress(userId);
   
@@ -31,23 +47,24 @@ export function saveReadingProgress(
     },
   };
 
-  localStorage.setItem(key, JSON.stringify(updated));
+  secureSetItem(key, updated);
 }
 
 // 사용자별 읽은 위치 불러오기
 export function getReadingProgress(userId: string): Record<string, { episodeEp: string; progress: number; scrollPosition?: number; lastReadAt: number }> {
   if (typeof window === "undefined") return {};
+  
+  // 입력 검증
+  if (!userId || !isValidInput(userId, 100)) {
+    return {};
+  }
 
   const key = `readingProgress_${userId}`;
-  const data = localStorage.getItem(key);
+  const data = secureGetItem(key);
   
   if (!data) return {};
   
-  try {
-    return JSON.parse(data);
-  } catch {
-    return {};
-  }
+  return secureParseJSON(data, {});
 }
 
 // 특정 작품의 읽은 위치 불러오기
@@ -78,8 +95,22 @@ export function saveSessionScrollPosition(
 ): void {
   if (typeof window === "undefined") return;
   
+  // 입력 검증
+  if (!novelId || !episodeEp || !isValidInput(novelId, 100) || !isValidInput(episodeEp, 50)) {
+    return;
+  }
+  
+  if (typeof progress !== "number" || progress < 0 || progress > 100) {
+    return;
+  }
+  
+  if (typeof scrollPosition !== "number" || scrollPosition < 0) {
+    return;
+  }
+  
   const key = `sessionReadingProgress`;
-  const existing = JSON.parse(sessionStorage.getItem(key) || "{}");
+  const existingData = sessionStorage.getItem(key);
+  const existing = secureParseJSON(existingData, {});
   
   existing[novelId] = {
     episodeEp,
@@ -88,7 +119,11 @@ export function saveSessionScrollPosition(
     lastReadAt: Date.now(),
   };
   
-  sessionStorage.setItem(key, JSON.stringify(existing));
+  try {
+    sessionStorage.setItem(key, JSON.stringify(existing));
+  } catch (error) {
+    console.error("Failed to save session progress:", error);
+  }
 }
 
 // 세션 스토리지에서 읽은 위치 불러오기
@@ -98,23 +133,27 @@ export function getSessionReadingProgress(): Record<string, { episodeEp: string;
   const data = sessionStorage.getItem("sessionReadingProgress");
   if (!data) return {};
   
-  try {
-    return JSON.parse(data);
-  } catch {
-    return {};
-  }
+  return secureParseJSON(data, {});
 }
 
 // 현재 로그인한 사용자 ID 가져오기
 export function getCurrentUserId(): string | null {
   if (typeof window === "undefined") return null;
   
-  const currentUser = localStorage.getItem("currentUser");
+  const currentUser = secureGetItem("currentUser");
   if (!currentUser) return null;
   
   try {
-    const user = JSON.parse(currentUser);
-    return user.id || null;
+    const user = secureParseJSON(currentUser, null);
+    if (!user || typeof user !== "object" || !("id" in user)) {
+      return null;
+    }
+    const userId = String(user.id);
+    // ID 검증
+    if (isValidInput(userId, 100)) {
+      return userId;
+    }
+    return null;
   } catch {
     return null;
   }

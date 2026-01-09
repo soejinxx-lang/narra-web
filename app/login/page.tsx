@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { sanitizeInput, isValidInput, checkLoginAttempts, recordLoginAttempt } from "@/app/utils/security";
+import { secureSetItem } from "@/app/utils/localStorageSecurity";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,8 +27,23 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    if (!username || !password) {
+    // 입력 검증 및 Rate Limiting
+    const sanitizedUsername = sanitizeInput(username.trim());
+    if (!sanitizedUsername || !password) {
       setError("Please enter both ID and password");
+      return;
+    }
+
+    if (!isValidInput(sanitizedUsername, 50)) {
+      setError("Invalid username format");
+      return;
+    }
+
+    // Rate limiting 체크
+    const rateLimitCheck = checkLoginAttempts(sanitizedUsername);
+    if (!rateLimitCheck.allowed) {
+      const minutes = Math.ceil((rateLimitCheck.remainingTime || 0) / 60000);
+      setError(`Too many login attempts. Please try again in ${minutes} minutes.`);
       return;
     }
 
@@ -34,28 +51,41 @@ export default function LoginPage() {
 
     try {
       const storageBase = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace('/api', '');
+      if (!storageBase || typeof storageBase !== "string" || !storageBase.startsWith("http")) {
+        setError("Invalid server configuration");
+        setLoading(false);
+        return;
+      }
+      
       const response = await fetch(`${storageBase}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username,
-          password,
+          username: sanitizedUsername,
+          password, // 비밀번호는 서버에서 검증
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
+        // 실패한 로그인 시도 기록
+        recordLoginAttempt(sanitizedUsername, false);
         setError(data.error || "Login failed");
         setLoading(false);
         return;
       }
 
-      // 토큰과 사용자 정보 저장
-      localStorage.setItem("authToken", data.token);
-      localStorage.setItem("currentUser", JSON.stringify(data.user));
+      // 성공한 로그인 시도 기록 (Rate limiting 리셋)
+      recordLoginAttempt(sanitizedUsername, true);
+
+      // 토큰과 사용자 정보 안전하게 저장
+      if (data.token && data.user) {
+        secureSetItem("authToken", data.token);
+        secureSetItem("currentUser", data.user);
+      }
 
       // 헤더 업데이트를 위한 이벤트 발생
       window.dispatchEvent(new Event("storage"));
@@ -111,10 +141,17 @@ export default function LoginPage() {
             <input
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                // 실시간 입력 제한 (최대 50자)
+                if (value.length <= 50) {
+                  setUsername(value);
+                }
+              }}
               placeholder="Enter your ID"
               required
               disabled={loading}
+              maxLength={50}
               style={{
                 width: "100%",
                 padding: "12px",
@@ -140,10 +177,17 @@ export default function LoginPage() {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                // 실시간 입력 제한 (최대 128자)
+                if (value.length <= 128) {
+                  setPassword(value);
+                }
+              }}
               placeholder="Enter your password"
               required
               disabled={loading}
+              maxLength={128}
               style={{
                 width: "100%",
                 padding: "12px",

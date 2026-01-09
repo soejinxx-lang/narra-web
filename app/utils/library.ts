@@ -1,17 +1,24 @@
 // 내 서재 관련 유틸리티 함수
 
 import { getReadingProgress } from "./readingProgress";
+import { secureSetItem, secureGetItem, secureParseJSON } from "./localStorageSecurity";
+import { isValidInput } from "./security";
 
 // 즐겨찾기 추가
 export function addToFavorites(userId: string, novelId: string): void {
   if (typeof window === "undefined") return;
+  
+  // 입력 검증
+  if (!userId || !novelId || !isValidInput(userId, 100) || !isValidInput(novelId, 100)) {
+    return;
+  }
   
   const key = `favorites_${userId}`;
   const favorites = getFavorites(userId);
   
   if (!favorites.includes(novelId)) {
     favorites.push(novelId);
-    localStorage.setItem(key, JSON.stringify(favorites));
+    secureSetItem(key, favorites);
   }
 }
 
@@ -19,27 +26,39 @@ export function addToFavorites(userId: string, novelId: string): void {
 export function removeFromFavorites(userId: string, novelId: string): void {
   if (typeof window === "undefined") return;
   
+  // 입력 검증
+  if (!userId || !novelId || !isValidInput(userId, 100) || !isValidInput(novelId, 100)) {
+    return;
+  }
+  
   const key = `favorites_${userId}`;
   const favorites = getFavorites(userId);
   
   const filtered = favorites.filter(id => id !== novelId);
-  localStorage.setItem(key, JSON.stringify(filtered));
+  secureSetItem(key, filtered);
 }
 
 // 즐겨찾기 목록 가져오기
 export function getFavorites(userId: string): string[] {
   if (typeof window === "undefined") return [];
   
+  // 입력 검증
+  if (!userId || !isValidInput(userId, 100)) {
+    return [];
+  }
+  
   const key = `favorites_${userId}`;
-  const data = localStorage.getItem(key);
+  const data = secureGetItem(key);
   
   if (!data) return [];
   
-  try {
-    return JSON.parse(data);
-  } catch {
+  const parsed = secureParseJSON<string[]>(data, []);
+  // 배열 검증
+  if (!Array.isArray(parsed)) {
     return [];
   }
+  // 배열 요소 검증
+  return parsed.filter(id => typeof id === "string" && isValidInput(id, 100));
 }
 
 // 즐겨찾기 여부 확인
@@ -52,6 +71,11 @@ export function isFavorite(userId: string, novelId: string): boolean {
 export function markAsCompleted(userId: string, novelId: string, episodeEp: string): void {
   if (typeof window === "undefined") return;
   
+  // 입력 검증
+  if (!userId || !novelId || !episodeEp || !isValidInput(userId, 100) || !isValidInput(novelId, 100) || !isValidInput(episodeEp, 50)) {
+    return;
+  }
+  
   const key = `completed_${userId}`;
   const completed = getCompleted(userId);
   
@@ -60,23 +84,24 @@ export function markAsCompleted(userId: string, novelId: string, episodeEp: stri
     completedAt: Date.now(),
   };
   
-  localStorage.setItem(key, JSON.stringify(completed));
+  secureSetItem(key, completed);
 }
 
 // 완독 작품 목록 가져오기
 export function getCompleted(userId: string): Record<string, { episodeEp: string; completedAt: number }> {
   if (typeof window === "undefined") return {};
   
+  // 입력 검증
+  if (!userId || !isValidInput(userId, 100)) {
+    return {};
+  }
+  
   const key = `completed_${userId}`;
-  const data = localStorage.getItem(key);
+  const data = secureGetItem(key);
   
   if (!data) return {};
   
-  try {
-    return JSON.parse(data);
-  } catch {
-    return {};
-  }
+  return secureParseJSON<Record<string, { episodeEp: string; completedAt: number }>>(data, {});
 }
 
 // 완독 여부 확인

@@ -350,7 +350,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
                   scale(${scale})
                 `,
                 transformStyle: "preserve-3d",
-                transition: mounted && isMobile && isDragging ? "none" : (mounted ? "all 1.5s cubic-bezier(0.4, 0, 0.2, 1)" : "none"),
+                transition: !mounted ? "none" : (isMobile && isDragging ? "none" : "all 1.5s cubic-bezier(0.4, 0, 0.2, 1)"),
                 opacity: opacity,
                 zIndex: isCurrent ? 3 : isLeft || isRight ? 1 : 0,
                 cursor: isLeft || isRight ? "pointer" : "default",

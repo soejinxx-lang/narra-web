@@ -17,22 +17,22 @@ export default function ShareButton({ novelId, novelTitle }: ShareButtonProps) {
   const handleShare = async () => {
     const fullUrl = shareUrl;
     
-    // Track share for daily missions
+    // Track share for daily missions (로그인한 사용자만)
     if (typeof window !== "undefined") {
       const currentUser = localStorage.getItem("currentUser");
-      if (!currentUser) return; // 로그인하지 않은 경우 카운트하지 않음
-      
-      try {
-        const user = JSON.parse(currentUser);
-        const userId = user.id;
-        // 미국 동부 시간 기준 오늘 날짜
-        const usEasternDate = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
-        const today = `${usEasternDate.getFullYear()}-${String(usEasternDate.getMonth() + 1).padStart(2, "0")}-${String(usEasternDate.getDate()).padStart(2, "0")}`;
-        const shareKey = `novelShares_${userId}_${today}`;
-        const currentShares = parseInt(localStorage.getItem(shareKey) || "0", 10);
-        localStorage.setItem(shareKey, String(currentShares + 1));
-      } catch (e) {
-        console.error("Failed to track share:", e);
+      if (currentUser) {
+        try {
+          const user = JSON.parse(currentUser);
+          const userId = user.id;
+          // 미국 동부 시간 기준 오늘 날짜
+          const usEasternDate = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
+          const today = `${usEasternDate.getFullYear()}-${String(usEasternDate.getMonth() + 1).padStart(2, "0")}-${String(usEasternDate.getDate()).padStart(2, "0")}`;
+          const shareKey = `novelShares_${userId}_${today}`;
+          const currentShares = parseInt(localStorage.getItem(shareKey) || "0", 10);
+          localStorage.setItem(shareKey, String(currentShares + 1));
+        } catch (e) {
+          console.error("Failed to track share:", e);
+        }
       }
     }
     

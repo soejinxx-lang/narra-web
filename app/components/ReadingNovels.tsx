@@ -146,11 +146,32 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
       .sort((a, b) => (b?.lastReadAt || 0) - (a?.lastReadAt || 0)); // 최근 클릭 순으로 정렬
   }, [sessionClickedNovels, novels, readingNovels]);
 
-  // 두 목록 합치기 (로그인한 사용자의 진도 있는 소설 우선, 그 다음 세션 클릭한 소설)
+  // 두 목록 합치기 (로그인한 사용자의 진도 있는 소설 우선, 그 다음 세션 클릭한 소설, 중복 제거)
   const readingNovelsWithInfo = useMemo(() => {
-    const combined = [...loggedInNovelsWithInfo, ...sessionNovelsWithInfo];
+    const novelIds = new Set<string>();
+    const uniqueNovels: any[] = [];
+    
+    // 로그인한 사용자의 진도 있는 소설 먼저 추가
+    for (const novel of loggedInNovelsWithInfo) {
+      if (novel && !novelIds.has(novel.id)) {
+        novelIds.add(novel.id);
+        uniqueNovels.push(novel);
+      }
+    }
+    
+    // 세션 클릭한 소설 추가 (중복 제외)
+    for (const novel of sessionNovelsWithInfo) {
+      if (novel && !novelIds.has(novel.id)) {
+        novelIds.add(novel.id);
+        uniqueNovels.push(novel);
+      }
+    }
+    
+    // 최근 읽은 순으로 정렬
+    const sorted = uniqueNovels.sort((a, b) => (b?.lastReadAt || 0) - (a?.lastReadAt || 0));
+    
     // showAll이 false면 최대 3개만, true면 모두 표시
-    return showAll ? combined : combined.slice(0, 3);
+    return showAll ? sorted : sorted.slice(0, 3);
   }, [loggedInNovelsWithInfo, sessionNovelsWithInfo, showAll]);
 
   // 전체 작품 개수 확인 (진도 있는 것 + 세션 클릭한 것)
@@ -226,13 +247,24 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
       ) : (
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: isMobile ? "16px" : "20px",
+            display: "grid",
+            gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+            gap: "0",
           }}
         >
-          {readingNovelsWithInfo.map((novel: any) => (
-            <div key={novel.id} style={{ width: "100%", display: "flex", flexDirection: "row", gap: "16px", alignItems: "flex-start" }}>
+          {readingNovelsWithInfo.map((novel: any, index: number) => (
+            <div 
+              key={novel.id} 
+              style={{ 
+                display: "flex", 
+                flexDirection: "row", 
+                gap: "2px", 
+                alignItems: "flex-start",
+                padding: isMobile ? "8px 8px 8px 8px" : "12px 0px 0px 12px",
+                borderRight: (index + 1) % (isMobile ? 2 : 3) !== 0 ? "1px solid #e5e5e5" : "none",
+                borderBottom: index < readingNovelsWithInfo.length - (isMobile ? 2 : 3) ? "1px solid #e5e5e5" : "none",
+              }}
+            >
               {/* NovelCard */}
               <div style={{ flexShrink: 0, width: isMobile ? "100px" : "140px" }}>
                 <Link
@@ -247,46 +279,28 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
               {novel.hasProgress && novel.progress > 0 ? (
                 <div
                   style={{
-                    flex: 1,
-                    padding: "12px 16px",
+                    width: "3cm",
+                    height: "1.8cm",
+                    padding: "2px 4px",
                     background: "#fff",
-                    borderRadius: "8px",
+                    borderRadius: "6px",
                     border: "1px solid #e5e5e5",
                     display: "flex",
                     flexDirection: "column",
+                    alignItems: "center",
                     justifyContent: "center",
-                    minHeight: isMobile ? "100px" : "140px",
+                    gap: "2px",
+                    boxSizing: "border-box",
                   }}
                 >
-                  <div style={{ fontSize: "14px", fontWeight: 600, color: "#243A6E", marginBottom: "8px", lineHeight: 1.4 }}>
-                    {novel.title}
-                  </div>
-                  <div style={{ fontSize: "13px", color: "#666", marginBottom: "4px" }}>
+                  <div style={{ fontSize: "15px", color: "#666", lineHeight: 1.2, whiteSpace: "nowrap" }}>
                     EP {novel.episodeEp}
                   </div>
-                  <div style={{ fontSize: "13px", color: "#666", fontWeight: 500 }}>
+                  <div style={{ fontSize: "15px", color: "#666", fontWeight: 500, lineHeight: 1.2, whiteSpace: "nowrap" }}>
                     {novel.progress}%
                   </div>
                 </div>
-              ) : (
-                <div
-                  style={{
-                    flex: 1,
-                    padding: "12px 16px",
-                    background: "#fff",
-                    borderRadius: "8px",
-                    border: "1px solid #e5e5e5",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    minHeight: isMobile ? "100px" : "140px",
-                  }}
-                >
-                  <div style={{ fontSize: "14px", fontWeight: 600, color: "#243A6E", lineHeight: 1.4 }}>
-                    {novel.title}
-                  </div>
-                </div>
-              )}
+              ) : null}
             </div>
           ))}
         </div>
@@ -294,4 +308,5 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
     </section>
   );
 }
+
 

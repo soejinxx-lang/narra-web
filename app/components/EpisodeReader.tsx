@@ -30,14 +30,12 @@ export default function EpisodeReader({
     lineHeight: 1.8,
     backgroundColor: "#faf9f6",
     fontFamily: "inherit",
+    studyMode: false,
   });
   
-  const [viewMode, setViewMode] = useState<ViewMode>("single");
   // 기본 8개 언어로 초기화
   const [availableLanguages, setAvailableLanguages] = useState<Language[]>(["ko", "en", "ja", "zh", "es", "fr", "de", "pt"]);
   const [singleLanguage, setSingleLanguage] = useState<Language>("ko"); // 단일 모드용 언어
-  const [leftLanguage, setLeftLanguage] = useState<Language>("ko");
-  const [rightLanguage, setRightLanguage] = useState<Language>("en");
   // 번역 데이터 캐시 (클라이언트 사이드에서 로드)
   const [translations, setTranslations] = useState<Record<string, any>>({
     ko: episode, // 기본 한국어는 서버에서 가져온 데이터
@@ -58,11 +56,7 @@ export default function EpisodeReader({
       }
     }
     
-    // 듀얼 모드 설정 불러오기
-    const savedViewMode = localStorage.getItem("dualViewMode");
-    if (savedViewMode === "dual") {
-      setViewMode("dual");
-    }
+
     
     // localStorage에서 언어 목록 불러오기
     if (typeof window !== "undefined") {
@@ -100,16 +94,9 @@ export default function EpisodeReader({
       
       setAvailableLanguages(languages);
       
-      // 기본 언어 설정 (첫 번째와 두 번째 언어)
+      // 기본 언어 설정
       if (languages.length >= 1) {
         setSingleLanguage(languages[0]);
-      }
-      if (languages.length >= 2) {
-        setLeftLanguage(languages[0]);
-        setRightLanguage(languages[1]);
-      } else if (languages.length >= 1) {
-        setLeftLanguage(languages[0]);
-        setRightLanguage(languages[0]);
       }
     }
 
@@ -145,7 +132,6 @@ export default function EpisodeReader({
 
   // 읽은 위치 복원 및 추적 (페이지 전체 스크롤)
   useEffect(() => {
-    if (viewMode !== "single") return;
 
     const userId = getCurrentUserId();
     const currentEpisodeEp = String(episode.ep);
@@ -201,21 +187,21 @@ export default function EpisodeReader({
         const windowTop = window.scrollY;
         const windowBottom = windowTop + window.innerHeight;
         
-        // 본문 영역이 화면에 보이는 부분 계산
-        const visibleTop = Math.max(windowTop, elementTop);
-        const visibleBottom = Math.min(windowBottom, elementBottom);
-        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
-        
         // 본문 영역의 전체 높이
         const totalHeight = contentRef.current.offsetHeight;
         
-        // 화면 중간 위치 기준으로 진도 계산
-        const middlePosition = windowTop + (window.innerHeight / 2);
-        const relativePosition = Math.max(0, middlePosition - elementTop);
-        const progress = Math.min(100, Math.max(0, Math.round((relativePosition / totalHeight) * 100)));
-        
-        // 스크롤 위치는 본문 영역 기준으로 저장
+        // 현재 스크롤 위치 (본문 영역 기준)
         const scrollPosition = Math.max(0, windowTop - elementTop);
+        
+        // 시작 = 1%, 끝 = 100%로 계산
+        // 스크롤 가능한 전체 높이 (본문 높이 - 화면 높이)
+        const scrollableHeight = Math.max(1, totalHeight - window.innerHeight);
+        
+        // 1%부터 시작하도록 계산 (0%가 아닌 1%)
+        // 스크롤이 시작 위치면 1%, 끝까지 스크롤하면 100%
+        const progress = scrollableHeight > 0 
+          ? Math.min(100, Math.max(1, Math.round(1 + (scrollPosition / scrollableHeight) * 99)))
+          : 1;
         
         // 진도 및 스크롤 위치 저장
         if (userId) {
@@ -241,16 +227,13 @@ export default function EpisodeReader({
       clearTimeout(saveTimeout);
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [novelId, episode.ep, viewMode]);
+  }, [novelId, episode.ep]);
 
   const handleSettingsChange = (newSettings: ReadingSettingsType) => {
     setSettings(newSettings);
   };
 
-  const handleViewModeChange = (mode: ViewMode) => {
-    setViewMode(mode);
-    localStorage.setItem("dualViewMode", mode);
-  };
+
 
 
   // 언어 코드를 풀네임으로 변환
@@ -359,16 +342,17 @@ export default function EpisodeReader({
       }
     };
 
-    // 단일 모드일 때 선택한 언어 로드
-    if (viewMode === "single") {
+    // Study Mode일 때는 양쪽 언어 모두 로드
+    if (settings.studyMode) {
+      const leftLang = settings.leftLanguage || "ko";
+      const rightLang = settings.rightLanguage || "en";
+      loadTranslation(leftLang);
+      loadTranslation(rightLang);
+    } else {
+      // Normal Mode일 때는 선택한 언어만 로드
       loadTranslation(singleLanguage);
     }
-    // 듀얼 모드일 때 양쪽 언어 모두 로드
-    if (viewMode === "dual") {
-      loadTranslation(leftLanguage);
-      loadTranslation(rightLanguage);
-    }
-  }, [viewMode, singleLanguage, leftLanguage, rightLanguage, novelId, episode.ep, translations]);
+  }, [settings.studyMode, settings.leftLanguage, settings.rightLanguage, singleLanguage, novelId, episode.ep, translations]);
 
   // 언어별 콘텐츠 가져오기
   const getContent = (lang: Language) => {
@@ -493,39 +477,80 @@ export default function EpisodeReader({
       {/* 본문 영역 */}
       <div
         style={{
-          maxWidth: viewMode === "dual" ? "100%" : "800px",
+          maxWidth: settings.studyMode ? "100%" : "900px",
           margin: "0 auto",
           padding: "40px 24px",
         }}
       >
-        {/* 모드 전환 버튼 */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "24px",
-            flexWrap: "wrap",
-            gap: "16px",
-          }}
-        >
-          <div style={{ marginBottom: "32px", flex: 1 }}>
-            <h1
+        <div style={{ marginBottom: "32px" }}>
+          <h1
+            style={{
+              fontSize: "28px",
+              fontWeight: 600,
+              marginBottom: "8px",
+              color: settings.backgroundColor === "#1a1a1a" ? "#fff" : "#243A6E",
+              fontFamily: '"KoPub Batang", serif',
+            }}
+          >
+            EP {episode.ep} {episode.title ? `- ${episode.title}` : ""}
+          </h1>
+        </div>
+
+        {settings.studyMode ? (
+          /* Study Mode: 2개 언어 나란히 */
+          <div
+            style={{
+              display: "flex",
+              gap: "24px",
+              alignItems: "flex-start",
+            }}
+          >
+            {/* 왼쪽 언어 */}
+            <div
+              ref={contentRef}
               style={{
-                fontSize: "28px",
-                fontWeight: 600,
-                marginBottom: "8px",
-                color: settings.backgroundColor === "#1a1a1a" ? "#fff" : "#243A6E",
-                fontFamily: '"KoPub Batang", serif',
+                flex: 1,
+                lineHeight: settings.lineHeight,
+                whiteSpace: "pre-wrap",
+                fontSize: `${settings.fontSize}px`,
+                fontFamily: settings.fontFamily,
+                color: settings.backgroundColor === "#1a1a1a" ? "#e0e0e0" : "#333",
+                minHeight: "400px",
+                paddingRight: "12px",
+                borderRight: "1px solid #e5e5e5",
               }}
             >
-              EP {episode.ep} {episode.title ? `- ${episode.title}` : ""}
-            </h1>
+              {getContent(settings.leftLanguage || "ko")}
+            </div>
+            
+            {/* 오른쪽 언어 */}
+            <div
+              style={{
+                flex: 1,
+                lineHeight: settings.lineHeight,
+                whiteSpace: "pre-wrap",
+                fontSize: `${settings.fontSize}px`,
+                fontFamily: settings.fontFamily,
+                color: settings.backgroundColor === "#1a1a1a" ? "#e0e0e0" : "#333",
+                minHeight: "400px",
+                paddingLeft: "12px",
+              }}
+            >
+              {getContent(settings.rightLanguage || "en")}
+            </div>
           </div>
-          
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-            {/* 단일 모드 언어 선택 */}
-            {viewMode === "single" && (
+        ) : (
+          /* Normal Mode: 단일 언어 */
+          <>
+            {/* 언어 선택 */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                marginBottom: "24px",
+              }}
+            >
               <select
                 value={singleLanguage}
                 onChange={(e) => setSingleLanguage(e.target.value as Language)}
@@ -539,185 +564,29 @@ export default function EpisodeReader({
                   maxWidth: "200px",
                 }}
               >
-                {availableLanguages && availableLanguages.length > 0 ? (
-                  availableLanguages.map((lang) => (
-                    <option key={lang} value={lang}>
-                      {getLanguageName(lang)}
-                    </option>
-                  ))
-                ) : (
-                  <option value="ko">Korean</option>
-                )}
+                {availableLanguages.map((lang) => (
+                  <option key={lang} value={lang}>
+                    {getLanguageName(lang)}
+                  </option>
+                ))}
               </select>
-            )}
-            
-            {/* 단일/듀얼 모드 전환 */}
-            <div
-              style={{
-                display: "flex",
-                background: "#f5f5f5",
-                borderRadius: "8px",
-                padding: "4px",
-                gap: "4px",
-              }}
-            >
-              <button
-                onClick={() => handleViewModeChange("single")}
-                style={{
-                  padding: "8px 16px",
-                  border: "none",
-                  borderRadius: "6px",
-                  background: viewMode === "single" ? "#243A6E" : "transparent",
-                  color: viewMode === "single" ? "#fff" : "#333",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  transition: "all 0.2s",
-                }}
-              >
-                ▭
-              </button>
-              <button
-                onClick={() => handleViewModeChange("dual")}
-                style={{
-                  padding: "8px 16px",
-                  border: "none",
-                  borderRadius: "6px",
-                  background: viewMode === "dual" ? "#243A6E" : "transparent",
-                  color: viewMode === "dual" ? "#fff" : "#333",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  transition: "all 0.2s",
-                }}
-              >
-                ▭▭
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {viewMode === "single" ? (
-          <div
-            ref={contentRef}
-            style={{
-              lineHeight: settings.lineHeight,
-              whiteSpace: "pre-wrap",
-              fontSize: `${settings.fontSize}px`,
-              fontFamily: settings.fontFamily,
-              color: settings.backgroundColor === "#1a1a1a" ? "#e0e0e0" : "#333",
-              minHeight: "400px",
-            }}
-          >
-            {getContent(singleLanguage)}
-          </div>
-        ) : (
-          <div>
-            {/* 듀얼 모드 헤더 */}
-            <div
-              style={{
-                display: "flex",
-                gap: "24px",
-                marginBottom: "24px",
-                flexDirection: "row",
-              }}
-            >
-              {/* 왼쪽 언어 선택 */}
-              <div style={{ flex: 1 }}>
-                <select
-                  value={leftLanguage}
-                  onChange={(e) => setLeftLanguage(e.target.value as Language)}
-                  style={{
-                    padding: "8px 12px",
-                    borderRadius: "6px",
-                    border: "1px solid #e5e5e5",
-                    background: "#fff",
-                    fontSize: "14px",
-                    cursor: "pointer",
-                    width: "100%",
-                    maxWidth: "200px",
-                  }}
-                >
-                  {availableLanguages && availableLanguages.length > 0 ? (
-                    availableLanguages.map((lang) => (
-                      <option key={lang} value={lang}>
-                        {getLanguageName(lang)}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="ko">Korean</option>
-                  )}
-                </select>
-              </div>
-              
-              {/* 오른쪽 언어 선택 */}
-              <div style={{ flex: 1 }}>
-                <select
-                  value={rightLanguage}
-                  onChange={(e) => setRightLanguage(e.target.value as Language)}
-                  style={{
-                    padding: "8px 12px",
-                    borderRadius: "6px",
-                    border: "1px solid #e5e5e5",
-                    background: "#fff",
-                    fontSize: "14px",
-                    cursor: "pointer",
-                    width: "100%",
-                    maxWidth: "200px",
-                  }}
-                >
-                  {availableLanguages && availableLanguages.length > 0 ? (
-                    availableLanguages.map((lang) => (
-                      <option key={lang} value={lang}>
-                        {getLanguageName(lang)}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="en">English</option>
-                  )}
-                </select>
-              </div>
             </div>
 
-            {/* 듀얼 모드 콘텐츠 - 좌우 분할 */}
+            {/* 본문 */}
             <div
+              ref={contentRef}
               style={{
-                display: "flex",
-                gap: "24px",
-                alignItems: "flex-start",
+                lineHeight: settings.lineHeight,
+                whiteSpace: "pre-wrap",
+                fontSize: `${settings.fontSize}px`,
+                fontFamily: settings.fontFamily,
+                color: settings.backgroundColor === "#1a1a1a" ? "#e0e0e0" : "#333",
+                minHeight: "400px",
               }}
             >
-              <div
-                style={{
-                  flex: 1,
-                  lineHeight: settings.lineHeight,
-                  whiteSpace: "pre-wrap",
-                  fontSize: `${settings.fontSize}px`,
-                  fontFamily: settings.fontFamily,
-                  color: settings.backgroundColor === "#1a1a1a" ? "#e0e0e0" : "#333",
-                  minHeight: "400px",
-                  paddingRight: "12px",
-                  borderRight: "1px solid #e5e5e5",
-                }}
-              >
-                {getContent(leftLanguage)}
-              </div>
-              <div
-                style={{
-                  flex: 1,
-                  lineHeight: settings.lineHeight,
-                  whiteSpace: "pre-wrap",
-                  fontSize: `${settings.fontSize}px`,
-                  fontFamily: settings.fontFamily,
-                  color: settings.backgroundColor === "#1a1a1a" ? "#e0e0e0" : "#333",
-                  minHeight: "400px",
-                  paddingLeft: "12px",
-                }}
-              >
-                {getContent(rightLanguage)}
-              </div>
+              {getContent(singleLanguage)}
             </div>
-          </div>
+          </>
         )}
 
         {/* 네비게이션 영역 */}
