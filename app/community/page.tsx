@@ -417,8 +417,11 @@ export default function CommunityPage() {
   };
 
   // 포스트 삭제 함수
-  const handleDeletePost = (postId: string) => {
-    if (!isMaster) return;
+  const handleDeletePost = (postId: string, postAuthor: string) => {
+    const currentUser = localStorage.getItem("communityUser") || "anonymous";
+    const canDelete = isMaster || postAuthor === currentUser;
+
+    if (!canDelete) return;
 
     if (window.confirm("Are you sure you want to delete this post?")) {
       const updatedPosts = posts.filter((post) => post.id !== postId);
@@ -441,8 +444,13 @@ export default function CommunityPage() {
   };
 
   // 댓글 삭제 함수
-  const handleDeleteComment = (commentId: string, isReply: boolean = false, parentCommentId?: string) => {
-    if (!isMaster || !selectedPost) return;
+  const handleDeleteComment = (commentId: string, commentAuthor: string, isReply: boolean = false, parentCommentId?: string) => {
+    if (!selectedPost) return;
+
+    const currentUser = localStorage.getItem("communityUser") || "anonymous";
+    const canDelete = isMaster || commentAuthor === currentUser;
+
+    if (!canDelete) return;
 
     const updatedPosts = posts.map((post) => {
       if (post.id === selectedPost.id) {
@@ -647,11 +655,11 @@ export default function CommunityPage() {
                         </span>
                       )}
                     </div>
-                    {isMaster && (
+                    {(isMaster || post.author === (localStorage.getItem("communityUser") || "anonymous")) && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDeletePost(post.id);
+                          handleDeletePost(post.id, post.author);
                         }}
                         style={{
                           background: "none",
@@ -770,10 +778,10 @@ export default function CommunityPage() {
                 {selectedPost.title}
               </h2>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                {isMaster && (
+                {(isMaster || selectedPost.author === (localStorage.getItem("communityUser") || "anonymous")) && (
                   <button
                     onClick={() => {
-                      handleDeletePost(selectedPost.id);
+                      handleDeletePost(selectedPost.id, selectedPost.author);
                     }}
                     style={{
                       background: "none",
@@ -843,9 +851,9 @@ export default function CommunityPage() {
                         <div style={{ fontWeight: 500, color: "#243A6E" }}>{comment.author}</div>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                           <div style={{ fontSize: "12px", color: "#999" }}>{getTimeAgo(comment.time)}</div>
-                          {isMaster && (
+                          {(isMaster || comment.author === (localStorage.getItem("communityUser") || "anonymous")) && (
                             <button
-                              onClick={() => handleDeleteComment(comment.id, false)}
+                              onClick={() => handleDeleteComment(comment.id, comment.author, false)}
                               style={{
                                 background: "none",
                                 border: "none",
@@ -883,9 +891,9 @@ export default function CommunityPage() {
                                 <div style={{ fontWeight: 500, color: "#243A6E", fontSize: "14px" }}>{reply.author}</div>
                                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                                   <div style={{ fontSize: "11px", color: "#999" }}>{getTimeAgo(reply.time)}</div>
-                                  {isMaster && (
+                                  {(isMaster || reply.author === (localStorage.getItem("communityUser") || "anonymous")) && (
                                     <button
-                                      onClick={() => handleDeleteComment(reply.id, true, comment.id)}
+                                      onClick={() => handleDeleteComment(reply.id, reply.author, true, comment.id)}
                                       style={{
                                         background: "none",
                                         border: "none",

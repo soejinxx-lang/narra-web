@@ -103,10 +103,15 @@ export default function MusicPlayer() {
         audioRef.current.currentTime = parseFloat(savedTime);
       }
       if (isPlaying) {
-        audioRef.current.play();
+        audioRef.current.play().catch(error => {
+          console.error("Playback failed:", error);
+          setIsPlaying(false);
+        });
+      } else {
+        audioRef.current.pause();
       }
     }
-  }, [currentTrack]);
+  }, [currentTrack, isPlaying]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -130,10 +135,15 @@ export default function MusicPlayer() {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
+        setIsPlaying(false);
       } else {
-        audioRef.current.play();
+        audioRef.current.play().catch(error => {
+          console.error("Play failed:", error);
+          setIsPlaying(false);
+        }).then(() => {
+          setIsPlaying(true);
+        });
       }
-      setIsPlaying(!isPlaying);
     }
   };
 
@@ -350,9 +360,19 @@ export default function MusicPlayer() {
               cursor: "pointer",
               color: "#fff",
               fontSize: "18px",
+              padding: 0,
             }}
           >
-            {isPlaying ? "⏸" : "▶"}
+            {isPlaying ? (
+              <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="4" height="16" rx="1" fill="white"/>
+                <rect x="10" width="4" height="16" rx="1" fill="white"/>
+              </svg>
+            ) : (
+              <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginLeft: "2px" }}>
+                <path d="M0 0.8C0 0.163522 0.724318 -0.244409 1.26393 0.106024L13.5639 7.30602C14.0484 7.62467 14.0484 8.37533 13.5639 8.69398L1.26393 15.894C0.724318 16.2444 0 15.8365 0 15.2V0.8Z" fill="white"/>
+              </svg>
+            )}
           </button>
 
           {/* Volume Control */}
