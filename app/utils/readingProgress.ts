@@ -150,7 +150,7 @@ export function getCurrentUserId(): string | null {
   if (!currentUser) return null;
   
   try {
-    const user = secureParseJSON(currentUser, null);
+    const user = secureParseJSON(currentUser, null) as { id: string | number } | null;
     if (!user || typeof user !== "object" || !("id" in user)) {
       return null;
     }
