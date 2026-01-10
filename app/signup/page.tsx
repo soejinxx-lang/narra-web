@@ -166,23 +166,6 @@ export default function SignUpPage() {
             >
               ID
             </label>
-            {!username && (
-              <div
-                style={{
-                  fontSize: "12px",
-                  color: "#666",
-                  marginBottom: "8px",
-                  padding: "8px 12px",
-                  background: "#f8f9fa",
-                  borderRadius: "6px",
-                  border: "1px solid #e5e5e5",
-                }}
-              >
-                • 3-20 characters
-                <br />
-                • Letters, numbers, underscore (_), and hyphen (-) only
-              </div>
-            )}
             <input
               type="text"
               value={username}
@@ -194,7 +177,7 @@ export default function SignUpPage() {
                   setUsername(sanitized);
                 }
               }}
-              placeholder="Enter your ID"
+              placeholder="3-20 characters (letters, numbers, _ and - only)"
               required
               disabled={loading}
               maxLength={20}
@@ -221,23 +204,6 @@ export default function SignUpPage() {
             >
               Password
             </label>
-            {!password && (
-              <div
-                style={{
-                  fontSize: "12px",
-                  color: "#666",
-                  marginBottom: "8px",
-                  padding: "8px 12px",
-                  background: "#f8f9fa",
-                  borderRadius: "6px",
-                  border: "1px solid #e5e5e5",
-                }}
-              >
-                • At least 8 characters
-                <br />
-                • Must contain both letters and numbers
-              </div>
-            )}
             <input
               type="password"
               value={password}
@@ -248,7 +214,7 @@ export default function SignUpPage() {
                   setPassword(value);
                 }
               }}
-              placeholder="Enter your password"
+              placeholder="8+ characters (must include letters and numbers)"
               required
               disabled={loading}
               maxLength={128}
