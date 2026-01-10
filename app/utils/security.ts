@@ -126,33 +126,41 @@ export function clearLoginAttempts(username: string): void {
   localStorage.removeItem(`loginLock_${username}`);
 }
 
-// 비밀번호 강도 검증 (사용자에게는 보이지 않게)
+// 비밀번호 강도 검증 (일반적인 사이트 수준)
 export function validatePasswordStrength(password: string): { valid: boolean; reason?: string } {
-  if (!password || password.length < 6) {
-    return { valid: false, reason: "Password must be at least 6 characters" };
+  // 최소 길이 8자
+  if (!password || password.length < 8) {
+    return { valid: false, reason: "Password must be at least 8 characters" };
   }
   
   if (password.length > 128) {
     return { valid: false, reason: "Password is too long" };
   }
   
-  // 너무 단순한 비밀번호 방지 (예: 111111, aaaaaa 등)
+  // 영문과 숫자 포함 필수 (일반적인 사이트 수준)
+  const hasLetter = /[a-zA-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  
+  if (!hasLetter || !hasNumber) {
+    return { valid: false, reason: "Password must contain both letters and numbers" };
+  }
+  
+  // 너무 단순한 비밀번호 방지 (예: 11111111, aaaaaaaa)
   if (/^(.)\1+$/.test(password)) {
     return { valid: false, reason: "Password is too simple" };
   }
   
-  // 연속된 문자 패턴 방지 (예: 123456, abcdef 등)
-  const sequences = [
-    "0123456789",
-    "9876543210",
-    "abcdefghijklmnopqrstuvwxyz",
-    "zyxwvutsrqponmlkjihgfedcba",
+  // 일반적인 약한 비밀번호 패턴
+  const weakPatterns = [
+    /^password/i,
+    /^12345678/,
+    /^qwerty/i,
+    /^abc123/i,
   ];
   
-  const lowerPassword = password.toLowerCase();
-  for (const seq of sequences) {
-    if (seq.includes(lowerPassword) || seq.includes(lowerPassword.split("").reverse().join(""))) {
-      return { valid: false, reason: "Password contains common sequences" };
+  for (const pattern of weakPatterns) {
+    if (pattern.test(password)) {
+      return { valid: false, reason: "Password is too common" };
     }
   }
   
@@ -165,8 +173,8 @@ export function validateUsername(username: string): { valid: boolean; reason?: s
     return { valid: false, reason: "Username must be at least 3 characters" };
   }
   
-  if (username.length > 50) {
-    return { valid: false, reason: "Username is too long" };
+  if (username.length > 20) {
+    return { valid: false, reason: "Username is too long (max 20 characters)" };
   }
   
   // 특수 문자 제한 (알파벳, 숫자, 언더스코어, 하이픈만 허용)

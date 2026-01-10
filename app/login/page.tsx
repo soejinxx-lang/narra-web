@@ -34,7 +34,7 @@ export default function LoginPage() {
       return;
     }
 
-    if (!isValidInput(sanitizedUsername, 50)) {
+    if (!isValidInput(sanitizedUsername, 20)) {
       setError("Invalid username format");
       return;
     }
@@ -143,15 +143,15 @@ export default function LoginPage() {
               value={username}
               onChange={(e) => {
                 const value = e.target.value;
-                // 실시간 입력 제한 (최대 50자)
-                if (value.length <= 50) {
+                // 실시간 입력 제한 (최대 20자)
+                if (value.length <= 20) {
                   setUsername(value);
                 }
               }}
               placeholder="Enter your ID"
               required
               disabled={loading}
-              maxLength={50}
+              maxLength={20}
               style={{
                 width: "100%",
                 padding: "12px",

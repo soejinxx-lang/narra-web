@@ -29,7 +29,7 @@ export default function SignUpPage() {
     }
 
     // 입력 검증
-    if (!isValidInput(sanitizedName, 100) || !isValidInput(sanitizedUsername, 50)) {
+    if (!isValidInput(sanitizedName, 100) || !isValidInput(sanitizedUsername, 20)) {
       setError("Invalid input detected");
       return;
     }
@@ -166,21 +166,38 @@ export default function SignUpPage() {
             >
               ID
             </label>
+            {!username && (
+              <div
+                style={{
+                  fontSize: "12px",
+                  color: "#666",
+                  marginBottom: "8px",
+                  padding: "8px 12px",
+                  background: "#f8f9fa",
+                  borderRadius: "6px",
+                  border: "1px solid #e5e5e5",
+                }}
+              >
+                • 3-20 characters
+                <br />
+                • Letters, numbers, underscore (_), and hyphen (-) only
+              </div>
+            )}
             <input
               type="text"
               value={username}
               onChange={(e) => {
                 const value = e.target.value;
-                // 실시간 입력 제한 (최대 50자, 특수문자 제한)
+                // 실시간 입력 제한 (최대 20자, 특수문자 제한)
                 const sanitized = value.replace(/[^a-zA-Z0-9_-]/g, "");
-                if (sanitized.length <= 50) {
+                if (sanitized.length <= 20) {
                   setUsername(sanitized);
                 }
               }}
               placeholder="Enter your ID"
               required
               disabled={loading}
-              maxLength={50}
+              maxLength={20}
               pattern="[a-zA-Z0-9_-]+"
               style={{
                 width: "100%",
@@ -204,6 +221,23 @@ export default function SignUpPage() {
             >
               Password
             </label>
+            {!password && (
+              <div
+                style={{
+                  fontSize: "12px",
+                  color: "#666",
+                  marginBottom: "8px",
+                  padding: "8px 12px",
+                  background: "#f8f9fa",
+                  borderRadius: "6px",
+                  border: "1px solid #e5e5e5",
+                }}
+              >
+                • At least 8 characters
+                <br />
+                • Must contain both letters and numbers
+              </div>
+            )}
             <input
               type="password"
               value={password}
@@ -218,7 +252,7 @@ export default function SignUpPage() {
               required
               disabled={loading}
               maxLength={128}
-              minLength={6}
+              minLength={8}
               style={{
                 width: "100%",
                 padding: "12px",
@@ -255,7 +289,7 @@ export default function SignUpPage() {
               required
               disabled={loading}
               maxLength={128}
-              minLength={6}
+              minLength={8}
               style={{
                 width: "100%",
                 padding: "12px",
