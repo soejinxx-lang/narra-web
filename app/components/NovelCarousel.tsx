@@ -307,10 +307,11 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
         {/* 모든 소설을 원형으로 배치 */}
         {novels.map((novel, index) => {
           // 각 소설의 원형 경로상 위치 계산
+          // 서버와 클라이언트 첫 렌더링 시 동일한 값을 사용하기 위해 항상 initialRadius 사용
           const angle = (index * 360) / novels.length;
-          const currentRadius = mounted ? radius : initialRadius;
-          const x = Math.sin((angle * Math.PI) / 180) * currentRadius;
-          const z = Math.cos((angle * Math.PI) / 180) * currentRadius;
+          const calcRadius = mounted ? radius : initialRadius;
+          const x = Math.sin((angle * Math.PI) / 180) * calcRadius;
+          const z = Math.cos((angle * Math.PI) / 180) * calcRadius;
           
           // 현재 인덱스와의 차이 계산
           const offset = (index - currentIndex + novels.length) % novels.length;
@@ -318,7 +319,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
           const isLeft = offset === novels.length - 1 || (offset > 0 && offset <= novels.length / 2);
           const isRight = offset === 1 || (offset > novels.length / 2);
           
-          // 크기와 투명도 조정
+          // 크기와 투명도 조정 (초기 렌더링 시 고정값 사용)
           let scale = 0.75;
           let opacity = 0.5;
           if (isCurrent) {
@@ -333,7 +334,8 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
           }
 
           // 각 소설이 항상 앞면을 향하도록 회전 (컨테이너 회전을 상쇄)
-          const novelRotation = -rotationAngle;
+          // 초기 렌더링 시 rotationAngle은 0으로 고정하여 hydration 오류 방지
+          const novelRotation = mounted ? -rotationAngle : 0;
 
           return (
             <div
