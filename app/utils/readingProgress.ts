@@ -110,7 +110,10 @@ export function saveSessionScrollPosition(
   
   const key = `sessionReadingProgress`;
   const existingData = sessionStorage.getItem(key);
-  const existing = secureParseJSON(existingData, {});
+  const existing = secureParseJSON(
+    existingData, 
+    {} as Record<string, { episodeEp: string; progress: number; scrollPosition?: number; lastReadAt: number }>
+  );
   
   existing[novelId] = {
     episodeEp,
@@ -133,7 +136,10 @@ export function getSessionReadingProgress(): Record<string, { episodeEp: string;
   const data = sessionStorage.getItem("sessionReadingProgress");
   if (!data) return {};
   
-  return secureParseJSON(data, {});
+  return secureParseJSON(
+    data, 
+    {} as Record<string, { episodeEp: string; progress: number; scrollPosition?: number; lastReadAt: number }>
+  );
 }
 
 // 현재 로그인한 사용자 ID 가져오기
