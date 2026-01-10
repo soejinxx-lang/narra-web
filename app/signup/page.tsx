@@ -12,6 +12,8 @@ export default function SignUpPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -181,7 +183,7 @@ export default function SignUpPage() {
               required
               disabled={loading}
               maxLength={20}
-              pattern="[a-zA-Z0-9_-]+"
+              pattern="[a-zA-Z0-9_\-]+"
               style={{
                 width: "100%",
                 padding: "12px",
@@ -204,30 +206,63 @@ export default function SignUpPage() {
             >
               Password
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => {
-                const value = e.target.value;
-                // 실시간 입력 제한 (최대 128자)
-                if (value.length <= 128) {
-                  setPassword(value);
-                }
-              }}
-              placeholder="8+ characters (must include letters and numbers)"
-              required
-              disabled={loading}
-              maxLength={128}
-              minLength={8}
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "1px solid #e5e5e5",
-                borderRadius: "8px",
-                fontSize: "14px",
-                outline: "none",
-              }}
-            />
+            <div style={{ position: "relative" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // 실시간 입력 제한 (최대 128자)
+                  if (value.length <= 128) {
+                    setPassword(value);
+                  }
+                }}
+                placeholder="8+ characters (must include letters and numbers)"
+                required
+                disabled={loading}
+                maxLength={128}
+                minLength={8}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  paddingRight: "45px",
+                  border: "1px solid #e5e5e5",
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                  outline: "none",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: "4px",
+                  display: "flex",
+                  alignItems: "center",
+                  fontSize: "18px",
+                  color: "#666",
+                }}
+              >
+                {showPassword ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                    <line x1="1" y1="1" x2="23" y2="23" />
+                  </svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
 
           <div style={{ marginBottom: "24px" }}>
@@ -241,30 +276,63 @@ export default function SignUpPage() {
             >
               Confirm Password
             </label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => {
-                const value = e.target.value;
-                // 실시간 입력 제한 (최대 128자)
-                if (value.length <= 128) {
-                  setConfirmPassword(value);
-                }
-              }}
-              placeholder="Confirm your password"
-              required
-              disabled={loading}
-              maxLength={128}
-              minLength={8}
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "1px solid #e5e5e5",
-                borderRadius: "8px",
-                fontSize: "14px",
-                outline: "none",
-              }}
-            />
+            <div style={{ position: "relative" }}>
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // 실시간 입력 제한 (최대 128자)
+                  if (value.length <= 128) {
+                    setConfirmPassword(value);
+                  }
+                }}
+                placeholder="Confirm your password"
+                required
+                disabled={loading}
+                maxLength={128}
+                minLength={8}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  paddingRight: "45px",
+                  border: "1px solid #e5e5e5",
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                  outline: "none",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: "4px",
+                  display: "flex",
+                  alignItems: "center",
+                  fontSize: "18px",
+                  color: "#666",
+                }}
+              >
+                {showConfirmPassword ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                    <line x1="1" y1="1" x2="23" y2="23" />
+                  </svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
 
           {error && (
