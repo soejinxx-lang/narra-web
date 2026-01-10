@@ -97,21 +97,30 @@ export default function MusicPlayer() {
 
   useEffect(() => {
     if (audioRef.current && currentTrack) {
+      console.log('🎶 Loading new track:', currentTrack.title);
+      console.log('🎶 Track URL:', currentTrack.url);
+      
+      // Only set src when track changes
       audioRef.current.src = currentTrack.url;
       const savedTime = localStorage.getItem("musicPlayer_currentTime");
       if (savedTime) {
         audioRef.current.currentTime = parseFloat(savedTime);
       }
-      if (isPlaying) {
-        audioRef.current.play().catch(error => {
-          console.error("Playback failed:", error);
+      
+      console.log('🎶 Audio src set, attempting auto-play...');
+      
+      // Auto-play when new track is loaded
+      audioRef.current.play()
+        .then(() => {
+          console.log('✅ Auto-play successful');
+          setIsPlaying(true);
+        })
+        .catch(error => {
+          console.error('❌ Auto-play failed:', error);
           setIsPlaying(false);
         });
-      } else {
-        audioRef.current.pause();
-      }
     }
-  }, [currentTrack, isPlaying]);
+  }, [currentTrack]); // Only trigger on track change, not isPlaying
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -131,19 +140,33 @@ export default function MusicPlayer() {
     };
   }, [currentTrack]);
 
-  const handlePlayPause = () => {
+  const handlePlayPause = async () => {
+    console.log('▶️ handlePlayPause called, isPlaying:', isPlaying);
+    console.log('🎵 audioRef.current:', audioRef.current);
+    console.log('🎵 currentTrack:', currentTrack);
+    
     if (audioRef.current) {
+      console.log('🎵 Audio src:', audioRef.current.src);
+      console.log('🎵 Audio readyState:', audioRef.current.readyState);
+      console.log('🎵 Audio paused:', audioRef.current.paused);
+      
       if (isPlaying) {
+        console.log('⏸ Pausing...');
         audioRef.current.pause();
         setIsPlaying(false);
       } else {
-        audioRef.current.play().catch(error => {
-          console.error("Play failed:", error);
-          setIsPlaying(false);
-        }).then(() => {
+        console.log('▶️ Playing...');
+        try {
+          await audioRef.current.play();
+          console.log('✅ Play successful');
           setIsPlaying(true);
-        });
+        } catch (error) {
+          console.error('❌ Play failed:', error);
+          setIsPlaying(false);
+        }
       }
+    } else {
+      console.error('❌ audioRef.current is null');
     }
   };
 
