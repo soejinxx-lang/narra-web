@@ -258,15 +258,15 @@ export default function CommunityPage() {
       const diffMonths = Math.floor(diffDays / 30);
       
       if (diffSeconds < 60) {
-        return `${diffSeconds}초 전`;
+        return `${diffSeconds} seconds ago`;
       } else if (diffMinutes < 60) {
-        return `${diffMinutes}분 전`;
+        return `${diffMinutes} minutes ago`;
       } else if (diffHours < 24) {
-        return `${diffHours}시간 전`;
+        return `${diffHours} hours ago`;
       } else if (diffDays < 30) {
-        return `${diffDays}일 전`;
+        return `${diffDays} days ago`;
       } else if (diffMonths < 12) {
-        return `${diffMonths}개월 전`;
+        return `${diffMonths} months ago`;
       } else {
         return time.toLocaleDateString();
       }

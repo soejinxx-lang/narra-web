@@ -130,7 +130,7 @@ export default async function Page({ params }: PageProps) {
 
       <section>
         {episodes.length === 0 && (
-          <div style={{ color: "#999" }}>등록된 에피소드가 없습니다.</div>
+          <div style={{ color: "#999" }}>No episodes available.</div>
         )}
 
         {episodes.map((ep: any) => (

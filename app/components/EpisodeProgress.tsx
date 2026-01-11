@@ -39,7 +39,7 @@ export default function EpisodeProgress({ novelId, episodeEp }: EpisodeProgressP
         fontWeight: 400,
       }}
     >
-      ({progress}% 읽음)
+      ({progress}% read)
     </span>
   );
 }
