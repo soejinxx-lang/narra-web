@@ -14,6 +14,7 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isDragging, setIsDragging] = useState(false); // 드래그 중인지 state
+  const prevIndexRef = useRef(currentIndex); // 이전 인덱스 추적
   const manualIntervalRef = useRef<NodeJS.Timeout | null>(null); // 수동 클릭 시 interval
   const autoIntervalRef = useRef<NodeJS.Timeout | null>(null); // 자동 넘어가기 interval
   const mouseActivityTimeoutRef = useRef<NodeJS.Timeout | null>(null); // 마우스 움직임 감지 timeout
@@ -42,17 +43,32 @@ export default function NovelCarousel({ novels }: NovelCarouselProps) {
     
     const angleStep = 360 / novels.length;
     const targetAngle = -(currentIndex * angleStep);
+    const prevIndex = prevIndexRef.current;
     
     setRotationAngle((prevAngle) => {
-      // 이전 각도와 목표 각도의 차이 계산
       let diff = targetAngle - prevAngle;
       
-      // 최단 경로 선택 (360도 차이를 -0도 또는 +0도로 조정)
-      if (diff > 180) diff -= 360;
-      if (diff < -180) diff += 360;
+      // 한 칸 이동 여부 판단
+      const isOneStepForward = (currentIndex === (prevIndex + 1) % novels.length);
+      const isOneStepBackward = (currentIndex === (prevIndex - 1 + novels.length) % novels.length);
+      
+      if (isOneStepForward) {
+        // 한 칸 앞으로: 항상 음수 방향 (시계 방향)
+        while (diff > 0) diff -= 360;
+      } else if (isOneStepBackward) {
+        // 한 칸 뒤로: 항상 양수 방향 (반시계 방향)
+        while (diff < 0) diff += 360;
+      } else {
+        // 여러 칸 점프: 최단 경로
+        if (diff > 180) diff -= 360;
+        if (diff < -180) diff += 360;
+      }
       
       return prevAngle + diff;
     });
+    
+    // 이전 인덱스 업데이트
+    prevIndexRef.current = currentIndex;
   }, [currentIndex, novels.length]);
 
   // 모바일 터치 이벤트 핸들러
