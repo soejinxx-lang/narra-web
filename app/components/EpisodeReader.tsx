@@ -268,6 +268,7 @@ export default function EpisodeReader({
 
         if (res.ok) {
           const data = await res.json();
+          console.log("RAW_TRANSLATION:", JSON.stringify(data.content));
           
           // 응답의 language 필드가 요청한 언어와 일치하는지 확인
           if (data.language && data.language !== lang) {
