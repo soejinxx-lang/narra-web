@@ -18,7 +18,14 @@ export default function LoginPage() {
   useEffect(() => {
     // 이미 로그인되어 있는지 확인
     const token = localStorage.getItem("authToken");
-    if (token) {
+    const userData = localStorage.getItem("currentUser");
+    
+    // 둘 중 하나라도 없으면 둘 다 제거
+    if (token && !userData) {
+      localStorage.removeItem("authToken");
+    }
+    
+    if (token && userData) {
       setIsLoggedIn(true);
       router.push("/daily-checkin");
     }
