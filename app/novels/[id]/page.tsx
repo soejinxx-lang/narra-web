@@ -120,7 +120,7 @@ export default async function Page({ params }: PageProps) {
       </div>
 
       {novel.description && (
-        <p style={{ color: "#666", marginBottom: 24 }}>
+        <p style={{ color: "#666", marginBottom: 24, whiteSpace: "pre-wrap" }}>
           {novel.description}
         </p>
       )}
