@@ -28,8 +28,14 @@ export default function Header() {
     checkLoginStatus();
 
     // storage 이벤트 리스너 추가 (다른 탭에서 로그인/로그아웃 시 감지)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "currentUser" || e.key === "loggedInUser") {
+    const handleStorageChange = (e: StorageEvent | Event) => {
+      // StorageEvent인 경우 key 체크
+      if (e instanceof StorageEvent) {
+        if (e.key === "currentUser" || e.key === "loggedInUser") {
+          checkLoginStatus();
+        }
+      } else {
+        // 커스텀 이벤트인 경우 무조건 체크
         checkLoginStatus();
       }
     };
