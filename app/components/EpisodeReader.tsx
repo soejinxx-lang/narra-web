@@ -41,6 +41,9 @@ export default function EpisodeReader({
     ko: episode, // 기본 한국어는 서버에서 가져온 데이터
   });
   
+  // 비공개 언어 목록 (is_public = false)
+  const [unavailableLanguages, setUnavailableLanguages] = useState<Set<string>>(new Set());
+  
   // 읽은 위치 추적을 위한 ref
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -280,6 +283,7 @@ export default function EpisodeReader({
               ...prev,
               [lang]: { ...data, translationNotReady: true },
             }));
+            setUnavailableLanguages((prev) => new Set(prev).add(lang));
             return;
           }
           
@@ -302,6 +306,7 @@ export default function EpisodeReader({
               ...prev,
               [lang]: { ...data, content: "", translationNotReady: true },
             }));
+            setUnavailableLanguages((prev) => new Set(prev).add(lang));
             return;
           }
           
@@ -318,6 +323,7 @@ export default function EpisodeReader({
               ...prev,
               [lang]: { ...data, translationNotReady: true },
             }));
+            setUnavailableLanguages((prev) => new Set(prev).add(lang));
             return;
           }
           
@@ -328,6 +334,7 @@ export default function EpisodeReader({
               ...prev,
               [lang]: { ...data, translationNotReady: true },
             }));
+            setUnavailableLanguages((prev) => new Set(prev).add(lang));
             return;
           }
           
@@ -554,7 +561,13 @@ export default function EpisodeReader({
             >
               <select
                 value={singleLanguage}
-                onChange={(e) => setSingleLanguage(e.target.value as Language)}
+                onChange={(e) => {
+                  const newLang = e.target.value as Language;
+                  // 비공개 언어는 선택 불가
+                  if (!unavailableLanguages.has(newLang)) {
+                    setSingleLanguage(newLang);
+                  }
+                }}
                 style={{
                   padding: "8px 12px",
                   borderRadius: "6px",
@@ -565,11 +578,23 @@ export default function EpisodeReader({
                   maxWidth: "200px",
                 }}
               >
-                {availableLanguages.map((lang) => (
-                  <option key={lang} value={lang}>
-                    {getLanguageName(lang)}
-                  </option>
-                ))}
+                {availableLanguages.map((lang) => {
+                  const isUnavailable = unavailableLanguages.has(lang);
+                  return (
+                    <option 
+                      key={lang} 
+                      value={lang}
+                      disabled={isUnavailable}
+                      style={{
+                        opacity: isUnavailable ? 0.4 : 1,
+                        color: isUnavailable ? "#999" : "inherit",
+                      }}
+                    >
+                      {getLanguageName(lang)}
+                      {isUnavailable ? " (비공개)" : ""}
+                    </option>
+                  );
+                })}
               </select>
             </div>
 
