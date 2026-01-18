@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "NARRA",
-  description: "Web novel translation & reading platform",
+  description: "Discover stories from around the world. Web novels that feel written just for you.",
 };
 
 export default function RootLayout({
