@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 
@@ -25,31 +25,31 @@ const royaltyFreeMusic: Tone[] = [
     tracks: [
       {
         id: "r1",
-        title: "Ambient Dreams",
-        artist: "Royalty Free Music",
-        duration: "3:45",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        title: "A Quiet Thought",
+        artist: "Kevin MacLeod",
+        duration: "3:32",
+        url: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/A%20Quiet%20Thought.mp3",
       },
       {
         id: "r2",
-        title: "Peaceful Moments",
-        artist: "Royalty Free Music",
-        duration: "4:12",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+        title: "Deliberate Thought",
+        artist: "Kevin MacLeod",
+        duration: "2:17",
+        url: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Deliberate%20Thought.mp3",
       },
       {
         id: "r3",
-        title: "Serene Garden",
-        artist: "Royalty Free Music",
-        duration: "3:28",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+        title: "Floating Cities",
+        artist: "Kevin MacLeod",
+        duration: "3:43",
+        url: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Floating%20Cities.mp3",
       },
       {
         id: "r4",
-        title: "Tranquil Waters",
-        artist: "Royalty Free Music",
-        duration: "4:05",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        title: "Sunrise in Paris",
+        artist: "Dan Henig",
+        duration: "3:28",
+        url: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Sunrise%20in%20Paris.mp3",
       },
     ],
   },
@@ -60,24 +60,24 @@ const royaltyFreeMusic: Tone[] = [
     tracks: [
       {
         id: "e1",
-        title: "Battle Anthem",
-        artist: "Royalty Free Music",
-        duration: "3:50",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+        title: "Clash Defiant",
+        artist: "Kevin MacLeod",
+        duration: "2:24",
+        url: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Clash%20Defiant.mp3",
       },
       {
         id: "e2",
-        title: "Heroic Journey",
-        artist: "Royalty Free Music",
-        duration: "4:20",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+        title: "Dragon and Toast",
+        artist: "Kevin MacLeod",
+        duration: "2:47",
+        url: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Dragon%20and%20Toast.mp3",
       },
       {
         id: "e3",
-        title: "Dragon's Call",
-        artist: "Royalty Free Music",
-        duration: "3:35",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        title: "Oppressive Gloom",
+        artist: "Kevin MacLeod",
+        duration: "4:17",
+        url: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Oppressive%20Gloom.mp3",
       },
     ],
   },
@@ -88,31 +88,31 @@ const royaltyFreeMusic: Tone[] = [
     tracks: [
       {
         id: "f1",
-        title: "Reading Atmosphere",
-        artist: "Royalty Free Music",
-        duration: "3:28",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+        title: "Backbay Lounge",
+        artist: "Kevin MacLeod",
+        duration: "3:13",
+        url: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Backbay%20Lounge.mp3",
       },
       {
         id: "f2",
-        title: "Study Session",
-        artist: "Royalty Free Music",
-        duration: "4:15",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        title: "Comfortable Mystery",
+        artist: "Kevin MacLeod",
+        duration: "2:57",
+        url: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Comfortable%20Mystery%204%20-%20Film%20Noire.mp3",
       },
       {
         id: "f3",
-        title: "Deep Focus",
-        artist: "Royalty Free Music",
-        duration: "3:55",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+        title: "Evening Melodrama",
+        artist: "Kevin MacLeod",
+        duration: "3:07",
+        url: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Evening%20Melodrama.mp3",
       },
       {
         id: "f4",
-        title: "Mindful Reading",
-        artist: "Royalty Free Music",
-        duration: "4:30",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+        title: "Meditation Impromptu",
+        artist: "Kevin MacLeod",
+        duration: "2:15",
+        url: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Meditation%20Impromptu%2002.mp3",
       },
     ],
   },
@@ -123,24 +123,24 @@ const royaltyFreeMusic: Tone[] = [
     tracks: [
       {
         id: "m1",
-        title: "Hidden Secrets",
-        artist: "Royalty Free Music",
-        duration: "3:40",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        title: "Brittle Rille",
+        artist: "Kevin MacLeod",
+        duration: "2:39",
+        url: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Brittle%20Rille.mp3",
       },
       {
         id: "m2",
-        title: "Dark Investigation",
-        artist: "Royalty Free Music",
-        duration: "4:00",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+        title: "Dark Walk",
+        artist: "Kevin MacLeod",
+        duration: "2:54",
+        url: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Dark%20Walk.mp3",
       },
       {
         id: "m3",
-        title: "Enigmatic Path",
-        artist: "Royalty Free Music",
-        duration: "3:45",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+        title: "Grave Matters",
+        artist: "Kevin MacLeod",
+        duration: "3:31",
+        url: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Grave%20Matters.mp3",
       },
     ],
   },
@@ -207,7 +207,7 @@ export default function MusicPage() {
               marginBottom: "16px",
             }}
           >
-            🎵
+            ?렦
           </div>
           <h2
             style={{
@@ -243,7 +243,7 @@ export default function MusicPage() {
               e.currentTarget.style.background = isSpotifyConnected ? "#1DB954" : "#243A6E";
             }}
           >
-            {isSpotifyConnected ? "✓ Connected" : "Connect to Spotify"}
+            {isSpotifyConnected ? "??Connected" : "Connect to Spotify"}
           </button>
         </div>
 
@@ -264,7 +264,7 @@ export default function MusicPage() {
               textAlign: "center",
             }}
           >
-            🎶
+            ?렧
           </div>
           <h2
             style={{
@@ -350,7 +350,7 @@ export default function MusicPage() {
                     e.currentTarget.style.background = "none";
                   }}
                 >
-                  ← Back to Tones
+                  ??Back to Tones
                 </button>
               </div>
               <p style={{ color: "#666", marginBottom: "24px", lineHeight: 1.6 }}>{selectedTone.description}</p>
@@ -395,7 +395,7 @@ export default function MusicPage() {
                     >
                       <div style={{ fontWeight: 500, marginBottom: "4px", color: "#243A6E" }}>{track.title}</div>
                       <div style={{ fontSize: "12px", color: "#999" }}>
-                        {track.artist} · {track.duration}
+                        {track.artist} 쨌 {track.duration}
                       </div>
                     </div>
                   );
@@ -404,7 +404,12 @@ export default function MusicPage() {
             </>
           )}
         </div>
+            
+      {/* Attribution */}
+      <div style={{ marginTop: "48px", padding: "16px", background: "#f8f9fa", borderRadius: "8px", fontSize: "13px", color: "#666", textAlign: "center" }}>
+        Music by Kevin MacLeod (incompetech.com) • Licensed under Creative Commons: By Attribution 4.0
       </div>
+</div>
     </main>
   );
 }
