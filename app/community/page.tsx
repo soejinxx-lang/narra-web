@@ -18,7 +18,7 @@ interface Post {
   author: string;
   time: string;
   likes: number;
-  likedBy: string[]; // 좋아요를 누른 사용자 목록
+  likedBy: string[]; // 좋아요를 누른 사용자 목록 
   topic: string; // 카테고리
   comments: Comment[]; // 댓글 목록 (대댓글 제외)
 }
