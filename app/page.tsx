@@ -51,11 +51,11 @@ export default async function Page() {
               fontWeight: 500,
             }}
           >
-            Where system meets editorial judgment.
+            Web novels that feel written just for you.
           </p>
 
           <p style={{ marginBottom: "32px", color: "#666", fontSize: "15px" }}>
-            Web novel translation & reading platform
+            Discover stories from around the world.
           </p>
 
           {/* 기능 그리드 */}
