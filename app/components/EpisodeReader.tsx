@@ -35,7 +35,50 @@ export default function EpisodeReader({
   
   // 기본 8개 언어로 초기화
   const [availableLanguages, setAvailableLanguages] = useState<Language[]>(["ko", "en", "ja", "zh", "es", "fr", "de", "pt"]);
-  const [singleLanguage, setSingleLanguage] = useState<Language>("ko"); // 단일 모드용 언어
+  
+  // ====================================
+  // ✅ Phase 1: localStorage 언어 설정
+  // ====================================
+  const [singleLanguage, setSingleLanguage] = useState<Language>(() => {
+    // 초기값: localStorage에서 읽기
+    if (typeof window !== "undefined") {
+      const userId = getCurrentUserId();
+      
+      // 로그인 사용자: user-specific key
+      // 비로그인 사용자: global key
+      const storageKey = userId 
+        ? `preferredLanguage_${userId}` 
+        : "preferredLanguage";
+      
+      const saved = localStorage.getItem(storageKey);
+      if (saved && ["ko", "en", "ja", "zh", "es", "fr", "de", "pt"].includes(saved)) {
+        return saved as Language;
+      }
+    }
+    return "ko"; // 기본값
+  });
+  
+  // 언어 변경 시 localStorage 저장
+  const handleLanguageChange = (newLang: Language) => {
+    setSingleLanguage(newLang);
+    
+    if (typeof window !== "undefined") {
+      const userId = getCurrentUserId();
+      const storageKey = userId 
+        ? `preferredLanguage_${userId}` 
+        : "preferredLanguage";
+      
+      localStorage.setItem(storageKey, newLang);
+      
+      // ✅ Phase 2: 로그인 사용자는 서버에도 저장 (TODO)
+      if (userId) {
+        // 추후 구현: saveLanguagePreference(userId, newLang)
+        console.log(`[TODO] Save language preference to server: ${userId} -> ${newLang}`);
+      }
+    }
+  };
+  // ====================================
+  
   // 번역 데이터 캐시 (클라이언트 사이드에서 로드)
   const [translations, setTranslations] = useState<Record<string, any>>({
     ko: episode, // 기본 한국어는 서버에서 가져온 데이터
@@ -96,11 +139,6 @@ export default function EpisodeReader({
       }
       
       setAvailableLanguages(languages);
-      
-      // 기본 언어 설정
-      if (languages.length >= 1) {
-        setSingleLanguage(languages[0]);
-      }
     }
 
     // Track episode read for daily missions
@@ -561,13 +599,7 @@ export default function EpisodeReader({
             >
               <select
                 value={singleLanguage}
-                onChange={(e) => {
-                  const newLang = e.target.value as Language;
-                  // 비공개 언어는 선택 불가
-                  if (!unavailableLanguages.has(newLang)) {
-                    setSingleLanguage(newLang);
-                  }
-                }}
+                onChange={(e) => handleLanguageChange(e.target.value as Language)}
                 style={{
                   padding: "8px 12px",
                   borderRadius: "6px",
@@ -673,4 +705,3 @@ export default function EpisodeReader({
     </main>
   );
 }
-
