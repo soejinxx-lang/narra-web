@@ -239,7 +239,7 @@ export default function ReadingSettings({ onSettingsChange }: ReadingSettingsPro
                     gap: "8px",
                   }}
                 >
-                  <span>{!settings.studyMode ? "?? : "??}</span>
+                  <span>{!settings.studyMode ? "On" : "Off"}</span>
                   <span>Normal</span>
                 </button>
                 <button
@@ -259,7 +259,7 @@ export default function ReadingSettings({ onSettingsChange }: ReadingSettingsPro
                     gap: "8px",
                   }}
                 >
-                  <span>{settings.studyMode ? "?? : "??}</span>
+                  <span>{settings.studyMode ? "On" : "Off"}</span>
                   <span>Study Mode</span>
                 </button>
               </div>
