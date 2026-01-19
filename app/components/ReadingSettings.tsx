@@ -167,54 +167,51 @@ export default function ReadingSettings({ onSettingsChange }: ReadingSettingsPro
               <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: 500 }}>
                 Background Color
               </label>
-              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              <select
+                value={settings.backgroundColor}
+                onChange={(e) => updateSetting("backgroundColor", e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  borderRadius: "6px",
+                  border: "1px solid #e5e5e5",
+                  background: "#fff",
+                  fontSize: "13px",
+                  cursor: "pointer",
+                }}
+              >
                 {backgroundColors.map((bg) => (
-                  <button
-                    key={bg.value}
-                    onClick={() => updateSetting("backgroundColor", bg.value)}
-                    style={{
-                      padding: "8px 12px",
-                      border: `2px solid ${settings.backgroundColor === bg.value ? "#243A6E" : "#e5e5e5"}`,
-                      borderRadius: "6px",
-                      background: bg.value,
-                      color: bg.value === "#1a1a1a" ? "#fff" : "#333",
-                      cursor: "pointer",
-                      fontSize: "13px",
-                      fontWeight: 500,
-                    }}
-                  >
+                  <option key={bg.value} value={bg.value}>
                     {bg.name}
-                  </button>
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
 
             <div style={{ marginBottom: "20px" }}>
               <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: 500 }}>
                 Font Family
               </label>
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <select
+                value={settings.fontFamily}
+                onChange={(e) => updateSetting("fontFamily", e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  borderRadius: "6px",
+                  border: "1px solid #e5e5e5",
+                  background: "#fff",
+                  fontSize: "13px",
+                  cursor: "pointer",
+                  fontFamily: settings.fontFamily,
+                }}
+              >
                 {fontFamilies.map((font) => (
-                  <button
-                    key={font.value}
-                    onClick={() => updateSetting("fontFamily", font.value)}
-                    style={{
-                      padding: "8px 12px",
-                      border: `2px solid ${settings.fontFamily === font.value ? "#243A6E" : "#e5e5e5"}`,
-                      borderRadius: "6px",
-                      background: settings.fontFamily === font.value ? "#f0f4ff" : "#fff",
-                      color: "#333",
-                      cursor: "pointer",
-                      fontSize: "13px",
-                      fontWeight: 500,
-                      textAlign: "left",
-                      fontFamily: font.value,
-                    }}
-                  >
+                  <option key={font.value} value={font.value}>
                     {font.name}
-                  </button>
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
 
             <div>
