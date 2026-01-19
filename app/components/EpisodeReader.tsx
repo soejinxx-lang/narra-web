@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -80,16 +80,17 @@ export default function EpisodeReader({
   
   // 踰덉뿭 ?곗씠??罹먯떆 (?대씪?댁뼵???ъ씠?쒖뿉??濡쒕뱶)
   const [translations, setTranslations] = useState<Record<string, any>>({
-    ko: episode, // 湲곕낯 ?쒓뎅?대뒗 ?쒕쾭?먯꽌 媛?몄삩 ?곗씠??  });
+    ko: episode, // Default content from server
+    });
   
   // 鍮꾧났媛??몄뼱 紐⑸줉 (is_public = false)
   const [unavailableLanguages, setUnavailableLanguages] = useState<Set<string>>(new Set());
   
-  // ?쎌? ?꾩튂 異붿쟻???꾪븳 ref
+  // Ref for scroll position tracking
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // 濡쒖뺄 ?ㅽ넗由ъ??먯꽌 ?ㅼ젙 遺덈윭?ㅺ린
+    // Load settings from localStorage
     const saved = localStorage.getItem("readingSettings");
     if (saved) {
       try {
