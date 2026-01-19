@@ -69,6 +69,8 @@ export default function ReadingSettings({
   onSingleLanguageChange,
 }: ReadingSettingsProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isBackgroundOpen, setIsBackgroundOpen] = useState(false);
+  const [isFontOpen, setIsFontOpen] = useState(false);
   const [settings, setSettings] = useState<ReadingSettings>(defaultSettings);
 
   useEffect(() => {
@@ -94,6 +96,20 @@ export default function ReadingSettings({
     value: ReadingSettings[K]
   ) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const currentBackground =
+    backgroundColors.find((bg) => bg.value === settings.backgroundColor) || backgroundColors[0];
+  const currentFont = fontFamilies.find((font) => font.value === settings.fontFamily) || fontFamilies[0];
+
+  const toggleBackgroundOpen = () => {
+    setIsBackgroundOpen((prev) => !prev);
+    setIsFontOpen(false);
+  };
+
+  const toggleFontOpen = () => {
+    setIsFontOpen((prev) => !prev);
+    setIsBackgroundOpen(false);
   };
 
   return (
@@ -177,51 +193,162 @@ export default function ReadingSettings({
               <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: 500 }}>
                 Background Color
               </label>
-              <select
-                value={settings.backgroundColor}
-                onChange={(e) => updateSetting("backgroundColor", e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "8px 12px",
-                  borderRadius: "6px",
-                  border: "1px solid #e5e5e5",
-                  background: "#fff",
-                  fontSize: "13px",
-                  cursor: "pointer",
-                }}
-              >
-                {backgroundColors.map((bg) => (
-                  <option key={bg.value} value={bg.value}>
-                    {bg.name}
-                  </option>
-                ))}
-              </select>
+              <div style={{ position: "relative" }}>
+                <button
+                  onClick={toggleBackgroundOpen}
+                  style={{
+                    width: "100%",
+                    padding: "8px 12px",
+                    borderRadius: "6px",
+                    border: "1px solid #e5e5e5",
+                    background: "#fff",
+                    fontSize: "13px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "8px",
+                  }}
+                >
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span
+                      style={{
+                        width: "12px",
+                        height: "12px",
+                        borderRadius: "50%",
+                        background: currentBackground.value,
+                        border: "1px solid #e5e5e5",
+                      }}
+                    />
+                    <span>{currentBackground.name}</span>
+                  </span>
+                  <span>v</span>
+                </button>
+
+                {isBackgroundOpen && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "calc(100% + 6px)",
+                      left: 0,
+                      right: 0,
+                      background: "#fff",
+                      border: "1px solid #e5e5e5",
+                      borderRadius: "6px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                      zIndex: 10,
+                    }}
+                  >
+                    {backgroundColors.map((bg) => (
+                      <button
+                        key={bg.value}
+                        onClick={() => {
+                          updateSetting("backgroundColor", bg.value);
+                          setIsBackgroundOpen(false);
+                        }}
+                        style={{
+                          width: "100%",
+                          padding: "8px 12px",
+                          border: "none",
+                          borderBottom: "1px solid #f0f0f0",
+                          background: "transparent",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          fontSize: "13px",
+                          fontWeight: settings.backgroundColor === bg.value ? 600 : 400,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: "12px",
+                            height: "12px",
+                            borderRadius: "50%",
+                            background: bg.value,
+                            border: "1px solid #e5e5e5",
+                          }}
+                        />
+                        <span>{bg.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div style={{ marginBottom: "20px" }}>
               <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: 500 }}>
                 Font Family
               </label>
-              <select
-                value={settings.fontFamily}
-                onChange={(e) => updateSetting("fontFamily", e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "8px 12px",
-                  borderRadius: "6px",
-                  border: "1px solid #e5e5e5",
-                  background: "#fff",
-                  fontSize: "13px",
-                  cursor: "pointer",
-                  fontFamily: settings.fontFamily,
-                }}
-              >
-                {fontFamilies.map((font) => (
-                  <option key={font.value} value={font.value}>
-                    {font.name}
-                  </option>
-                ))}
-              </select>
+              <div style={{ position: "relative" }}>
+                <button
+                  onClick={toggleFontOpen}
+                  style={{
+                    width: "100%",
+                    padding: "8px 12px",
+                    borderRadius: "6px",
+                    border: "1px solid #e5e5e5",
+                    background: "#fff",
+                    fontSize: "13px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "8px",
+                    fontFamily: currentFont.value,
+                  }}
+                >
+                  <span>{currentFont.name}</span>
+                  <span>v</span>
+                </button>
+
+                {isFontOpen && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "calc(100% + 6px)",
+                      left: 0,
+                      right: 0,
+                      background: "#fff",
+                      border: "1px solid #e5e5e5",
+                      borderRadius: "6px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                      zIndex: 10,
+                    }}
+                  >
+                    {fontFamilies.map((font) => (
+                      <button
+                        key={font.value}
+                        onClick={() => {
+                          updateSetting("fontFamily", font.value);
+                          setIsFontOpen(false);
+                        }}
+                        style={{
+                          width: "100%",
+                          padding: "8px 12px",
+                          border: "none",
+                          borderBottom: "1px solid #f0f0f0",
+                          background: "transparent",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: "8px",
+                          fontSize: "13px",
+                          fontFamily: font.value,
+                          fontWeight: settings.fontFamily === font.value ? 600 : 400,
+                        }}
+                      >
+                        <span>{font.name}</span>
+                        <span>Aa</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div>
