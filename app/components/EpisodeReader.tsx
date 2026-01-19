@@ -71,6 +71,7 @@ export default function EpisodeReader({
 
   // 언어 변경 시 localStorage 저장
   const handleLanguageChange = (newLang: Language) => {
+    setSingleLanguage(newLang);
 
     if (typeof window !== "undefined") {
       const userId = getCurrentUserId();
@@ -524,7 +525,13 @@ export default function EpisodeReader({
             ←           </Link>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
             {novel && <ShareButton novelId={novelId} novelTitle={novel.title || "Novel"} />}
-            <ReadingSettings onSettingsChange={handleSettingsChange} />
+            <ReadingSettings
+              onSettingsChange={handleSettingsChange}
+              singleLanguage={singleLanguage}
+              availableLanguages={availableLanguages}
+              unavailableLanguages={unavailableLanguages}
+              onSingleLanguageChange={handleLanguageChange}
+            />
           </div>
         </div>
       </div>
@@ -606,64 +613,19 @@ export default function EpisodeReader({
           </div>
         ) : (
           /* Normal Mode: ?⑥씪 ?몄뼱 */
-          <>
-            {/* ?몄뼱 ?좏깮 */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                marginBottom: "24px",
-              }}
-            >
-              <select
-                value={singleLanguage}
-                onChange={(e) => handleLanguageChange(e.target.value as Language)}
-                style={{
-                  padding: "8px 12px",
-                  borderRadius: "6px",
-                  border: "1px solid #e5e5e5",
-                  background: "#fff",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                  maxWidth: "200px",
-                }}
-              >
-                {availableLanguages.map((lang) => {
-                  const isUnavailable = unavailableLanguages.has(lang);
-                  return (
-                    <option
-                      key={lang}
-                      value={lang}
-                      disabled={isUnavailable}
-                      style={{
-                        opacity: isUnavailable ? 0.4 : 1,
-                        color: isUnavailable ? "#999" : "inherit",
-                      }}
-                    >
-                      {getLanguageName(lang)}
-                      {isUnavailable ? " (Unavailable)" : ""}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-
-            {/* 蹂몃Ц */}
-            <div
-              ref={contentRef}
-              style={{
-                lineHeight: settings.lineHeight,
-                whiteSpace: "pre-wrap",
-                fontSize: `${settings.fontSize}px`,
-                fontFamily: settings.fontFamily,
-                color: settings.backgroundColor === "#1a1a1a" ? "#e0e0e0" : "#333",
-                minHeight: "400px",
-              }}
-            >
-              {getContent(singleLanguage)}
-            </div>
-          </>
+          <div
+            ref={contentRef}
+            style={{
+              lineHeight: settings.lineHeight,
+              whiteSpace: "pre-wrap",
+              fontSize: `${settings.fontSize}px`,
+              fontFamily: settings.fontFamily,
+              color: settings.backgroundColor === "#1a1a1a" ? "#e0e0e0" : "#333",
+              minHeight: "400px",
+            }}
+          >
+            {getContent(singleLanguage)}
+          </div>
         )}
 
         {/* ?ㅻ퉬寃뚯씠← ?곸뿭 */}

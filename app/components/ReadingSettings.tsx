@@ -4,6 +4,10 @@ import { useState, useEffect } from "react";
 
 type ReadingSettingsProps = {
   onSettingsChange: (settings: ReadingSettings) => void;
+  singleLanguage?: string;
+  availableLanguages?: string[];
+  unavailableLanguages?: Set<string>;
+  onSingleLanguageChange?: (lang: string) => void;
 };
 
 export type ReadingSettings = {
@@ -57,7 +61,13 @@ const languages = [
   { code: "pt", name: "Portuguese" },
 ];
 
-export default function ReadingSettings({ onSettingsChange }: ReadingSettingsProps) {
+export default function ReadingSettings({
+  onSettingsChange,
+  singleLanguage,
+  availableLanguages,
+  unavailableLanguages,
+  onSingleLanguageChange,
+}: ReadingSettingsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [settings, setSettings] = useState<ReadingSettings>(defaultSettings);
 
@@ -301,6 +311,35 @@ export default function ReadingSettings({ onSettingsChange }: ReadingSettingsPro
                         {lang.name}
                       </option>
                     ))}
+                  </select>
+                </div>
+              )}
+
+              {!settings.studyMode && onSingleLanguageChange && (
+                <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <select
+                    value={singleLanguage || "ko"}
+                    onChange={(e) => onSingleLanguageChange(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "8px 12px",
+                      borderRadius: "6px",
+                      border: "1px solid #e5e5e5",
+                      background: "#fff",
+                      fontSize: "13px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {(availableLanguages || languages.map((lang) => lang.code)).map((code) => {
+                      const name = languages.find((lang) => lang.code === code)?.name || code.toUpperCase();
+                      const isUnavailable = unavailableLanguages?.has(code);
+                      return (
+                        <option key={code} value={code} disabled={isUnavailable}>
+                          {name}
+                          {isUnavailable ? " (Unavailable)" : ""}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
               )}
