@@ -343,7 +343,6 @@ export default function ReadingSettings({
                         }}
                       >
                         <span>{font.name}</span>
-                        <span>Aa</span>
                       </button>
                     ))}
                   </div>
@@ -373,9 +372,36 @@ export default function ReadingSettings({
                     gap: "8px",
                   }}
                 >
-                  <span>{!settings.studyMode ? "On" : "Off"}</span>
                   <span>Normal</span>
                 </button>
+                {!settings.studyMode && onSingleLanguageChange && (
+                  <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <select
+                      value={singleLanguage || "ko"}
+                      onChange={(e) => onSingleLanguageChange(e.target.value)}
+                      style={{
+                        width: "100%",
+                        padding: "8px 12px",
+                        borderRadius: "6px",
+                        border: "1px solid #e5e5e5",
+                        background: "#fff",
+                        fontSize: "13px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {(availableLanguages || languages.map((lang) => lang.code)).map((code) => {
+                        const name = languages.find((lang) => lang.code === code)?.name || code.toUpperCase();
+                        const isUnavailable = unavailableLanguages?.has(code);
+                        return (
+                          <option key={code} value={code} disabled={isUnavailable}>
+                            {name}
+                            {isUnavailable ? " (Unavailable)" : ""}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                )}
                 <button
                   onClick={() => updateSetting("studyMode", true)}
                   style={{
@@ -393,7 +419,6 @@ export default function ReadingSettings({
                     gap: "8px",
                   }}
                 >
-                  <span>{settings.studyMode ? "On" : "Off"}</span>
                   <span>Study Mode</span>
                 </button>
               </div>
@@ -439,36 +464,7 @@ export default function ReadingSettings({
                     ))}
                   </select>
                 </div>
-              ) : (
-                onSingleLanguageChange && (
-                  <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
-                    <select
-                      value={singleLanguage || "ko"}
-                      onChange={(e) => onSingleLanguageChange(e.target.value)}
-                      style={{
-                        width: "100%",
-                        padding: "8px 12px",
-                        borderRadius: "6px",
-                        border: "1px solid #e5e5e5",
-                        background: "#fff",
-                        fontSize: "13px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      {(availableLanguages || languages.map((lang) => lang.code)).map((code) => {
-                        const name = languages.find((lang) => lang.code === code)?.name || code.toUpperCase();
-                        const isUnavailable = unavailableLanguages?.has(code);
-                        return (
-                          <option key={code} value={code} disabled={isUnavailable}>
-                            {name}
-                            {isUnavailable ? " (Unavailable)" : ""}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </div>
-                )
-              )}
+              ) : null}
             </div>
 
             <div style={{ marginTop: "20px" }}>
