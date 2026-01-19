@@ -24,16 +24,26 @@ export default function AudioPlayer({ novelId, episodeNumber, language }: AudioP
     const checkAudioStatus = async () => {
       try {
         const response = await fetch(`${STORAGE_API}/api/audio/${novelId}/${episodeNumber}/${language}`);
+        if (!response.ok) {
+          setStatus("error");
+          return;
+        }
+
         const data = await response.json();
 
         if (data.status === "DONE" && data.audio_url) {
-          setAudioUrl(`${STORAGE_API}${data.audio_url}`);
+          const resolvedUrl = data.audio_url.startsWith("http")
+            ? data.audio_url
+            : `${STORAGE_API}${data.audio_url}`;
+          setAudioUrl(resolvedUrl);
           setStatus("ready");
         } else if (data.status === "PROCESSING" || data.status === "PENDING") {
           setStatus("generating");
           // 5초 후 다시 확인
           setTimeout(checkAudioStatus, 5000);
         } else if (data.status === "FAILED") {
+          setStatus("error");
+        } else {
           setStatus("error");
         }
       } catch (error) {
