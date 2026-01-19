@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 
@@ -12,6 +12,7 @@ export type ReadingSettings = {
   backgroundColor: string;
   fontFamily: string;
   studyMode: boolean;
+  audioMode: boolean;
   leftLanguage?: string;
   rightLanguage?: string;
 };
@@ -22,6 +23,7 @@ const defaultSettings: ReadingSettings = {
   backgroundColor: "#faf9f6",
   fontFamily: "inherit",
   studyMode: false,
+  audioMode: false,
   leftLanguage: "ko",
   rightLanguage: "en",
 };
@@ -60,14 +62,14 @@ export default function ReadingSettings({ onSettingsChange }: ReadingSettingsPro
   const [settings, setSettings] = useState<ReadingSettings>(defaultSettings);
 
   useEffect(() => {
-    // 로컬 스토리지에서 설정 불러오기
+    // 濡쒖뺄 ?ㅽ넗由ъ??먯꽌 ?ㅼ젙 遺덈윭?ㅺ린
     const saved = localStorage.getItem("readingSettings");
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         setSettings({ ...defaultSettings, ...parsed });
       } catch (e) {
-        // 파싱 실패 시 기본값 사용
+        // ?뚯떛 ?ㅽ뙣 ??湲곕낯媛??ъ슜
       }
     }
   }, []);
@@ -102,7 +104,7 @@ export default function ReadingSettings({ onSettingsChange }: ReadingSettingsPro
           gap: "0",
         }}
       >
-        ⚙️
+        ?숋툘
       </button>
 
       {isOpen && (
@@ -237,7 +239,7 @@ export default function ReadingSettings({ onSettingsChange }: ReadingSettingsPro
                     gap: "8px",
                   }}
                 >
-                  <span>{!settings.studyMode ? "●" : "○"}</span>
+                  <span>{!settings.studyMode ? "?? : "??}</span>
                   <span>Normal</span>
                 </button>
                 <button
@@ -257,12 +259,12 @@ export default function ReadingSettings({ onSettingsChange }: ReadingSettingsPro
                     gap: "8px",
                   }}
                 >
-                  <span>{settings.studyMode ? "●" : "○"}</span>
+                  <span>{settings.studyMode ? "?? : "??}</span>
                   <span>Study Mode</span>
                 </button>
               </div>
               
-              {/* Study Mode 언어 선택 */}
+              {/* Study Mode ?몄뼱 ?좏깮 */}
               {settings.studyMode && (
                 <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
                   <select
