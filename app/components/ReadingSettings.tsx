@@ -104,7 +104,7 @@ export default function ReadingSettings({ onSettingsChange }: ReadingSettingsPro
           gap: "0",
         }}
       >
-        ?숋툘
+        Settings
       </button>
 
       {isOpen && (
@@ -307,6 +307,33 @@ export default function ReadingSettings({ onSettingsChange }: ReadingSettingsPro
                   </select>
                 </div>
               )}
+            </div>
+
+            <div style={{ marginTop: "20px" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: 500 }}>
+                Audio Mode
+              </label>
+              <button
+                onClick={() => updateSetting("audioMode", !settings.audioMode)}
+                style={{
+                  padding: "10px 12px",
+                  border: `2px solid ${settings.audioMode ? "#243A6E" : "#e5e5e5"}`,
+                  borderRadius: "6px",
+                  background: settings.audioMode ? "#f0f4ff" : "#fff",
+                  color: "#333",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  textAlign: "left",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  width: "100%",
+                }}
+              >
+                <span>{settings.audioMode ? "On" : "Off"}</span>
+                <span>Audio Mode</span>
+              </button>
             </div>
           </div>
         </>
