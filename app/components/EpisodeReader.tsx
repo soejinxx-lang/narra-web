@@ -58,8 +58,8 @@ export default function EpisodeReader({
     }
     return "ko"; // 湲곕낯媛?  });
   
-  // ?몄뼱 蹂寃???localStorage ???  const handleLanguageChange = (newLang: Language) => {
-    setSingleLanguage(newLang);
+  // 언어 변경 시 localStorage 저장
+  const handleLanguageChange = (newLang: Language) => {
     
     if (typeof window !== "undefined") {
       const userId = getCurrentUserId();
