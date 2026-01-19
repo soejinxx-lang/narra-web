@@ -32,10 +32,20 @@ export default function EpisodeReader({
     backgroundColor: "#faf9f6",
     fontFamily: "inherit",
     studyMode: false,
-      audioMode: false,
-    });
+    audioMode: false,
+  });
 
-  // 湲곕낯 8媛← 몄뼱濡?珥덇린←   const [availableLanguages, setAvailableLanguages] = useState<Language[]>(["ko", "en", "ja", "zh", "es", "fr", "de", "pt"]);
+  // 기본 8개 언어로 초기화
+  const [availableLanguages, setAvailableLanguages] = useState<Language[]>([
+    "ko",
+    "en",
+    "ja",
+    "zh",
+    "es",
+    "fr",
+    "de",
+    "pt",
+  ]);
 
   // ====================================
   // ← Phase 1: localStorage ?몄뼱 ?ㅼ젙
@@ -82,7 +92,7 @@ export default function EpisodeReader({
   // 踰덉뿭 ?곗씠← 罹먯떆 (?대씪?댁뼵← ?ъ씠?쒖뿉← 濡쒕뱶)
   const [translations, setTranslations] = useState<Record<string, any>>({
     ko: episode, // Default content from server
-    });
+  });
 
   // Unavailable)?몄뼱 紐⑸줉 (is_public = false)
   const [unavailableLanguages, setUnavailableLanguages] = useState<Set<string>>(new Set());
@@ -256,7 +266,8 @@ export default function EpisodeReader({
           // 鍮꾨줈洹몄씤 ?ъ슜?? sessionStorage?????
           saveSessionScrollPosition(novelId, currentEpisodeEp, scrollPosition, progress);
         }
-      }, 500); // 0.5珥덈쭏← ?←     };
+      }, 500); // 0.5초마다 저장
+    };
 
     window.addEventListener("scroll", handleScroll);
 
@@ -276,7 +287,8 @@ export default function EpisodeReader({
 
 
 
-  // ?몄뼱 肄붾뱶瑜← ?ㅼ엫?쇰줈 蹂←   const getLanguageName = (lang: Language): string => {
+  // 언어 코드를 이름으로 변환
+  const getLanguageName = (lang: Language): string => {
     const languageNames: Record<string, string> = {
       ko: "Korean",
       en: "English",
@@ -290,7 +302,7 @@ export default function EpisodeReader({
     return languageNames[lang] || lang.toUpperCase();
   };
 
-  // ?몄뼱蹂?肄섑뀗痢?濡쒕뱶 (?대씪?댁뼵← ?ъ씠←
+  // 언어별 콘텐츠 로드 (클라이언트에서 호출)
   useEffect(() => {
     const loadTranslation = async (lang: Language) => {
       // ?대? 濡쒕뱶← ?몄뼱硫← ㅽ궢
@@ -398,7 +410,8 @@ export default function EpisodeReader({
     }
   }, [settings.studyMode, settings.leftLanguage, settings.rightLanguage, singleLanguage, novelId, episode.ep, translations]);
 
-  // ?몄뼱蹂?肄섑뀗痢?媛?몄삤湲?  const getContent = (lang: Language) => {
+  // 언어별 콘텐츠 가져오기
+  const getContent = (lang: Language) => {
     const translation = translations[lang];
 
     // 踰덉뿭← 以鍮꾨릺吏 ?딆? 寃쎌슦
@@ -433,7 +446,8 @@ export default function EpisodeReader({
     return `[Loading translation...]`;
   };
 
-  // ?몄뼱蹂← 쒕ぉ 媛?몄삤湲?  const getTitle = (lang: Language) => {
+  // 언어별 제목 가져오기
+  const getTitle = (lang: Language) => {
     const translation = translations[lang];
     if (translation && translation.title) {
       return translation.title;
