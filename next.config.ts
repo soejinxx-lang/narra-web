@@ -4,10 +4,10 @@ import path from "path";
 const nextConfig: NextConfig = {
   // 워크스페이스 루트 명시적 설정 (Next.js 16에서 experimental에서 이동)
   outputFileTracingRoot: path.join(__dirname),
-  
+
   // Turbopack 설정 (Next.js 16에서 기본 활성화, webpack 사용 시 빈 설정 필요)
   turbopack: {},
-  
+
   // 파일 감시 설정 (OneDrive 및 Windows 경로 지원)
   // --webpack 플래그를 사용하므로 webpack 설정이 적용됩니다
   webpack: (config, { dev }) => {
@@ -20,6 +20,15 @@ const nextConfig: NextConfig = {
       };
     }
     return config;
+  },
+
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${process.env.NEXT_PUBLIC_STORAGE_BASE_URL}/:path*`, // Proxy to Backend
+      },
+    ];
   },
 
   async headers() {
