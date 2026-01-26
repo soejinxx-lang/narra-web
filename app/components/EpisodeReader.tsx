@@ -5,6 +5,7 @@ import Link from "next/link";
 import ReadingSettings, { ReadingSettings as ReadingSettingsType } from "./ReadingSettings";
 import AudioPlayer from "./AudioPlayer";
 import ShareButton from "./ShareButton";
+import CommentSection from "./CommentSection";
 import { saveReadingProgress, getCurrentUserId, getNovelProgress, saveSessionScrollPosition, getSessionReadingProgress } from "@/app/utils/readingProgress";
 import { markAsCompleted } from "@/app/utils/library";
 
@@ -151,6 +152,23 @@ export default function EpisodeReader({
 
       setAvailableLanguages(languages);
     }
+
+    // ✅ Survival Mode: Increment View Count
+    const incrementViewCount = async () => {
+      try {
+        await fetch(`/api/episodes/${episode.id}/view`, {
+          method: "POST",
+          cache: "no-store" // Ensure it hits the server
+        });
+      } catch (error) {
+        // Silently fail for views
+        console.error("Failed to increment view count", error);
+      }
+    };
+
+    // Call once on mount
+    incrementViewCount();
+
 
     // Track episode read for daily missions
     if (typeof window !== "undefined") {
@@ -680,6 +698,9 @@ export default function EpisodeReader({
               Next → </div>
           )}
         </div>
+
+        {/* ✅ Community: Comment Section */}
+        <CommentSection episodeId={episode.id} />
       </div>
     </main>
   );
