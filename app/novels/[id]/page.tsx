@@ -157,12 +157,12 @@ export default async function Page({ params }: PageProps) {
               </div>
 
               <div style={{ display: "flex", gap: "16px", fontSize: "13px", color: "#888" }}>
-                {/* 조회수 */}
-                {ep.views !== undefined && (
+                {/* 조회수 (Optional) */}
+                {ep.views ? (
                   <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                    👁 {ep.views.toLocaleString()}
+                    👁 {Number(ep.views).toLocaleString()}
                   </span>
-                )}
+                ) : null}
                 {/* 날짜 */}
                 {ep.created_at && (
                   <span>

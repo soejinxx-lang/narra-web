@@ -57,7 +57,8 @@ export async function fetchEpisodesByNovelId(id: string) {
   );
 
   if (!res.ok) {
-    throw new Error(`Failed to fetch episodes for novel: ${id}`);
+    console.warn(`Failed to fetch episodes for novel: ${id} (Status: ${res.status})`);
+    return [];
   }
 
   const data = await res.json();
