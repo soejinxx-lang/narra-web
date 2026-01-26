@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
 import { fetchNovelById, fetchEpisodesByNovelId } from "@/lib/api";
 import ShareButton from "@/app/components/ShareButton";
 import ContinueReadingButton from "@/app/components/ContinueReadingButton";
@@ -32,14 +33,14 @@ export default async function Page({ params }: PageProps) {
             whiteSpace: "pre-wrap",
           }}
         >
-{JSON.stringify(
-  {
-    paramsId: id,
-    error: String(error),
-  },
-  null,
-  2
-)}
+          {JSON.stringify(
+            {
+              paramsId: id,
+              error: String(error),
+            },
+            null,
+            2
+          )}
         </pre>
       </main>
     );
@@ -69,14 +70,14 @@ export default async function Page({ params }: PageProps) {
             whiteSpace: "pre-wrap",
           }}
         >
-{JSON.stringify(
-  {
-    paramsId: id,
-    error: String(error),
-  },
-  null,
-  2
-)}
+          {JSON.stringify(
+            {
+              paramsId: id,
+              error: String(error),
+            },
+            null,
+            2
+          )}
         </pre>
       </main>
     );
@@ -141,14 +142,33 @@ export default async function Page({ params }: PageProps) {
           >
             <div
               style={{
-                padding: "12px 0",
+                padding: "16px 0",
                 borderBottom: "1px solid #e5e5e5",
                 cursor: "pointer",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
-              <div style={{ fontWeight: 500, display: "flex", alignItems: "center" }}>
-                EP {ep.ep} {ep.title ?? ""}
+              <div style={{ fontWeight: 500, display: "flex", alignItems: "center", gap: "8px" }}>
+                <span>EP {ep.ep}</span>
+                {ep.title && <span style={{ color: "#333" }}>{ep.title}</span>}
                 <EpisodeProgress novelId={id} episodeEp={String(ep.ep)} />
+              </div>
+
+              <div style={{ display: "flex", gap: "16px", fontSize: "13px", color: "#888" }}>
+                {/* 조회수 */}
+                {ep.views !== undefined && (
+                  <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                    👁 {ep.views.toLocaleString()}
+                  </span>
+                )}
+                {/* 날짜 */}
+                {ep.created_at && (
+                  <span>
+                    {formatDistanceToNow(new Date(ep.created_at), { addSuffix: true })}
+                  </span>
+                )}
               </div>
             </div>
           </Link>

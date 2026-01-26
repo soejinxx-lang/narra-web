@@ -85,10 +85,7 @@ export default function CommentSection({ episodeId }: CommentSectionProps) {
         const content = parentId ? replyContent : newComment;
         if (!content.trim()) return;
 
-        if (!currentUser) {
-            alert("Please log in to comment.");
-            return;
-        }
+
 
         try {
             // Note: In a real app, you should use a proper auth token. 
@@ -256,83 +253,59 @@ export default function CommentSection({ episodeId }: CommentSectionProps) {
 
             {/* Main Comment Form */}
             <div style={{ marginBottom: "40px" }}>
-                {currentUser ? (
-                    <div style={{ display: "flex", gap: "16px" }}>
-                        <div
+                <div style={{ display: "flex", gap: "16px" }}>
+                    <div
+                        style={{
+                            width: "48px",
+                            height: "48px",
+                            borderRadius: "50%",
+                            background: "#eee",
+                            overflow: "hidden",
+                            flexShrink: 0
+                        }}
+                    >
+                        <img
+                            src={`https://api.dicebear.com/7.x/initials/svg?seed=${currentUser ? currentUser.username : "Guest"}`}
+                            alt="Avatar"
+                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <textarea
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder={currentUser ? "Leave a comment..." : "Leave a comment as Guest..."}
                             style={{
-                                width: "48px",
-                                height: "48px",
-                                borderRadius: "50%",
-                                background: "#eee",
-                                overflow: "hidden",
-                                flexShrink: 0
+                                width: "100%",
+                                padding: "16px",
+                                borderRadius: "8px",
+                                border: "1px solid #e5e5e5",
+                                resize: "vertical",
+                                minHeight: "100px",
+                                marginBottom: "12px",
+                                fontFamily: "inherit",
                             }}
-                        >
-                            <img
-                                src={`https://api.dicebear.com/7.x/initials/svg?seed=${currentUser.username}`}
-                                alt="Me"
-                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                            />
-                        </div>
-                        <div style={{ flex: 1 }}>
-                            <textarea
-                                value={newComment}
-                                onChange={(e) => setNewComment(e.target.value)}
-                                placeholder="Leave a comment..."
+                        />
+                        <div style={{ textAlign: "right" }}>
+                            <button
+                                onClick={() => handleSubmit(null)}
                                 style={{
-                                    width: "100%",
-                                    padding: "16px",
-                                    borderRadius: "8px",
-                                    border: "1px solid #e5e5e5",
-                                    resize: "vertical",
-                                    minHeight: "100px",
-                                    marginBottom: "12px",
-                                    fontFamily: "inherit",
+                                    padding: "10px 24px",
+                                    background: "#243A6E",
+                                    color: "#fff",
+                                    border: "none",
+                                    borderRadius: "6px",
+                                    fontWeight: 600,
+                                    cursor: "pointer",
+                                    fontSize: "14px"
                                 }}
-                            />
-                            <div style={{ textAlign: "right" }}>
-                                <button
-                                    onClick={() => handleSubmit(null)}
-                                    style={{
-                                        padding: "10px 24px",
-                                        background: "#243A6E",
-                                        color: "#fff",
-                                        border: "none",
-                                        borderRadius: "6px",
-                                        fontWeight: 600,
-                                        cursor: "pointer",
-                                        fontSize: "14px"
-                                    }}
-                                >
-                                    Post Comment
-                                </button>
-                            </div>
+                            >
+                                Post Comment
+                            </button>
                         </div>
                     </div>
-                ) : (
-                    <div style={{
-                        background: "#f8f9fa",
-                        padding: "32px",
-                        textAlign: "center",
-                        borderRadius: "8px",
-                        color: "#666"
-                    }}>
-                        <p style={{ marginBottom: "16px" }}>Log in to join the discussion.</p>
-                        <a href="/login" style={{
-                            display: "inline-block",
-                            padding: "10px 24px",
-                            background: "#243A6E",
-                            color: "#fff",
-                            textDecoration: "none",
-                            borderRadius: "6px",
-                            fontWeight: 500
-                        }}>
-                            Log In
-                        </a>
-                    </div>
-                )}
+                </div>
             </div>
-
             {/* Comment List */}
             <div>
                 {comments.map((comment) => renderComment(comment))}
