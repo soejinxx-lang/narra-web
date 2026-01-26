@@ -130,11 +130,18 @@ export default async function Page({ params }: PageProps) {
       <ContinueReadingButton novelId={id} />
 
       <section>
-        {episodes.length === 0 && (
+        {episodes === null && (
+          <div style={{ color: "red", padding: "20px", background: "#fff0f0" }}>
+            <h3>API Connection Failed</h3>
+            <p>Could not fetch episodes. Backend might be down or misconfigured (CORS/Deploy).</p>
+          </div>
+        )}
+
+        {Array.isArray(episodes) && episodes.length === 0 && (
           <div style={{ color: "#999" }}>No episodes available.</div>
         )}
 
-        {episodes.map((ep: any) => (
+        {Array.isArray(episodes) && episodes.map((ep: any) => (
           <Link
             key={ep.ep}
             href={`/novels/${id}/episodes/${ep.ep}`}
