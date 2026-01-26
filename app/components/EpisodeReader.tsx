@@ -338,7 +338,7 @@ export default function EpisodeReader({
 
         if (res.ok) {
           const data = await res.json();
-          console.log("RAW_TRANSLATION:", JSON.stringify(data.content));
+
 
           // ?묐떟← language ?꾨뱶媛 ?붿껌← ?몄뼱? ?쇱튂?섎뒗吏 ?뺤씤
           if (data.language && data.language !== lang) {
