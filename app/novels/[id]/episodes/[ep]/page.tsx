@@ -31,7 +31,10 @@ export default async function Page({
 
   // 한국어 콘텐츠 가져오기 (기본)
   const koContent = await fetchEpisodeContent(id, ep, "ko").catch(() => null);
-  const episodeWithKo = koContent ? { ...episode, ...koContent } : episode;
+  // Ensure ID is preserved from the original episode object
+  const episodeWithKo = koContent
+    ? { ...koContent, ...episode, id: episode.id, ep: episode.ep }
+    : episode;
 
   const currentIndex = allEpisodes.findIndex((e: any) => String(e.ep) === String(ep));
   const prevEpisode = currentIndex > 0 ? allEpisodes[currentIndex - 1] : null;
