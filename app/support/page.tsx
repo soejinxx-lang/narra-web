@@ -166,7 +166,7 @@ function AccordionItem({ item }: { item: QnAItem }) {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          group: "group", // Note: inline styles don't support group, using logic instead
+
         }}
       >
         <span
