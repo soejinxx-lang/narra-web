@@ -24,6 +24,7 @@ interface Post {
   topic: string;
   views: number;
   likes: number; // Simple integer
+  liked_by_me: boolean;
   comment_count: number;
   user_id?: string; // for ownership check
 }
@@ -196,14 +197,27 @@ export default function CommunityPage() {
     // Optimistic update
     setPosts(prev => prev.map(p => {
       if (p.id === postId) {
-        return { ...p, likes: (p.likes || 0) + 1 };
+        const isLiked = !!p.liked_by_me;
+        return {
+          ...p,
+          likes: Math.max(0, (p.likes || 0) + (isLiked ? -1 : 1)),
+          liked_by_me: !isLiked
+        };
       }
       return p;
     }));
 
     // In detail view
     if (selectedPost && selectedPost.id === postId) {
-      setSelectedPost(prev => prev ? { ...prev, likes: (prev.likes || 0) + 1 } : null);
+      setSelectedPost(prev => {
+        if (!prev) return null;
+        const isLiked = !!prev.liked_by_me;
+        return {
+          ...prev,
+          likes: Math.max(0, (prev.likes || 0) + (isLiked ? -1 : 1)),
+          liked_by_me: !isLiked
+        };
+      });
     }
 
     try {
@@ -363,9 +377,10 @@ export default function CommunityPage() {
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#999" }}>
                     <span>by {post.author_name || post.author} · {getTimeAgo(post.created_at)}</span>
                     <div style={{ display: "flex", gap: "12px" }}>
-                      <span onClick={(e) => handleLike(post.id, e)} style={{ cursor: "pointer" }}>❤️ {post.likes}</span>
+                      <span onClick={(e) => handleLike(post.id, e)} style={{ cursor: "pointer", opacity: post.liked_by_me ? 1 : 0.7 }}>
+                        {post.liked_by_me ? "❤️" : "🤍"} {post.likes}
+                      </span>
                       <span>💬 {post.comment_count}</span>
-                      <span>👁️ {post.views}</span>
                     </div>
                   </div>
                 </div>
