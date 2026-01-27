@@ -8,6 +8,7 @@ export interface ReadingProgress {
   episodeEp: string; // 가장 최근에 읽은 에피소드 (이어보기용)
   progress: number; // 0-100 (읽은 퍼센트)
   lastReadAt: number; // 마지막 읽은 시간 (timestamp)
+  scrollPosition?: number;
   // 에피소드별 히스토리 추가
   history?: Record<string, {
     progress: number;
