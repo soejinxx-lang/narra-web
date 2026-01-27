@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { formatRelativeTime } from "@/lib/utils";
 
 type EpisodeListItemProps = {
   episode: any;
@@ -39,7 +40,7 @@ export default function EpisodeListItem({ episode, novelId }: EpisodeListItemPro
           </div>
           {episode.created_at && (
             <div style={{ color: "#999", fontSize: "13px" }}>
-              {new Date(episode.created_at).toLocaleDateString("en-US")}
+              {formatRelativeTime(episode.created_at)}
             </div>
           )}
         </div>
