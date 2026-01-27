@@ -167,6 +167,7 @@ export default function LanguageLearningMode({
       fr: "French",
       de: "German",
       pt: "Portuguese",
+      id: "Indonesian",
     };
     return names[code] || code.toUpperCase();
   };
@@ -414,8 +415,8 @@ export default function LanguageLearningMode({
                     displayMode === "side-by-side"
                       ? "#fff"
                       : isDark
-                      ? "#ccc"
-                      : "#666",
+                        ? "#ccc"
+                        : "#666",
                   fontSize: "14px",
                   cursor: "pointer",
                   transition: "all 0.2s",
@@ -440,8 +441,8 @@ export default function LanguageLearningMode({
                     displayMode === "interleaved"
                       ? "#fff"
                       : isDark
-                      ? "#ccc"
-                      : "#666",
+                        ? "#ccc"
+                        : "#666",
                   fontSize: "14px",
                   cursor: "pointer",
                   transition: "all 0.2s",

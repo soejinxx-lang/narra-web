@@ -46,6 +46,7 @@ export default function EpisodeReader({
     "fr",
     "de",
     "pt",
+    "id",
   ]);
 
   // ====================================
@@ -145,7 +146,7 @@ export default function EpisodeReader({
 
       // ?몄뼱 紐⑸줉← ?놁쑝硫?湲곕낯媛← ъ슜 (8媛← 몄뼱)
       if (languages.length === 0) {
-        languages = ["ko", "en", "ja", "zh", "es", "fr", "de", "pt"];
+        languages = ["ko", "en", "ja", "zh", "es", "fr", "de", "pt", "id"];
         // 湲곕낯媛믪쓣 localStorage?????
         localStorage.setItem("availableLanguages", JSON.stringify(languages));
       }
@@ -317,6 +318,7 @@ export default function EpisodeReader({
       fr: "French",
       de: "German",
       pt: "Portuguese",
+      id: "Indonesian",
     };
     return languageNames[lang] || lang.toUpperCase();
   };
