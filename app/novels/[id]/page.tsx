@@ -8,6 +8,7 @@ import { fetchNovelById, fetchEpisodesByNovelId } from "@/lib/api";
 import ShareButton from "@/app/components/ShareButton";
 import ContinueReadingButton from "@/app/components/ContinueReadingButton";
 import EpisodeProgress from "@/app/components/EpisodeProgress";
+import { formatViewCount } from "@/lib/utils";
 
 type PageProps = {
   params: Promise<{
@@ -167,7 +168,7 @@ export default async function Page({ params }: PageProps) {
                 {/* 조회수 (Optional) */}
                 {ep.views != null ? (
                   <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                    Views {Number(ep.views).toLocaleString()}
+                    Views {formatViewCount(ep.views)}
                   </span>
                 ) : null}
                 {/* 날짜 */}
