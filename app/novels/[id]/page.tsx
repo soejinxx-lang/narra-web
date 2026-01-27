@@ -167,7 +167,7 @@ export default async function Page({ params }: PageProps) {
                 {/* 조회수 (Optional) */}
                 {ep.views != null ? (
                   <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                    👁 {Number(ep.views).toLocaleString()}
+                    Views {Number(ep.views).toLocaleString()}
                   </span>
                 ) : null}
                 {/* 날짜 */}
