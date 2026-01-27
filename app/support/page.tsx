@@ -25,6 +25,10 @@ export default function SupportPage() {
       question: "Is it free?",
       answer: "Yes. During this beta period, all episodes are free to read.",
     },
+    {
+      question: "What is the AI Badge?",
+      answer: "This badge is displayed on novels that utilize AI technology in their creation process. We believe in transparency and want you to know exactly how the stories you enjoy are made.",
+    },
   ];
 
   const creatorsQnA: QnAItem[] = [
