@@ -63,16 +63,8 @@ export default function ContinueReadingButton({ novelId }: ContinueReadingButton
             e.currentTarget.style.background = "#243A6E";
           }}
         >
-          Continue Reading (EP {progress.episodeEp} {progress.progress}%)
+          Continue Reading - EP {progress.episodeEp}
         </Link>
-        <span
-          style={{
-            color: "#666",
-            fontSize: "14px",
-          }}
-        >
-          {progress.progress}% read
-        </span>
       </div>
     </div>
   );
