@@ -168,7 +168,7 @@ export default function LibraryPage() {
           fontFamily: '"KoPub Batang", serif',
         }}
       >
-        📚 My Library
+         My Library
       </h1>
 
       {/* 탭 */}
