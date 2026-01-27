@@ -149,7 +149,7 @@ export default function CommentSection({ episodeId }: CommentSectionProps) {
                     >
                         {/* Fallback avatar logic usually goes here */}
                         <img
-                            src={`https://api.dicebear.com/7.x/initials/svg?seed=${comment.username}`}
+                            src={`https://api.dicebear.com/7.x/initials/svg?seed=${comment.username || "Guest"}`}
                             alt={comment.username}
                             style={{ width: "100%", height: "100%", objectFit: "cover" }}
                         />
@@ -159,7 +159,7 @@ export default function CommentSection({ episodeId }: CommentSectionProps) {
                 {/* Content */}
                 <div style={{ flex: 1 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                        <span style={{ fontWeight: 600, color: "#243A6E" }}>{comment.name || comment.username}</span>
+                        <span style={{ fontWeight: 600, color: "#243A6E" }}>{comment.name || comment.username || "Guest"}</span>
                         <span style={{ fontSize: "12px", color: "#888" }}>
                             {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
                         </span>
