@@ -511,8 +511,9 @@ export default function EpisodeReader({
           background: "#fff",
           borderBottom: "1px solid #e5e5e5",
           padding: "16px 24px",
-          position: "sticky",
-          top: 56,
+          position: "fixed", // Changed from sticky to fixed
+          top: 56, // Below global header
+          left: 0,
           zIndex: 50,
           boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
           width: "100%",
@@ -559,7 +560,7 @@ export default function EpisodeReader({
         style={{
           maxWidth: settings.studyMode ? "100%" : "900px",
           margin: "0 auto",
-          padding: "40px 24px",
+          padding: "130px 24px 40px 24px", // Increased top padding from 40px to 130px
         }}
       >
         <div style={{ marginBottom: "32px" }}>
