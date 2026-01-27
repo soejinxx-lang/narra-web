@@ -10,35 +10,35 @@ type QnAItem = {
 export default function SupportPage() {
   const readersQnA: QnAItem[] = [
     {
-      question: "NARRA는 어떤 곳인가요?",
-      answer: "NARRA는 언어의 장벽 없이 전 세계의 웹소설을 즐길 수 있는 글로벌 플랫폼입니다. 한국의 인기 웹소설을 시작으로, 다양한 문화권의 이야기를 가장 편안한 언어로 전달합니다.",
+      question: "What is NARRA?",
+      answer: "NARRA is a global platform where you can enjoy web novels from around the world without language barriers. Starting with popular Korean novels, we share stories from diverse cultures in languages that feel natural to you.",
     },
     {
-      question: "오리지널 배지는 뭔가요?",
-      answer: "다른 플랫폼에서는 연재되지 않고, 오직 NARRA에서만 독점적으로 연재되는 작품에 부여되는 표시입니다. 이 배지가 붙은 작품은 어디서도 본 적 없는 새롭고 특별한 이야기들을 담고 있습니다.",
+      question: "What is the Original Badge?",
+      answer: "This badge indicates works serialized exclusively on NARRA. These stories are unique to our platform and cannot be found anywhere else.",
     },
     {
-      question: "번역 퀄리티는 어떤가요?",
-      answer: "최고의 기술을 활용하되, 결국 완성하는 것은 사람입니다. 저희는 작품 속 고유명사(이름, 지역, 기술명 등)를 사람이 직접 추출하고 고정하는 과정을 거칩니다. 덕분에 장편 연재가 이어져도 주인공 이름이 바뀌거나 엉뚱하게 번역되는 일 없이, 끝까지 몰입해서 읽으실 수 있습니다.",
+      question: "How is the translation quality?",
+      answer: "While we use top-tier technology, the final touch is human. We manually extract and lock proper nouns (names, places, skills, etc.) for every series. This ensures character names and terms remain consistent throughout long stories, allowing you to stay fully immersed.",
     },
     {
-      question: "이용료는 무료인가요?",
-      answer: "현재 베타 서비스 기간 동안은 모든 에피소드를 무료로 감상하실 수 있습니다.",
+      question: "Is it free?",
+      answer: "Yes. During this beta period, all episodes are free to read.",
     },
   ];
 
   const creatorsQnA: QnAItem[] = [
     {
-      question: "제가 쓴 소설도 NARRA에서 연재할 수 있나요?",
-      answer: "물론입니다. 언어 문제는 저희가 해결해 드립니다. 작가님은 오직 재미있는 이야기를 쓰는 데만 집중해 주세요. 내 작품이 영어, 스페인어, 일본어 등 다양한 언어로 번역되어 전 세계 독자들을 만나는 경험, NARRA와 함께라면 가능합니다.",
+      question: "Can I publish my novel on NARRA?",
+      answer: "Absolutely. We handle the language barrier so you can focus on writing great stories. With NARRA, your work can be translated into English, Spanish, Japanese, and more to reach readers worldwide.",
     },
     {
-      question: "수익적인 부분은 어떤가요?",
-      answer: "현재 참여하고 계신 작가님들은 단기적인 수익보다는, 내 작품이 다른 언어권 독자들에게 어떻게 읽히는지, 그리고 번역된 형태로 어떤 반응이 나오는지를 확인해 보고 싶다는 점을 가장 큰 메리트로 꼽으셨습니다. 아직 널리 알려지지 않은 작품이라도, 글로벌 시장에서의 장기적인 가능성과 실험적인 의미를 더 중요하게 생각하시는 분들과 함께하고 있습니다.",
+      question: "What about revenue?",
+      answer: "Our current authors value the opportunity to see how their stories resonate with global readers over immediate short-term profits. We partner with creators who prioritize long-term potential and the experimental value of reaching a new, international audience, even if their work isn't widely known yet.",
     },
     {
-      question: "저작권 문제는 어떻게 되나요?",
-      answer: "작품의 저작권은 전적으로 작가님께 있으며, 번역본 역시 원작자의 권리를 침해하지 않는 범위 내에서만 사용됩니다. 현재 단계에서는 독점 계약이나 권리 양도 같은 것을 전제로 하지 않고, 이후 수익화가 가능한 구조가 만들어질 경우에만 그 시점에서 다시 조건을 협의하는 방향을 생각하고 있습니다.",
+      question: "What about copyright?",
+      answer: "You retain full copyright of your work. Translations are used solely to share your story without infringing on your rights. We do not require exclusive contracts or rights transfers at this stage. Future monetization terms will only be negotiated when a revenue structure is established.",
     },
   ];
 
@@ -121,7 +121,7 @@ export default function SupportPage() {
             Contact
           </h2>
           <p style={{ fontSize: "16px", color: "#444", lineHeight: 1.6, marginBottom: "24px" }}>
-            문의사항이 있으신가요? 아래 이메일로 언제든 연락해 주세요.
+            Have a question or suggestion? Feel free to email us at any time.
           </p>
           <div
             style={{
@@ -145,16 +145,22 @@ export default function SupportPage() {
 
 function AccordionItem({ item }: { item: QnAItem }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       style={{
         border: "1px solid #e5e5e5",
         borderRadius: "8px",
         backgroundColor: "#fff",
         overflow: "hidden",
-        transition: "box-shadow 0.2s",
-        boxShadow: isOpen ? "0 4px 12px rgba(0,0,0,0.05)" : "none",
+        transition: "transform 0.2s, box-shadow 0.2s",
+        transform: isHovered ? "translateY(-2px)" : "translateY(0)",
+        boxShadow: isHovered || isOpen
+          ? "0 4px 12px rgba(0,0,0,0.08)"
+          : "none",
       }}
     >
       <button
@@ -195,7 +201,7 @@ function AccordionItem({ item }: { item: QnAItem }) {
             color: "#555",
             fontSize: "16px",
             lineHeight: 1.7,
-            whiteSpace: "pre-line", // 줄바꿈 지원
+            whiteSpace: "pre-line",
           }}
         >
           {item.answer}
