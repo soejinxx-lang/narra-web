@@ -43,35 +43,37 @@ export default function SupportPage() {
   ];
 
   return (
-    <main style={{ maxWidth: "800px", margin: "0 auto", padding: "48px 24px" }}>
+    <main style={{ maxWidth: "800px", margin: "0 auto", padding: "60px 24px 100px" }}>
       <h1
         style={{
-          fontSize: "36px",
+          fontSize: "42px",
           fontWeight: 600,
-          marginBottom: "48px",
+          marginBottom: "60px",
           color: "#243A6E",
           fontFamily: '"KoPub Batang", serif',
+          letterSpacing: "-0.5px",
         }}
       >
         FAQ & Support
       </h1>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "60px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "80px" }}>
         {/* For Readers */}
         <section>
           <h2
             style={{
-              fontSize: "24px",
-              fontWeight: 600,
-              color: "#333",
+              fontSize: "16px",
+              fontWeight: 700,
+              color: "#243A6E",
               marginBottom: "24px",
-              borderBottom: "2px solid #243A6E",
-              paddingBottom: "12px",
+              letterSpacing: "1px",
+              textTransform: "uppercase",
+              opacity: 0.8,
             }}
           >
             For Readers
           </h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div style={{ display: "flex", flexDirection: "column" }}>
             {readersQnA.map((item, index) => (
               <AccordionItem key={index} item={item} />
             ))}
@@ -82,17 +84,18 @@ export default function SupportPage() {
         <section>
           <h2
             style={{
-              fontSize: "24px",
-              fontWeight: 600,
-              color: "#333",
+              fontSize: "16px",
+              fontWeight: 700,
+              color: "#243A6E",
               marginBottom: "24px",
-              borderBottom: "2px solid #243A6E",
-              paddingBottom: "12px",
+              letterSpacing: "1px",
+              textTransform: "uppercase",
+              opacity: 0.8,
             }}
           >
             For Creators
           </h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div style={{ display: "flex", flexDirection: "column" }}>
             {creatorsQnA.map((item, index) => (
               <AccordionItem key={index} item={item} />
             ))}
@@ -102,37 +105,31 @@ export default function SupportPage() {
         {/* Contact */}
         <section
           style={{
-            marginTop: "20px",
-            padding: "32px",
-            backgroundColor: "#fff",
-            borderRadius: "12px",
-            boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
-            border: "1px solid #eee",
+            marginTop: "40px",
+            borderTop: "1px solid #243A6E",
+            paddingTop: "40px",
           }}
         >
           <h2
             style={{
-              fontSize: "20px",
+              fontSize: "24px",
               fontWeight: 600,
               color: "#243A6E",
               marginBottom: "16px",
+              fontFamily: '"KoPub Batang", serif',
             }}
           >
             Contact
           </h2>
-          <p style={{ fontSize: "16px", color: "#444", lineHeight: 1.6, marginBottom: "24px" }}>
+          <p style={{ fontSize: "16px", color: "#444", lineHeight: 1.6, marginBottom: "16px" }}>
             Have a question or suggestion? Feel free to email us at any time.
           </p>
           <div
             style={{
-              display: "inline-block",
-              padding: "12px 20px",
-              backgroundColor: "#f5f7fa",
-              borderRadius: "8px",
-              fontSize: "16px",
+              fontSize: "18px",
               fontWeight: 500,
               color: "#333",
-              border: "1px solid #e1e4e8",
+              fontFamily: "monospace",
             }}
           >
             narrastudio901@gmail.com
@@ -152,15 +149,9 @@ function AccordionItem({ item }: { item: QnAItem }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
-        border: "1px solid #e5e5e5",
-        borderRadius: "8px",
-        backgroundColor: "#fff",
-        overflow: "hidden",
-        transition: "transform 0.2s, box-shadow 0.2s",
-        transform: isHovered ? "translateY(-2px)" : "translateY(0)",
-        boxShadow: isHovered || isOpen
-          ? "0 4px 12px rgba(0,0,0,0.08)"
-          : "none",
+        borderBottom: "1px solid #e5e5e5",
+        backgroundColor: "transparent",
+        transition: "all 0.3s ease",
       }}
     >
       <button
@@ -168,45 +159,58 @@ function AccordionItem({ item }: { item: QnAItem }) {
         style={{
           width: "100%",
           textAlign: "left",
-          padding: "20px 24px",
+          padding: "24px 12px",
           background: "none",
           border: "none",
-          fontSize: "17px",
-          fontWeight: 500,
-          color: "#333",
           cursor: "pointer",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          lineHeight: 1.5,
+          group: "group", // Note: inline styles don't support group, using logic instead
         }}
       >
-        <span>Q. {item.question}</span>
+        <span
+          style={{
+            fontSize: "20px",
+            fontWeight: 500,
+            color: isHovered || isOpen ? "#243A6E" : "#171717",
+            fontFamily: '"KoPub Batang", serif', // Use serif for questions
+            transition: "color 0.2s",
+          }}
+        >
+          Q. {item.question}
+        </span>
         <span
           style={{
             transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-            transition: "transform 0.2s",
-            color: "#888",
-            marginLeft: "16px",
+            transition: "transform 0.3s ease",
+            color: isHovered || isOpen ? "#243A6E" : "#999",
+            marginLeft: "24px",
             fontSize: "14px",
           }}
         >
           ▼
         </span>
       </button>
-      {isOpen && (
+      <div
+        style={{
+          maxHeight: isOpen ? "500px" : "0",
+          overflow: "hidden",
+          transition: "max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.3s",
+        }}
+      >
         <div
           style={{
-            padding: "0 24px 24px 24px",
-            color: "#555",
+            padding: "0 12px 32px 12px",
+            color: "#444",
             fontSize: "16px",
-            lineHeight: 1.7,
+            lineHeight: 1.8,
             whiteSpace: "pre-line",
           }}
         >
           {item.answer}
         </div>
-      )}
+      </div>
     </div>
   );
 }
