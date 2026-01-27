@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getNovelProgress, getCurrentUserId } from "@/app/utils/readingProgress";
+import { getEpisodeProgress, getCurrentUserId } from "@/app/utils/readingProgress";
 
 type EpisodeProgressProps = {
   novelId: string;
@@ -18,9 +18,11 @@ export default function EpisodeProgress({ novelId, episodeEp }: EpisodeProgressP
       return;
     }
 
-    const novelProgress = getNovelProgress(userId, novelId);
-    if (novelProgress && novelProgress.episodeEp === episodeEp && novelProgress.progress > 0) {
-      setProgress(novelProgress.progress);
+    // 변경된 함수 사용: 에피소드별 진도율 가져오기
+    const epProgress = getEpisodeProgress(userId, novelId, episodeEp);
+
+    if (epProgress && epProgress > 0) {
+      setProgress(epProgress);
     } else {
       setProgress(null);
     }
