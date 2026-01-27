@@ -8,7 +8,7 @@ type Comment = {
     content: string;
     username: string;
     name: string;
-    liks: number;
+    likes: number;
     created_at: string;
     parent_id: string | null;
     replies?: Comment[];
