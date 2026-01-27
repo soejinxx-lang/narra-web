@@ -22,7 +22,7 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
   useEffect(() => {
     // 클라이언트에서만 실행되도록 마운트 상태 설정
     setMounted(true);
-    
+
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
@@ -34,11 +34,11 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
   useEffect(() => {
     // 마운트되지 않았으면 실행하지 않음
     if (!mounted) return;
-    
+
     // 세션 기반 클릭한 소설 목록 가져오기 (로그인 여부와 관계없이)
     const sessionClicked = getSessionClickedNovels();
     setSessionClickedNovels(sessionClicked);
-    
+
     const userId = getCurrentUserId();
     if (userId) {
       // 로그인한 사용자: 읽은 진도 가져오기
@@ -61,17 +61,17 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
 
     // 작품 정보가 없으면 가져오기
     if (novels.length === 0) {
-      fetchNovels().then(setNovels).catch(() => {});
+      fetchNovels().then(setNovels).catch(() => { });
     }
-    
+
     // sessionStorage 변경 감지 (다른 탭에서 클릭해도 반영)
     const handleStorageChange = () => {
       const updated = getSessionClickedNovels();
       setSessionClickedNovels(updated);
     };
-    
+
     window.addEventListener("storage", handleStorageChange);
-    
+
     // 주기적으로 세션 클릭 목록 확인 (같은 탭 내에서도)
     const interval = setInterval(() => {
       const updated = getSessionClickedNovels();
@@ -79,7 +79,7 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
         setSessionClickedNovels(updated);
       }
     }, 1000);
-    
+
     return () => {
       window.removeEventListener("storage", handleStorageChange);
       clearInterval(interval);
@@ -108,20 +108,20 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
   const sessionNovelsWithInfo = useMemo(() => {
     const userId = getCurrentUserId();
     const loggedInNovelIds = new Set(readingNovels.map(r => r.novelId));
-    
+
     // 세션에서 읽은 진도 가져오기
     const sessionProgress = getSessionReadingProgress();
-    
+
     return sessionClickedNovels
       .map((clicked) => {
         // 로그인한 사용자의 경우 이미 진도가 있는 소설은 제외
         if (userId && loggedInNovelIds.has(clicked.novelId)) {
           return null;
         }
-        
+
         const novel = novels.find((n) => n.id === clicked.novelId);
         if (!novel) return null;
-        
+
         // 세션에서 읽은 진도가 있는지 확인
         const sessionData = sessionProgress[clicked.novelId];
         if (sessionData && sessionData.progress > 0) {
@@ -133,7 +133,7 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
             hasProgress: true,
           };
         }
-        
+
         return {
           ...novel,
           episodeEp: null,
@@ -150,7 +150,7 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
   const readingNovelsWithInfo = useMemo(() => {
     const novelIds = new Set<string>();
     const uniqueNovels: any[] = [];
-    
+
     // 로그인한 사용자의 진도 있는 소설 먼저 추가
     for (const novel of loggedInNovelsWithInfo) {
       if (novel && !novelIds.has(novel.id)) {
@@ -158,7 +158,7 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
         uniqueNovels.push(novel);
       }
     }
-    
+
     // 세션 클릭한 소설 추가 (중복 제외)
     for (const novel of sessionNovelsWithInfo) {
       if (novel && !novelIds.has(novel.id)) {
@@ -166,10 +166,10 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
         uniqueNovels.push(novel);
       }
     }
-    
+
     // 최근 읽은 순으로 정렬
     const sorted = uniqueNovels.sort((a, b) => (b?.lastReadAt || 0) - (a?.lastReadAt || 0));
-    
+
     // showAll이 false면 최대 3개만, true면 모두 표시
     return showAll ? sorted : sorted.slice(0, 3);
   }, [loggedInNovelsWithInfo, sessionNovelsWithInfo, showAll]);
@@ -221,7 +221,7 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
           </button>
         )}
       </div>
-      
+
       {!mounted ? (
         <div
           style={{
@@ -253,17 +253,17 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
           }}
         >
           {readingNovelsWithInfo.map((novel: any, index: number) => (
-            <div 
-              key={novel.id} 
-              style={{ 
-                display: "flex", 
-                flexDirection: "row", 
-                gap: "0.7cm", 
+            <div
+              key={novel.id}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                gap: "0.7cm",
                 alignItems: "flex-start",
                 paddingTop: isMobile ? "8px" : "12px",
                 paddingLeft: isMobile ? "8px" : "12px",
                 paddingBottom: isMobile ? "8px" : "12px",
-                paddingRight: novel.hasProgress && novel.progress > 0 ? "0.7cm" : (isMobile ? "8px" : "12px"),
+                paddingRight: novel.hasProgress && novel.progress > 0 ? "0.1cm" : (isMobile ? "8px" : "12px"),
                 borderRight: (index + 1) % (isMobile ? 2 : 3) !== 0 ? "1px solid #e5e5e5" : "none",
                 borderBottom: index < readingNovelsWithInfo.length - (isMobile ? 2 : 3) ? "1px solid #e5e5e5" : "none",
               }}
@@ -277,7 +277,7 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
                   <NovelCard novel={novel} />
                 </Link>
               </div>
-              
+
               {/* 진도 정보 표시 (NovelCard 옆) */}
               {novel.hasProgress && novel.progress > 0 ? (
                 <div
