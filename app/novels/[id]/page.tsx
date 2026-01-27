@@ -165,7 +165,7 @@ export default async function Page({ params }: PageProps) {
 
               <div style={{ display: "flex", gap: "16px", fontSize: "13px", color: "#888" }}>
                 {/* 조회수 (Optional) */}
-                {ep.views ? (
+                {ep.views != null ? (
                   <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                     👁 {Number(ep.views).toLocaleString()}
                   </span>
