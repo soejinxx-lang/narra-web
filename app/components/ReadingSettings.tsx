@@ -59,6 +59,7 @@ const languages = [
   { code: "fr", name: "French" },
   { code: "de", name: "German" },
   { code: "pt", name: "Portuguese" },
+  { code: "id", name: "Indonesian" },
 ];
 
 export default function ReadingSettings({
@@ -422,7 +423,7 @@ export default function ReadingSettings({
                   <span>Study Mode</span>
                 </button>
               </div>
-              
+
               {settings.studyMode ? (
                 <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
                   <select
