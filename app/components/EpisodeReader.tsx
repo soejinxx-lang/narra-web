@@ -604,7 +604,6 @@ export default function EpisodeReader({
               style={{
                 flex: 1,
                 lineHeight: settings.lineHeight,
-                whiteSpace: "pre-wrap",
                 fontSize: `${settings.fontSize}px`,
                 fontFamily: settings.fontFamily,
                 color: settings.backgroundColor === "#1a1a1a" ? "#e0e0e0" : "#333",
@@ -612,25 +611,22 @@ export default function EpisodeReader({
                 paddingRight: "12px",
                 borderRight: "1px solid #e5e5e5",
               }}
-            >
-              {getContent(settings.leftLanguage || "ko")}
-            </div>
+              dangerouslySetInnerHTML={{ __html: getContent(settings.leftLanguage || "ko") }}
+            />
 
             {/* ?ㅻⅨ履← 몄뼱 */}
             <div
               style={{
                 flex: 1,
                 lineHeight: settings.lineHeight,
-                whiteSpace: "pre-wrap",
                 fontSize: `${settings.fontSize}px`,
                 fontFamily: settings.fontFamily,
                 color: settings.backgroundColor === "#1a1a1a" ? "#e0e0e0" : "#333",
                 minHeight: "400px",
                 paddingLeft: "12px",
               }}
-            >
-              {getContent(settings.rightLanguage || "en")}
-            </div>
+              dangerouslySetInnerHTML={{ __html: getContent(settings.rightLanguage || "en") }}
+            />
           </div>
         ) : (
           /* Normal Mode: ?⑥씪 ?몄뼱 */
@@ -638,15 +634,13 @@ export default function EpisodeReader({
             ref={contentRef}
             style={{
               lineHeight: settings.lineHeight,
-              whiteSpace: "pre-wrap",
               fontSize: `${settings.fontSize}px`,
               fontFamily: settings.fontFamily,
               color: settings.backgroundColor === "#1a1a1a" ? "#e0e0e0" : "#333",
               minHeight: "400px",
             }}
-          >
-            {getContent(singleLanguage)}
-          </div>
+            dangerouslySetInnerHTML={{ __html: getContent(singleLanguage) }}
+          />
         )}
 
         {/* ?ㅻ퉬寃뚯씠← ?곸뿭 */}
