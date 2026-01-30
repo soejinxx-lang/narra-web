@@ -64,7 +64,7 @@ export default function EpisodeReader({
         : "preferredLanguage";
 
       const saved = localStorage.getItem(storageKey);
-      if (saved && ["ko", "en", "ja", "zh", "es", "fr", "de", "pt"].includes(saved)) {
+      if (saved && ["ko", "en", "ja", "zh", "es", "fr", "de", "pt", "id"].includes(saved)) {
         return saved as Language;
       }
     }
