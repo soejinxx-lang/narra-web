@@ -182,7 +182,7 @@ export default function ReadingSettings({
               <input
                 type="range"
                 min="1.4"
-                max="2.5"
+                max="3.5"
                 step="0.1"
                 value={settings.lineHeight}
                 onChange={(e) => updateSetting("lineHeight", parseFloat(e.target.value))}
