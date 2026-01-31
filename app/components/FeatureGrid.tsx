@@ -1,8 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export default function FeatureGrid() {
+  const [shouldAnimateQnA, setShouldAnimateQnA] = useState(false);
+
+  useEffect(() => {
+    // Check if this is the first visit
+    if (typeof window !== "undefined") {
+      const hasVisited = localStorage.getItem("hasVisitedNARRA");
+
+      if (!hasVisited) {
+        // First visit - trigger animation
+        setShouldAnimateQnA(true);
+        localStorage.setItem("hasVisitedNARRA", "true");
+      }
+    }
+  }, []);
+
   const features = [
     { title: "Author", href: "/authors" },
     { title: "Daily Check-in", href: "/daily-checkin" },
@@ -67,6 +83,9 @@ export default function FeatureGrid() {
                 alignItems: "center",
                 justifyContent: "center",
                 minHeight: "0",
+                ...(feature.title === "QNA" && shouldAnimateQnA ? {
+                  animation: "rollQnA 2s ease-in-out forwards",
+                } : {}),
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-2px)";

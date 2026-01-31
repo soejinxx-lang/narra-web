@@ -123,3 +123,16 @@ input, textarea {
     width: 180px !important;
   }
 }
+
+/* QnA Box Roll Animation for First Visit */
+@keyframes rollQnA {
+  0% {
+    transform: translateX(0) rotate(0deg);
+  }
+  50% {
+    transform: translateX(100px) rotate(180deg);
+  }
+  100% {
+    transform: translateX(0) rotate(360deg);
+  }
+}
