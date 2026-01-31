@@ -112,9 +112,28 @@ export default function EpisodeReader({
         const parsed = JSON.parse(saved);
         setSettings(parsed);
       } catch (e) {
-        // 湲곕낯媛← ъ슜
+        // 기본값 사용
       }
     }
+
+    // Smart Copy: Add copyright notice to copied text
+    const handleCopy = (e: ClipboardEvent) => {
+      const selection = window.getSelection();
+      if (!selection) return;
+
+      const copyText = selection.toString();
+      if (copyText.length > 0) {
+        const footer = "\n\n© narra.kr - AI 학습 및 무단 도용을 금지합니다.";
+        e.clipboardData?.setData('text/plain', copyText + footer);
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener('copy', handleCopy);
+
+    return () => {
+      document.removeEventListener('copy', handleCopy);
+    };
 
 
 
