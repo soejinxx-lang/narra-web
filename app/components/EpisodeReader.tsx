@@ -448,14 +448,21 @@ export default function EpisodeReader({
       ];
 
       const isChatbotResponse = chatbotPatterns.some(
-        (pattern) => translation.content.includes(pattern)
+        (pattern) => translation.content.trim() === pattern
       );
 
       if (isChatbotResponse) {
-        return `[Translation pending...]`;
+        return `[Translation error detected. Please retry translation.]`;
       }
 
-      return translation.content;
+      // Convert \n\n to <p> tags for proper HTML rendering
+      const paragraphs = translation.content
+        .split('\n\n')
+        .filter(p => p.trim())
+        .map(p => `<p>${p.trim()}</p>`)
+        .join('');
+
+      return paragraphs || translation.content;
     }
 
     // ?쒓뎅?대뒗 湲곕낯 episode ?ъ슜
