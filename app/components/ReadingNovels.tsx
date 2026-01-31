@@ -263,7 +263,7 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
                 paddingTop: isMobile ? "6px" : "8px",
                 paddingLeft: isMobile ? "6px" : "8px",
                 paddingBottom: isMobile ? "6px" : "8px",
-                paddingRight: isMobile ? "6px" : "8px",
+                paddingRight: "0",
                 borderRight: (index + 1) % (isMobile ? 2 : 3) !== 0 ? "1px solid #e5e5e5" : "none",
                 borderBottom: index < readingNovelsWithInfo.length - (isMobile ? 2 : 3) ? "1px solid #e5e5e5" : "none",
               }}
