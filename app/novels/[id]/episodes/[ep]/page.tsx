@@ -29,11 +29,12 @@ export default async function Page({
     notFound();
   }
 
-  // 한국어 콘텐츠 가져오기 (기본)
-  const koContent = await fetchEpisodeContent(id, ep, "ko").catch(() => null);
+  // 원본 언어 콘텐츠 가져오기 (novel의 source_language 사용)
+  const sourceLanguage = novel?.source_language || "ko";
+  const sourceContent = await fetchEpisodeContent(id, ep, sourceLanguage).catch(() => null);
   // Ensure ID is preserved from the original episode object
-  const episodeWithKo = koContent
-    ? { ...koContent, ...episode, id: episode.id, ep: episode.ep }
+  const episodeWithSource = sourceContent
+    ? { ...sourceContent, ...episode, id: episode.id, ep: episode.ep }
     : episode;
 
   const currentIndex = allEpisodes.findIndex((e: any) => String(e.ep) === String(ep));
@@ -42,7 +43,7 @@ export default async function Page({
 
   return (
     <EpisodeReader
-      episode={episodeWithKo}
+      episode={episodeWithSource}
       novel={novel}
       novelId={id}
       prevEpisode={prevEpisode}
