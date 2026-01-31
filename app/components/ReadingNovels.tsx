@@ -296,30 +296,45 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
                       .slice(0, 4);
 
                     return recentEpisodes.map(([ep, data]: any) => (
-                      <div
+                      <Link
                         key={ep}
-                        style={{
-                          width: "3cm",
-                          height: "1.8cm",
-                          padding: "2px 4px",
-                          background: "#fff",
-                          borderRadius: "0px",
-                          border: "1px solid #e5e5e5",
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          gap: "2px",
-                          boxSizing: "border-box",
-                        }}
+                        href={`/novels/${novel.id}/episodes/${ep}`}
+                        style={{ textDecoration: "none", color: "inherit" }}
                       >
-                        <div style={{ fontSize: "15px", color: "#666", lineHeight: 1.2, whiteSpace: "nowrap" }}>
-                          EP {ep}
+                        <div
+                          style={{
+                            width: "3cm",
+                            height: "1.8cm",
+                            padding: "2px 4px",
+                            background: "#fff",
+                            borderRadius: "0px",
+                            border: "1px solid #e5e5e5",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: "2px",
+                            boxSizing: "border-box",
+                            cursor: "pointer",
+                            transition: "all 0.2s",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = "#f8f9fa";
+                            e.currentTarget.style.borderColor = "#243A6E";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = "#fff";
+                            e.currentTarget.style.borderColor = "#e5e5e5";
+                          }}
+                        >
+                          <div style={{ fontSize: "15px", color: "#666", lineHeight: 1.2, whiteSpace: "nowrap" }}>
+                            EP {ep}
+                          </div>
+                          <div style={{ fontSize: "15px", color: "#666", fontWeight: 500, lineHeight: 1.2, whiteSpace: "nowrap" }}>
+                            {data.progress}%
+                          </div>
                         </div>
-                        <div style={{ fontSize: "15px", color: "#666", fontWeight: 500, lineHeight: 1.2, whiteSpace: "nowrap" }}>
-                          {data.progress}%
-                        </div>
-                      </div>
+                      </Link>
                     ));
                   })()}
                 </div>
