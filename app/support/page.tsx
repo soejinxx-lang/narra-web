@@ -46,7 +46,7 @@ export default function SupportPage() {
     },
     {
       question: "Is copyright protection better than other sites?",
-      answer: "To be honest, it's impossible to prevent all unauthorized copying through technology alone. However, NARRA adopts NoAI tags as standard and implements a system where the source is automatically embedded when text is copied, allowing us to track your rights. We protect authors not just through technology, but through policy—standing by you until the end.",
+      answer: "Honestly? No platform can stop every scraper. But here's what we do: NoAI tags block corporate crawlers, and when someone copies text, our source URL gets embedded automatically. If your work shows up elsewhere, you'll have proof it came from NARRA. We protect you through policy, not just code.",
     },
   ];
 
