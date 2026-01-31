@@ -247,8 +247,8 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
       ) : (
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+            display: "flex",
+            flexWrap: "wrap",
             gap: "0",
           }}
         >
