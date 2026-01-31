@@ -151,9 +151,9 @@ export default function EpisodeReader({
       let languages: Language[] = [];
       for (const key of languageKeys) {
         const saved = localStorage.getItem(key);
-        if (saved) {
+        if (saved !== null) {
           try {
-            const parsed = JSON.parse(saved);
+            const parsed = JSON.parse(saved as string);
             if (Array.isArray(parsed) && parsed.length > 0) {
               languages = parsed;
               break;
@@ -197,7 +197,7 @@ export default function EpisodeReader({
       if (!currentUser) return; // 濡쒓렇?명븯吏 ?딆? 寃쎌슦 移댁슫?명븯吏 ?딆쓬
 
       try {
-        const user = JSON.parse(currentUser);
+        const user = currentUser ? JSON.parse(currentUser as string) : null;
         const userId = user.id;
         // 誘멸뎅 ?숇? ?쒓컙 湲곗? ?ㅻ뒛 ?좎쭨
         const usEasternDate = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));

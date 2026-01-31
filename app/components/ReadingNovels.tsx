@@ -12,7 +12,7 @@ type ReadingNovelsProps = {
 };
 
 export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
-  const [readingNovels, setReadingNovels] = useState<Array<{ novelId: string; episodeEp: string; progress: number; lastReadAt: number }>>([]);
+  const [readingNovels, setReadingNovels] = useState<Array<{ novelId: string; episodeEp: string; progress: number; lastReadAt: number; history?: Record<string, { progress: number; scrollPosition?: number; lastReadAt: number }> }>>([]);
   const [sessionClickedNovels, setSessionClickedNovels] = useState<Array<{ novelId: string; lastClickedAt: number }>>([]);
   const [novels, setNovels] = useState<any[]>(allNovels);
   const [isMobile, setIsMobile] = useState(false);
@@ -97,6 +97,7 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
           episodeEp: reading.episodeEp,
           progress: reading.progress,
           lastReadAt: reading.lastReadAt,
+          history: reading.history || {},
           hasProgress: true,
         };
       })
@@ -278,30 +279,49 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
                 </Link>
               </div>
 
-              {/* 진도 정보 표시 (NovelCard 옆) */}
+              {/* 진도 정보 표시 (NovelCard 옆) - 최근 4개 에피소드 */}
               {novel.hasProgress && novel.progress > 0 ? (
                 <div
                   style={{
-                    width: "3cm",
-                    height: "1.8cm",
-                    padding: "2px 4px",
-                    background: "#fff",
-                    borderRadius: "6px",
-                    border: "1px solid #e5e5e5",
                     display: "flex",
                     flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "2px",
-                    boxSizing: "border-box",
+                    gap: "6px",
                   }}
                 >
-                  <div style={{ fontSize: "15px", color: "#666", lineHeight: 1.2, whiteSpace: "nowrap" }}>
-                    EP {novel.episodeEp}
-                  </div>
-                  <div style={{ fontSize: "15px", color: "#666", fontWeight: 500, lineHeight: 1.2, whiteSpace: "nowrap" }}>
-                    {novel.progress}%
-                  </div>
+                  {(() => {
+                    // history에서 최근 4개 에피소드 가져오기
+                    const history = novel.history || {};
+                    const recentEpisodes = Object.entries(history)
+                      .sort(([, a]: any, [, b]: any) => b.lastReadAt - a.lastReadAt)
+                      .slice(0, 4);
+
+                    return recentEpisodes.map(([ep, data]: any) => (
+                      <div
+                        key={ep}
+                        style={{
+                          width: "3cm",
+                          height: "1.8cm",
+                          padding: "2px 4px",
+                          background: "#fff",
+                          borderRadius: "0px",
+                          border: "1px solid #e5e5e5",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "2px",
+                          boxSizing: "border-box",
+                        }}
+                      >
+                        <div style={{ fontSize: "15px", color: "#666", lineHeight: 1.2, whiteSpace: "nowrap" }}>
+                          EP {ep}
+                        </div>
+                        <div style={{ fontSize: "15px", color: "#666", fontWeight: 500, lineHeight: 1.2, whiteSpace: "nowrap" }}>
+                          {data.progress}%
+                        </div>
+                      </div>
+                    ));
+                  })()}
                 </div>
               ) : null}
             </div>
