@@ -458,8 +458,8 @@ export default function EpisodeReader({
       // Convert \n\n to <p> tags for proper HTML rendering
       const paragraphs = translation.content
         .split('\n\n')
-        .filter(p => p.trim())
-        .map(p => `<p>${p.trim()}</p>`)
+        .filter((p: string) => p.trim())
+        .map((p: string) => `<p>${p.trim()}</p>`)
         .join('');
 
       return paragraphs || translation.content;
