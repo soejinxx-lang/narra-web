@@ -86,7 +86,8 @@ button {
 }
 
 /* 입력 필드 기본 스타일 */
-input, textarea {
+input,
+textarea {
   font-family: inherit;
 }
 
@@ -106,20 +107,20 @@ input, textarea {
     height: 500px !important;
   }
 
-  .novel-carousel > div {
+  .novel-carousel>div {
     width: 400px !important;
     height: 400px !important;
   }
 
-  .novel-carousel > div > div {
+  .novel-carousel>div>div {
     width: 200px !important;
   }
 
-  .novel-carousel > div > div[style*="315px"] {
+  .novel-carousel>div>div[style*="315px"] {
     width: 200px !important;
   }
 
-  .novel-carousel > div > div[style*="280px"] {
+  .novel-carousel>div>div[style*="280px"] {
     width: 180px !important;
   }
 }
@@ -129,10 +130,12 @@ input, textarea {
   0% {
     transform: translateX(0) rotate(0deg);
   }
+
   50% {
     transform: translateX(100px) rotate(180deg);
   }
+
   100% {
-    transform: translateX(0) rotate(360deg);
+    transform: translateX(0) rotate(0deg);
   }
 }
