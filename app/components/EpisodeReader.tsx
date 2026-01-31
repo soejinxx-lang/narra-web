@@ -475,14 +475,17 @@ export default function EpisodeReader({
         return `[Translation error detected. Please retry translation.]`;
       }
 
+      // First, replace literal \n strings with actual newlines
+      let processedContent = translation.content.replace(/\\n/g, '\n');
+
       // Convert \n\n to <p> tags for proper HTML rendering
-      const paragraphs = translation.content
+      const paragraphs = processedContent
         .split('\n\n')
         .filter((p: string) => p.trim())
-        .map((p: string) => `<p>${p.trim()}</p>`)
+        .map((p: string) => `<p>${p.trim().replace(/\n/g, '<br>')}</p>`)
         .join('');
 
-      return paragraphs || translation.content;
+      return paragraphs || processedContent;
     }
 
     // ?쒓뎅?대뒗 湲곕낯 episode ?ъ슜
