@@ -258,12 +258,12 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
               style={{
                 display: "flex",
                 flexDirection: "row",
-                gap: "12px",
+                gap: "8px",
                 alignItems: "flex-start",
-                paddingTop: isMobile ? "8px" : "12px",
-                paddingLeft: isMobile ? "8px" : "12px",
-                paddingBottom: isMobile ? "8px" : "12px",
-                paddingRight: novel.hasProgress && novel.progress > 0 ? "0.1cm" : (isMobile ? "8px" : "12px"),
+                paddingTop: isMobile ? "6px" : "8px",
+                paddingLeft: isMobile ? "6px" : "8px",
+                paddingBottom: isMobile ? "6px" : "8px",
+                paddingRight: isMobile ? "6px" : "8px",
                 borderRight: (index + 1) % (isMobile ? 2 : 3) !== 0 ? "1px solid #e5e5e5" : "none",
                 borderBottom: index < readingNovelsWithInfo.length - (isMobile ? 2 : 3) ? "1px solid #e5e5e5" : "none",
               }}
