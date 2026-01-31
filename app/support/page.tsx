@@ -44,6 +44,10 @@ export default function SupportPage() {
       question: "What about copyright?",
       answer: "You retain full copyright of your work. Translations are used solely to share your story without infringing on your rights. We do not require exclusive contracts or rights transfers at this stage. Future monetization terms will only be negotiated when a revenue structure is established.",
     },
+    {
+      question: "Is copyright protection better than other sites?",
+      answer: "To be honest, it's impossible to prevent all unauthorized copying through technology alone. However, NARRA adopts NoAI tags as standard and implements a system where the source is automatically embedded when text is copied, allowing us to track your rights. We protect authors not just through technology, but through policy—standing by you until the end.",
+    },
   ];
 
   return (
