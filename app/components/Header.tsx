@@ -180,7 +180,7 @@ export default function Header() {
             { href: "/library", label: "My Library", requireLogin: true },
             { href: "/guide", label: "Guide" },
             { href: "/notes", label: "Notes" },
-            { href: "/support", label: "Support" },
+            { href: "/settings", label: "Settings" },
           ].filter((item) => !item.requireLogin || user).map((item) => (
             <Link
               key={item.href}

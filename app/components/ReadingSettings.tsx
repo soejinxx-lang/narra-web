@@ -124,14 +124,15 @@ export default function ReadingSettings({
           padding: "10px 16px",
           borderRadius: "8px",
           cursor: "pointer",
-          fontSize: "14px",
-          fontWeight: 500,
+          fontSize: "16px",
+          fontWeight: 600,
           display: "flex",
           alignItems: "center",
           gap: "0",
         }}
+        title="Reading Settings"
       >
-        Settings
+        Aa
       </button>
 
       {isOpen && (
