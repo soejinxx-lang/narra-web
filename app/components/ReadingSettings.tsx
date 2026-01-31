@@ -390,12 +390,11 @@ export default function ReadingSettings({
                         cursor: "pointer",
                       }}
                     >
-                      {(availableLanguages || languages.map((lang) => lang.code)).map((code) => {
-                        const name = languages.find((lang) => lang.code === code)?.name || code.toUpperCase();
-                        const isUnavailable = unavailableLanguages?.has(code);
+                      {languages.map((lang) => {
+                        const isUnavailable = unavailableLanguages?.has(lang.code);
                         return (
-                          <option key={code} value={code} disabled={isUnavailable}>
-                            {name}
+                          <option key={lang.code} value={lang.code} disabled={isUnavailable}>
+                            {lang.name}
                             {isUnavailable ? " (Unavailable)" : ""}
                           </option>
                         );
