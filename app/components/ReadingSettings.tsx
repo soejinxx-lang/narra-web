@@ -355,31 +355,83 @@ export default function ReadingSettings({
               <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: 500 }}>
                 Reading Mode
               </label>
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              {/* Tab-style buttons */}
+              <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
                 <button
                   onClick={() => updateSetting("studyMode", false)}
                   style={{
+                    flex: 1,
                     padding: "10px 12px",
-                    border: `2px solid ${!settings.studyMode ? "#243A6E" : "#e5e5e5"}`,
+                    border: "none",
                     borderRadius: "6px",
-                    background: !settings.studyMode ? "#f0f4ff" : "#fff",
-                    color: "#333",
+                    background: !settings.studyMode ? "#243A6E" : "#f5f5f5",
+                    color: !settings.studyMode ? "#fff" : "#666",
                     cursor: "pointer",
                     fontSize: "13px",
                     fontWeight: 500,
-                    textAlign: "left",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
+                    transition: "all 0.2s",
                   }}
                 >
-                  <span>Normal</span>
+                  Normal
                 </button>
-                {!settings.studyMode && onSingleLanguageChange && (
-                  <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                <button
+                  onClick={() => updateSetting("studyMode", true)}
+                  style={{
+                    flex: 1,
+                    padding: "10px 12px",
+                    border: "none",
+                    borderRadius: "6px",
+                    background: settings.studyMode ? "#243A6E" : "#f5f5f5",
+                    color: settings.studyMode ? "#fff" : "#666",
+                    cursor: "pointer",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    transition: "all 0.2s",
+                  }}
+                >
+                  Study Mode
+                </button>
+              </div>
+
+              {/* Language selection based on mode */}
+              {!settings.studyMode && onSingleLanguageChange ? (
+                <div>
+                  <label style={{ display: "block", marginBottom: "6px", fontSize: "12px", color: "#666" }}>
+                    Language
+                  </label>
+                  <select
+                    value={singleLanguage || "ko"}
+                    onChange={(e) => onSingleLanguageChange(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "8px 12px",
+                      borderRadius: "6px",
+                      border: "1px solid #e5e5e5",
+                      background: "#fff",
+                      fontSize: "13px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {languages.map((lang) => {
+                      const isUnavailable = unavailableLanguages?.has(lang.code);
+                      return (
+                        <option key={lang.code} value={lang.code} disabled={isUnavailable}>
+                          {lang.name}
+                          {isUnavailable ? " (Unavailable)" : ""}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+              ) : settings.studyMode ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <div>
+                    <label style={{ display: "block", marginBottom: "6px", fontSize: "12px", color: "#666" }}>
+                      Left Language
+                    </label>
                     <select
-                      value={singleLanguage || "ko"}
-                      onChange={(e) => onSingleLanguageChange(e.target.value)}
+                      value={settings.leftLanguage || "ko"}
+                      onChange={(e) => updateSetting("leftLanguage", e.target.value)}
                       style={{
                         width: "100%",
                         padding: "8px 12px",
@@ -390,79 +442,37 @@ export default function ReadingSettings({
                         cursor: "pointer",
                       }}
                     >
-                      {languages.map((lang) => {
-                        const isUnavailable = unavailableLanguages?.has(lang.code);
-                        return (
-                          <option key={lang.code} value={lang.code} disabled={isUnavailable}>
-                            {lang.name}
-                            {isUnavailable ? " (Unavailable)" : ""}
-                          </option>
-                        );
-                      })}
+                      {languages.map((lang) => (
+                        <option key={lang.code} value={lang.code}>
+                          {lang.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
-                )}
-                <button
-                  onClick={() => updateSetting("studyMode", true)}
-                  style={{
-                    padding: "10px 12px",
-                    border: `2px solid ${settings.studyMode ? "#243A6E" : "#e5e5e5"}`,
-                    borderRadius: "6px",
-                    background: settings.studyMode ? "#f0f4ff" : "#fff",
-                    color: "#333",
-                    cursor: "pointer",
-                    fontSize: "13px",
-                    fontWeight: 500,
-                    textAlign: "left",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  <span>Study Mode</span>
-                </button>
-              </div>
-
-              {settings.studyMode ? (
-                <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <select
-                    value={settings.leftLanguage || "ko"}
-                    onChange={(e) => updateSetting("leftLanguage", e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "8px 12px",
-                      borderRadius: "6px",
-                      border: "1px solid #e5e5e5",
-                      background: "#fff",
-                      fontSize: "13px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {languages.map((lang) => (
-                      <option key={lang.code} value={lang.code}>
-                        {lang.name}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    value={settings.rightLanguage || "en"}
-                    onChange={(e) => updateSetting("rightLanguage", e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "8px 12px",
-                      borderRadius: "6px",
-                      border: "1px solid #e5e5e5",
-                      background: "#fff",
-                      fontSize: "13px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {languages.map((lang) => (
-                      <option key={lang.code} value={lang.code}>
-                        {lang.name}
-                      </option>
-                    ))}
-                  </select>
+                  <div>
+                    <label style={{ display: "block", marginBottom: "6px", fontSize: "12px", color: "#666" }}>
+                      Right Language
+                    </label>
+                    <select
+                      value={settings.rightLanguage || "en"}
+                      onChange={(e) => updateSetting("rightLanguage", e.target.value)}
+                      style={{
+                        width: "100%",
+                        padding: "8px 12px",
+                        borderRadius: "6px",
+                        border: "1px solid #e5e5e5",
+                        background: "#fff",
+                        fontSize: "13px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {languages.map((lang) => (
+                        <option key={lang.code} value={lang.code}>
+                          {lang.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               ) : null}
             </div>
