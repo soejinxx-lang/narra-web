@@ -113,7 +113,7 @@ export default function Header() {
                   background: "#243A6E",
                   color: "#fff",
                   border: "none",
-                  borderRadius: "6px",
+                  borderRadius: "0",
                   fontSize: "12px",
                   cursor: "pointer",
                   fontWeight: 500,

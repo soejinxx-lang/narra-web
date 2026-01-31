@@ -263,7 +263,9 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
                 paddingTop: isMobile ? "8px" : "12px",
                 paddingLeft: isMobile ? "8px" : "12px",
                 paddingBottom: isMobile ? "8px" : "12px",
-                paddingRight: isMobile ? "8px" : "12px",
+                paddingRight: novel.hasProgress && novel.progress > 0 ? "0.1cm" : (isMobile ? "8px" : "12px"),
+                borderRight: (index + 1) % (isMobile ? 2 : 3) !== 0 ? "1px solid #e5e5e5" : "none",
+                borderBottom: index < readingNovelsWithInfo.length - (isMobile ? 2 : 3) ? "1px solid #e5e5e5" : "none",
               }}
             >
               {/* NovelCard */}
