@@ -48,6 +48,18 @@ export default function SupportPage() {
       question: "Is copyright protection better than other sites?",
       answer: "Honestly? No platform can stop every scraper. But here's what we do: NoAI tags block corporate crawlers, and when someone copies text, our source URL gets embedded automatically. If your work shows up elsewhere, you'll have proof it came from NARRA. We protect you through policy, not just code.",
     },
+    {
+      question: "Why 9 languages? Google Translate exists.",
+      answer: "I'm a web novel reader myself. Generic translators miss the nuances—they don't get genre fiction. The way a romance builds tension, or how a fantasy world feels real... that's lost when you just run it through Google Translate. NARRA locks character names, preserves tone, and keeps stories feeling like stories.",
+    },
+    {
+      question: "What's NARRA's goal?",
+      answer: "Great stories shouldn't die in their home country just because of language. I'm not backed by big money, but I built NARRA to solve a real problem: connecting authors with readers across borders. My goal is to be the most reliable partner for writers going global—not through capital, but through sharp tech.",
+    },
+    {
+      question: "Who runs NARRA?",
+      answer: "Just me—a college engineering student in Korea who reads way too many web novels.",
+    },
   ];
 
   return (
