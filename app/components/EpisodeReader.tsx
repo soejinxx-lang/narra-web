@@ -92,9 +92,10 @@ export default function EpisodeReader({
   };
   // ====================================
 
-  // 踰덉뿭 ?곗씠← 罹먯떆 (?대씪?댁뼵← ?ъ씠?쒖뿉← 濡쒕뱶)
+  // 번역 데이터 캐시 (언어 사이클에서 로드)
+  const sourceLanguage = novel?.source_language || "ko";
   const [translations, setTranslations] = useState<Record<string, any>>({
-    ko: episode, // Default content from server
+    [sourceLanguage]: episode, // Use source language as key
   });
 
   // Unavailable)?몄뼱 紐⑸줉 (is_public = false)
