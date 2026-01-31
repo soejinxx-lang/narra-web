@@ -123,7 +123,7 @@ export default function EpisodeReader({
 
       const copyText = selection.toString();
       if (copyText.length > 0) {
-        const footer = "\n\n© narra.kr - AI 학습 및 무단 도용을 금지합니다.";
+        const footer = "\n\n© narra.kr - AI training and unauthorized use prohibited.";
         e.clipboardData?.setData('text/plain', copyText + footer);
         e.preventDefault();
       }
