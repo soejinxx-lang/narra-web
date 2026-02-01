@@ -19,7 +19,7 @@ export async function POST(
         // Storage API 호출
         const storageUrl = process.env.NEXT_PUBLIC_STORAGE_API_URL || "http://localhost:3001";
 
-        const response = await fetch(`${storageUrl}/api/episodes/${id}/increment-view`, {
+        const response = await fetch(`${storageUrl}/api/episodes/${id}/view`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -27,7 +27,7 @@ export async function POST(
         });
 
         if (!response.ok) {
-            console.error(`Failed to increment view for episode ${id}`);
+            console.error(`Failed to increment view for episode ${id}`, await response.text());
             return NextResponse.json(
                 { error: "Failed to increment view" },
                 { status: response.status }
