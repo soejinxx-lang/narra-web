@@ -35,7 +35,7 @@ export default function SearchBar() {
           width: "100%",
           padding: "8px 12px",
           border: "1px solid #e5e5e5",
-          borderRadius: "20px",
+          borderRadius: "0",
           fontSize: "14px",
           outline: "none",
           background: "#fff",

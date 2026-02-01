@@ -137,7 +137,7 @@ export default function Header() {
                 background: "#243A6E",
                 color: "#fff",
                 textDecoration: "none",
-                borderRadius: "6px",
+                borderRadius: "0",
                 fontSize: "12px",
                 fontWeight: 500,
               }}

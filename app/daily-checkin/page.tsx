@@ -58,34 +58,34 @@ export default function DailyCheckInPage() {
     const todayDate = getUSEasternDate();
     todayDate.setHours(0, 0, 0, 0);
     const todayStr = formatDate(todayDate);
-    
+
     // 사용자별 체크인 데이터 키
     const checkInKey = `dailyCheckIns_${user.id}`;
-    
+
     // Load check-ins
     const saved = localStorage.getItem(checkInKey);
     let savedCheckIns: string[] = [];
     if (saved) {
       savedCheckIns = JSON.parse(saved);
     }
-    
+
     // 오늘 체크인이 안 되어 있으면 자동으로 체크인
     if (!savedCheckIns.includes(todayStr)) {
       const newCheckIns = [...savedCheckIns, todayStr];
       localStorage.setItem(checkInKey, JSON.stringify(newCheckIns));
       savedCheckIns = newCheckIns;
     }
-    
+
     setCheckIns(new Set(savedCheckIns));
     setTodayChecked(true);
-    
+
     // Calculate streak
     let currentStreak = 0;
     for (let i = 0; i < 365; i++) {
       const checkDate = new Date(todayDate);
       checkDate.setDate(todayDate.getDate() - i);
       const dateStr = formatDate(checkDate);
-      
+
       if (savedCheckIns.includes(dateStr)) {
         currentStreak++;
       } else {
@@ -146,7 +146,7 @@ export default function DailyCheckInPage() {
         localStorage.setItem(allCompletedKey, JSON.stringify(completedDates));
       }
     }
-    
+
     // Set up interval to check mission progress
     const interval = setInterval(() => {
       if (user) {
@@ -225,7 +225,7 @@ export default function DailyCheckInPage() {
     const today = getUSEasternDate();
     today.setHours(0, 0, 0, 0);
     const todayStr = formatDate(today);
-    
+
     if (checkIns.has(todayStr)) {
       return;
     }
@@ -234,18 +234,18 @@ export default function DailyCheckInPage() {
     newCheckIns.add(todayStr);
     setCheckIns(newCheckIns);
     setTodayChecked(true);
-    
+
     const checkInsArray = Array.from(newCheckIns);
     const checkInKey = `dailyCheckIns_${currentUser.id}`;
     localStorage.setItem(checkInKey, JSON.stringify(checkInsArray));
-    
+
     // Update streak
     let currentStreak = 1;
     for (let i = 1; i < 365; i++) {
       const checkDate = new Date(today);
       checkDate.setDate(today.getDate() - i);
       const dateStr = formatDate(checkDate);
-      
+
       if (newCheckIns.has(dateStr)) {
         currentStreak++;
       } else {
@@ -283,17 +283,17 @@ export default function DailyCheckInPage() {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
-    
+
     const days = [];
-    
+
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
     }
-    
+
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(new Date(year, month, day));
     }
-    
+
     return days;
   };
 
@@ -318,9 +318,9 @@ export default function DailyCheckInPage() {
     const dateStr = formatDate(date);
     const missionKey = `dailyMissions_${currentUser.id}_${dateStr}`;
     const savedMissions = localStorage.getItem(missionKey);
-    
+
     if (!savedMissions) return false;
-    
+
     try {
       const data = JSON.parse(savedMissions);
       const completed = new Set(data.completed || []);
@@ -403,10 +403,9 @@ export default function DailyCheckInPage() {
         <div
           style={{
             background: "#fff",
-            borderRadius: "12px",
+            borderRadius: "4px",
             padding: "24px",
             border: "1px solid #e5e5e5",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
             textAlign: "center",
           }}
         >
@@ -416,10 +415,9 @@ export default function DailyCheckInPage() {
         <div
           style={{
             background: "#fff",
-            borderRadius: "12px",
+            borderRadius: "4px",
             padding: "24px",
             border: "1px solid #e5e5e5",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
             textAlign: "center",
           }}
         >
@@ -432,10 +430,9 @@ export default function DailyCheckInPage() {
       <div
         style={{
           background: "#fff",
-          borderRadius: "12px",
+          borderRadius: "4px",
           padding: "24px",
           border: "1px solid #e5e5e5",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
           marginBottom: "32px",
         }}
       >
@@ -585,10 +582,9 @@ export default function DailyCheckInPage() {
       <div
         style={{
           background: "#fff",
-          borderRadius: "12px",
+          borderRadius: "4px",
           padding: "32px",
           border: "1px solid #e5e5e5",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
         }}
       >
         {/* Calendar Header */}
@@ -657,7 +653,7 @@ export default function DailyCheckInPage() {
             const checked = isChecked(date);
             const today = isToday(date);
             const allMissionsCompleted = areAllMissionsCompleted(date);
-            
+
             return (
               <div
                 key={index}
