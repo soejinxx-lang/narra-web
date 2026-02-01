@@ -11,7 +11,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
       style={{
         width: "100%",
         margin: 0,
-        aspectRatio: "5 / 10.5",
+        aspectRatio: "5 / 9.5",
         border: "1px solid #e5e5e5",
         borderRadius: 16,
         background: "#fff",
@@ -58,6 +58,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
           textAlign: "center",
           lineHeight: 1.3,
           flexGrow: 1,
+          maxHeight: "60px",
           display: "flex",
           alignItems: "flex-start",
           justifyContent: "center",
