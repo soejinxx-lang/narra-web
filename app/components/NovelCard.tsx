@@ -52,7 +52,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
       {/* 제목 영역 */}
       <div
         style={{
-          padding: "10px 12px 14px",
+          padding: "8px 12px 6px",
           fontSize: 16,
           fontWeight: 600,
           textAlign: "center",
@@ -66,7 +66,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
           minHeight: 0,
         }}
       >
-        <div style={{ 
+        <div style={{
           overflow: "hidden",
           textOverflow: "ellipsis",
           display: "-webkit-box",
