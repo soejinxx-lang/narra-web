@@ -131,12 +131,6 @@ export default function EpisodeReader({
 
     document.addEventListener('copy', handleCopy);
 
-    return () => {
-      document.removeEventListener('copy', handleCopy);
-    };
-
-
-
     // localStorage?먯꽌 ?몄뼱 紐⑸줉 遺덈윭?ㅺ린
     if (typeof window !== "undefined") {
       // ?щ윭 媛?ν븳 ← ?대쫫 ?뺤씤
@@ -159,7 +153,7 @@ export default function EpisodeReader({
               break;
             }
           } catch (e) {
-            // ?뚯떛 ?ㅽ뙣 ← ?ㅼ쓬 ← ?쒕룄
+            // ?뚯떛 ?ㅽ뙣 ← ?ㅼ쓬 ← ?룄
           }
         }
       }
@@ -219,6 +213,10 @@ export default function EpisodeReader({
         console.error("Failed to track episode read:", e);
       }
     }
+
+    return () => {
+      document.removeEventListener('copy', handleCopy);
+    };
   }, [novelId, episode]);
 
   // ?쎌? ?꾩튂 蹂듭썝 諛?異붿쟻 (?섏씠吏 ?꾩껜 ?ㅽ겕濡?
