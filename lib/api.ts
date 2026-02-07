@@ -17,6 +17,25 @@ export async function fetchNovels() {
   return data.novels;
 }
 
+export async function fetchAuthors() {
+  const base = process.env.NEXT_PUBLIC_STORAGE_BASE_URL;
+
+  if (!base) {
+    throw new Error("STORAGE BASE URL NOT SET");
+  }
+
+  const res = await fetch(`${base}/authors`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch authors");
+  }
+
+  const data = await res.json();
+  return data.authors;
+}
+
 export async function fetchNovelById(id: string) {
   console.log("FETCH NOVEL ID:", id);
 

@@ -1,30 +1,8 @@
-import { fetchNovels } from "@/lib/api";
+import { fetchAuthors } from "@/lib/api";
 import AuthorCard from "@/app/components/AuthorCard";
 
 export default async function AuthorsPage() {
-  const novels = await fetchNovels();
-
-  // Extract unique authors from novels
-  const authorsMap = new Map<string, { name: string; novelCount: number; novels: any[] }>();
-  
-  novels.forEach((novel: any) => {
-    const authorName = novel.author || "Unknown Author";
-    if (authorsMap.has(authorName)) {
-      const author = authorsMap.get(authorName)!;
-      author.novelCount++;
-      author.novels.push(novel);
-    } else {
-      authorsMap.set(authorName, {
-        name: authorName,
-        novelCount: 1,
-        novels: [novel],
-      });
-    }
-  });
-
-  const authors = Array.from(authorsMap.values()).sort((a, b) => 
-    a.name.localeCompare(b.name)
-  );
+  const authors = await fetchAuthors();
 
   return (
     <main style={{ padding: "32px 24px", maxWidth: "1200px", margin: "0 auto" }}>
@@ -52,12 +30,11 @@ export default async function AuthorsPage() {
             gap: "24px",
           }}
         >
-          {authors.map((author) => (
-            <AuthorCard key={author.name} author={author} />
+          {authors.map((author: any) => (
+            <AuthorCard key={author.id} author={author} />
           ))}
         </div>
       )}
     </main>
   );
 }
-

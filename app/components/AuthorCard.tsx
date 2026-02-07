@@ -4,16 +4,20 @@ import Link from "next/link";
 
 type AuthorCardProps = {
   author: {
+    id: string;
     name: string;
-    novelCount: number;
-    novels: any[];
+    bio?: string | null;
+    avatar_url?: string | null;
+    novel_count: string | number;
   };
 };
 
 export default function AuthorCard({ author }: AuthorCardProps) {
+  const count = Number(author.novel_count) || 0;
+
   return (
     <Link
-      href={`/authors/${encodeURIComponent(author.name)}`}
+      href={`/authors/${author.id}`}
       style={{
         textDecoration: "none",
         color: "inherit",
@@ -28,6 +32,9 @@ export default function AuthorCard({ author }: AuthorCardProps) {
           boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
           transition: "transform 0.2s, box-shadow 0.2s",
           cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          gap: "16px",
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = "translateY(-4px)";
@@ -38,43 +45,65 @@ export default function AuthorCard({ author }: AuthorCardProps) {
           e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.05)";
         }}
       >
+        {/* Avatar */}
         <div
           style={{
-            fontSize: "24px",
-            fontWeight: 600,
-            marginBottom: "12px",
-            color: "#243A6E",
-            fontFamily: '"KoPub Batang", serif',
+            width: "48px",
+            height: "48px",
+            borderRadius: "50%",
+            backgroundColor: "#e8e4df",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "20px",
+            fontWeight: 700,
+            color: "#6b7280",
+            flexShrink: 0,
+            overflow: "hidden",
           }}
         >
-          {author.name}
+          {author.avatar_url ? (
+            <img
+              src={author.avatar_url}
+              alt={author.name}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            author.name?.[0]?.toUpperCase() ?? "?"
+          )}
         </div>
-        <div style={{ color: "#666", fontSize: "14px", marginBottom: "16px" }}>
-          {author.novelCount} {author.novelCount === 1 ? "novel" : "novels"}
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          {author.novels.slice(0, 3).map((novel: any) => (
+
+        {/* Info */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div
+            style={{
+              fontSize: "18px",
+              fontWeight: 600,
+              color: "#243A6E",
+              fontFamily: '"KoPub Batang", serif',
+              marginBottom: "4px",
+            }}
+          >
+            {author.name}
+          </div>
+          {author.bio && (
             <div
-              key={novel.id}
               style={{
                 fontSize: "13px",
                 color: "#999",
-                padding: "8px",
-                background: "#faf9f6",
-                borderRadius: "6px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
               }}
             >
-              {novel.title}
-            </div>
-          ))}
-          {author.novels.length > 3 && (
-            <div style={{ fontSize: "12px", color: "#999", fontStyle: "italic" }}>
-              +{author.novels.length - 3} more
+              {author.bio}
             </div>
           )}
+          <div style={{ color: "#aaa", fontSize: "12px", marginTop: "4px" }}>
+            {count} {count === 1 ? "novel" : "novels"}
+          </div>
         </div>
       </div>
     </Link>
   );
 }
-
