@@ -152,7 +152,7 @@ export default function SupportPage() {
               fontFamily: "monospace",
             }}
           >
-            narrastudio901@gmail.com
+            contact@narra.kr
           </div>
         </section>
       </div>

@@ -23,7 +23,7 @@ export default function BottomBar() {
           marginRight: "24px",
         }}
       >
-        narrastudio901@gmail.com
+        contact@narra.kr
       </div>
     </div>
   );
