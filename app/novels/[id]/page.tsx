@@ -122,9 +122,37 @@ export default async function Page({ params }: PageProps) {
       </div>
 
       {novel.description && (
-        <p style={{ color: "#666", marginBottom: 24, whiteSpace: "pre-wrap" }}>
+        <p style={{ color: "#666", marginBottom: 16, whiteSpace: "pre-wrap" }}>
           {novel.description}
         </p>
+      )}
+
+      {/* 작가 정보 */}
+      {(novel.author_name || novel.author_username) && (
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          marginBottom: 24,
+          fontSize: "14px",
+          color: "#666"
+        }}>
+          <div style={{
+            width: 24,
+            height: 24,
+            borderRadius: "50%",
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "white",
+            fontSize: "12px",
+            fontWeight: 600
+          }}>
+            {(novel.author_name || novel.author_username || "?").charAt(0).toUpperCase()}
+          </div>
+          <span>Written by {novel.author_name || novel.author_username}</span>
+        </div>
       )}
 
       {/* 이어서 읽기 버튼 */}
