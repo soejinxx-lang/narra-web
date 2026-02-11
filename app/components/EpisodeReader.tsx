@@ -8,6 +8,7 @@ import ShareButton from "./ShareButton";
 import CommentSection from "./CommentSection";
 import { saveReadingProgress, getCurrentUserId, getNovelProgress, saveSessionScrollPosition, getSessionReadingProgress } from "@/app/utils/readingProgress";
 import { markAsCompleted } from "@/app/utils/library";
+import { toRoman } from "@/lib/utils";
 
 type EpisodeReaderProps = {
   episode: any;
@@ -603,7 +604,7 @@ export default function EpisodeReader({
               fontFamily: '"KoPub Batang", serif',
             }}
           >
-            EP {episode.ep} {episode.title ? `- ${episode.title}` : ""}
+            {toRoman(episode.ep)} {episode.title ? `- ${episode.title}` : ""}
           </h1>
         </div>
         {/* Audio Player - 오디오 모드일 때만 표시 */}

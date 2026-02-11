@@ -8,7 +8,7 @@ import { fetchNovelById, fetchEpisodesByNovelId } from "@/lib/api";
 import ShareButton from "@/app/components/ShareButton";
 import ContinueReadingButton from "@/app/components/ContinueReadingButton";
 import EpisodeProgress from "@/app/components/EpisodeProgress";
-import { formatViewCount } from "@/lib/utils";
+import { formatViewCount, toRoman } from "@/lib/utils";
 
 type PageProps = {
   params: Promise<{
@@ -187,7 +187,7 @@ export default async function Page({ params }: PageProps) {
               }}
             >
               <div style={{ fontWeight: 500, display: "flex", alignItems: "center", gap: "8px" }}>
-                <span>EP {ep.ep}</span>
+                <span>{toRoman(ep.ep)}</span>
                 {ep.title && <span style={{ color: "#333" }}>{ep.title}</span>}
                 <EpisodeProgress novelId={id} episodeEp={String(ep.ep)} />
               </div>

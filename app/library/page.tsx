@@ -7,6 +7,7 @@ import { getReadingNovels, getCurrentUserId, getReadingProgress } from "@/app/ut
 import { getFavorites, getCompleted, getLibraryStats } from "@/app/utils/library";
 import { fetchNovels } from "@/lib/api";
 import NovelCard from "@/app/components/NovelCard";
+import { toRoman } from "@/lib/utils";
 
 type LibraryTab = "reading" | "completed" | "favorites" | "stats";
 
@@ -26,33 +27,33 @@ export default function LibraryPage() {
 
   useEffect(() => {
     setMounted(true);
-    
+
     const currentUserId = getCurrentUserId();
     if (!currentUserId) {
       router.push("/login");
       return;
     }
-    
+
     setUserId(currentUserId);
-    
+
     // 읽는 중 목록 가져오기
     const reading = getReadingNovels(currentUserId, 100);
     setReadingNovels(reading);
-    
+
     // 즐겨찾기 가져오기
     const favs = getFavorites(currentUserId);
     setFavorites(favs);
-    
+
     // 완독 목록 가져오기
     const comp = getCompleted(currentUserId);
     setCompleted(comp);
-    
+
     // 통계 가져오기
     const libraryStats = getLibraryStats(currentUserId);
     setStats(libraryStats);
-    
+
     // 작품 정보 가져오기
-    fetchNovels().then(setNovels).catch(() => {});
+    fetchNovels().then(setNovels).catch(() => { });
   }, [router]);
 
   // 작품 정보와 읽기 진도 매칭
@@ -131,7 +132,7 @@ export default function LibraryPage() {
     const minutes = Math.floor(diff / 60000);
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
-    
+
     if (minutes < 60) {
       return `${minutes} minutes ago`;
     } else if (hours < 24) {
@@ -168,7 +169,7 @@ export default function LibraryPage() {
           fontFamily: '"KoPub Batang", serif',
         }}
       >
-         My Library
+        My Library
       </h1>
 
       {/* 탭 */}
@@ -263,7 +264,7 @@ export default function LibraryPage() {
                     {novel.title}
                   </h3>
                   <div style={{ fontSize: "14px", color: "#666", marginBottom: "4px" }}>
-                    EP {novel.episodeEp} • {novel.progress}% progress
+                    {toRoman(novel.episodeEp)} • {novel.progress}% progress
                   </div>
                   <div style={{ fontSize: "13px", color: "#999", marginBottom: "12px" }}>
                     Last read: {formatLastRead(novel.lastReadAt)}
@@ -323,7 +324,7 @@ export default function LibraryPage() {
                     {novel.title}
                   </h3>
                   <div style={{ fontSize: "14px", color: "#666", marginBottom: "4px" }}>
-                    Completed: EP {novel.episodeEp}
+                    Completed: {toRoman(novel.episodeEp)}
                   </div>
                   <div style={{ fontSize: "13px", color: "#999" }}>
                     Completed: {formatLastRead(novel.completedAt)}

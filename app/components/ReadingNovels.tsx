@@ -6,6 +6,7 @@ import { getReadingNovels, getCurrentUserId, getSessionReadingProgress } from "@
 import { getSessionClickedNovels } from "@/app/utils/clickTracking";
 import { fetchNovels } from "@/lib/api";
 import NovelCard from "@/app/components/NovelCard";
+import { toRoman } from "@/lib/utils";
 
 type ReadingNovelsProps = {
   allNovels?: any[];
@@ -328,7 +329,7 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
                           }}
                         >
                           <div style={{ fontSize: "15px", color: "#666", lineHeight: 1.2, whiteSpace: "nowrap" }}>
-                            EP {ep}
+                            {toRoman(ep)}
                           </div>
                           <div style={{ fontSize: "15px", color: "#666", fontWeight: 500, lineHeight: 1.2, whiteSpace: "nowrap" }}>
                             {data.progress}%
