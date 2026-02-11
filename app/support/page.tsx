@@ -42,11 +42,19 @@ export default function SupportPage() {
     },
     {
       question: "What about copyright?",
-      answer: "You retain full copyright of your work. Translations are used solely to share your story without infringing on your rights. We do not require exclusive contracts or rights transfers at this stage. Future monetization terms will only be negotiated when a revenue structure is established.",
+      answer: "You retain full copyright of your original work—always. NARRA never claims ownership of your story. By publishing on NARRA, you grant us a non-exclusive license to translate and distribute your work globally. \"Non-exclusive\" means you are free to publish the same original work on any other platform simultaneously (Wattpad, Kakao, Munpia, etc.). We do not lock you in.",
+    },
+    {
+      question: "Who owns the translated text?",
+      answer: "The translated versions are created by NARRA at our own cost using our proprietary translation pipeline. The exclusive right to use, distribute, and display these translations belongs to NARRA.\n\nTo be clear:\n• Your original work = yours. Publish it anywhere.\n• NARRA's translations = NARRA's. You may not copy or redistribute them to other platforms.\n\nThis is standard practice across the industry (Webnovel, Tapas, etc.). We invest in translating your story into 9 languages—in return, those translations remain on NARRA.",
     },
     {
       question: "Is copyright protection better than other sites?",
       answer: "Honestly? No platform can stop every scraper. But here's what we do: NoAI tags block corporate crawlers, and when someone copies text, our source URL gets embedded automatically. If your work shows up elsewhere, you'll have proof it came from NARRA. We protect you through policy, not just code.",
+    },
+    {
+      question: "Can I remove my work from NARRA?",
+      answer: "Yes. You can request removal at any time by contacting us. When your original work is removed, all associated translations are also deleted from our platform.",
     },
     {
       question: "Why 9 languages? Google Translate exists.",
@@ -214,7 +222,7 @@ function AccordionItem({ item }: { item: QnAItem }) {
       </button>
       <div
         style={{
-          maxHeight: isOpen ? "500px" : "0",
+          maxHeight: isOpen ? "800px" : "0",
           overflow: "hidden",
           transition: "max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.3s",
         }}
