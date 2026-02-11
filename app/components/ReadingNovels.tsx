@@ -329,7 +329,7 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
                           }}
                         >
                           <div style={{ fontSize: "15px", color: "#666", lineHeight: 1.2, whiteSpace: "nowrap" }}>
-                            {toRoman(ep)}
+                            {novel.episode_format === "roman" ? toRoman(ep) : `EP ${ep}`}
                           </div>
                           <div style={{ fontSize: "15px", color: "#666", fontWeight: 500, lineHeight: 1.2, whiteSpace: "nowrap" }}>
                             {data.progress}%

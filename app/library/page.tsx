@@ -264,7 +264,7 @@ export default function LibraryPage() {
                     {novel.title}
                   </h3>
                   <div style={{ fontSize: "14px", color: "#666", marginBottom: "4px" }}>
-                    {toRoman(novel.episodeEp)} • {novel.progress}% progress
+                    {novel.episode_format === "roman" ? toRoman(novel.episodeEp) : `EP ${novel.episodeEp}`} • {novel.progress}% progress
                   </div>
                   <div style={{ fontSize: "13px", color: "#999", marginBottom: "12px" }}>
                     Last read: {formatLastRead(novel.lastReadAt)}
@@ -324,7 +324,7 @@ export default function LibraryPage() {
                     {novel.title}
                   </h3>
                   <div style={{ fontSize: "14px", color: "#666", marginBottom: "4px" }}>
-                    Completed: {toRoman(novel.episodeEp)}
+                    Completed: {novel.episode_format === "roman" ? toRoman(novel.episodeEp) : `EP ${novel.episodeEp}`}
                   </div>
                   <div style={{ fontSize: "13px", color: "#999" }}>
                     Completed: {formatLastRead(novel.completedAt)}

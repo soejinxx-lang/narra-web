@@ -187,7 +187,7 @@ export default async function Page({ params }: PageProps) {
               }}
             >
               <div style={{ fontWeight: 500, display: "flex", alignItems: "center", gap: "8px" }}>
-                <span>{toRoman(ep.ep)}</span>
+                <span>{novel.episode_format === "roman" ? toRoman(ep.ep) : `EP ${ep.ep}`}</span>
                 {ep.title && <span style={{ color: "#333" }}>{ep.title}</span>}
                 <EpisodeProgress novelId={id} episodeEp={String(ep.ep)} />
               </div>

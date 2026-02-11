@@ -604,7 +604,7 @@ export default function EpisodeReader({
               fontFamily: '"KoPub Batang", serif',
             }}
           >
-            {toRoman(episode.ep)} {episode.title ? `- ${episode.title}` : ""}
+            {novel?.episode_format === "roman" ? toRoman(episode.ep) : `EP ${episode.ep}`} {episode.title ? `- ${episode.title}` : ""}
           </h1>
         </div>
         {/* Audio Player - 오디오 모드일 때만 표시 */}
