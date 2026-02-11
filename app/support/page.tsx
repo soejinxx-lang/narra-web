@@ -34,11 +34,11 @@ export default function SupportPage() {
   const creatorsQnA: QnAItem[] = [
     {
       question: "Can I publish my novel on NARRA?",
-      answer: "Absolutely. We handle the language barrier so you can focus on writing great stories. With NARRA, your work can be translated into English, Spanish, Japanese, and more to reach readers worldwide.",
+      answer: "Go for it. You focus on the storytelling; we'll break down the language walls for you. Your work gets translated into English, Spanish, Japanese, and more—so readers worldwide can find you.",
     },
     {
       question: "What about revenue?",
-      answer: "Our current authors value the opportunity to see how their stories resonate with global readers over immediate short-term profits. We partner with creators who prioritize long-term potential and the experimental value of reaching a new, international audience, even if their work isn't widely known yet.",
+      answer: "To be real: if you're looking for a quick payout, we might not be there yet. But if you want to see your story go global and test how it resonates with readers in 9 different languages, that's exactly what we're building. Our current authors are here for the long game.",
     },
     {
       question: "What about copyright?",
@@ -46,7 +46,7 @@ export default function SupportPage() {
     },
     {
       question: "Who owns the translated text?",
-      answer: "The translated versions are created by NARRA at our own cost using our proprietary translation pipeline. The exclusive right to use, distribute, and display these translations belongs to NARRA.\n\nTo be clear:\n• Your original work = yours. Publish it anywhere.\n• NARRA's translations = NARRA's. You may not copy or redistribute them to other platforms.\n\nThis is standard practice across the industry (Webnovel, Tapas, etc.). We invest in translating your story into 9 languages—in return, those translations remain on NARRA.",
+      answer: "The translated versions are created by NARRA at our own cost using our proprietary translation pipeline. The exclusive right to use, distribute, and display these translations belongs to NARRA.\n\nTo be clear:\n• Your original work = yours. Publish it anywhere.\n• NARRA's translations = NARRA's. You may not copy or redistribute them to other platforms.\n\nWe're following the same rules as the big guys like Webnovel or Tapas. We invest in translating your story into 9 languages—in return, those translations stay on NARRA.",
     },
     {
       question: "Is copyright protection better than other sites?",
