@@ -19,12 +19,12 @@ export default function LoginPage() {
     // 이미 로그인되어 있는지 확인
     const token = localStorage.getItem("authToken");
     const userData = localStorage.getItem("currentUser");
-    
+
     // 둘 중 하나라도 없으면 둘 다 제거
     if (token && !userData) {
       localStorage.removeItem("authToken");
     }
-    
+
     if (token && userData) {
       setIsLoggedIn(true);
       router.push("/daily-checkin");
@@ -64,7 +64,7 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-      
+
       const response = await fetch(`${storageBase}/api/auth/login`, {
         method: "POST",
         headers: {
@@ -93,6 +93,8 @@ export default function LoginPage() {
       if (data.token && data.user) {
         secureSetItem("authToken", data.token);
         secureSetItem("currentUser", data.user);
+        // 서버사이드에서도 읽을 수 있도록 쿠키에도 저장
+        document.cookie = `authToken=${data.token}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
       }
 
       // 헤더 업데이트를 위한 이벤트 발생
