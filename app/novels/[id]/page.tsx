@@ -130,35 +130,44 @@ export default async function Page({ params }: PageProps) {
       {/* 작가 정보 */}
       {(novel.author_name || novel.author_username) && novel.author_id && (
         <>
-          <style>{`.author-link { color: #666; transition: color 0.2s; } .author-link:hover { color: #243A6E; }`}</style>
-          <Link
-            href={`/authors/${novel.author_id}`}
-            className="author-link"
-            style={{
-              textDecoration: "none",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              marginBottom: 24,
-              fontSize: "14px",
-            }}
-          >
-            <div style={{
-              width: 24,
-              height: 24,
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              fontSize: "12px",
-              fontWeight: 600
-            }}>
-              {(novel.author_name || novel.author_username || "?").charAt(0).toUpperCase()}
-            </div>
-            <span>Written by {novel.author_name || novel.author_username}</span>
-          </Link>
+          <style>{`.author-name { transition: text-decoration 0.2s, color 0.2s; } .author-name:hover { text-decoration: underline; color: #243A6E; }`}</style>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            marginBottom: 24,
+            fontSize: "14px",
+            color: "#666",
+          }}>
+            <span>Written by</span>
+            <Link
+              href={`/authors/${novel.author_id}`}
+              className="author-name"
+              style={{
+                textDecoration: "none",
+                color: "#666",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <div style={{
+                width: 24,
+                height: 24,
+                borderRadius: "50%",
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "white",
+                fontSize: "12px",
+                fontWeight: 600
+              }}>
+                {(novel.author_name || novel.author_username || "?").charAt(0).toUpperCase()}
+              </div>
+              <span>{novel.author_name || novel.author_username}</span>
+            </Link>
+          </div>
         </>
       )}
       {/* author_id 없는 경우 링크 없이 표시 */}
