@@ -15,6 +15,9 @@ export default async function AuthorPage({ params }: PageProps) {
     let data: any;
     try {
         data = await fetchAuthorById(id);
+        console.log("🔍 [AuthorPage] id:", id);
+        console.log("🔍 [AuthorPage] novels count:", data?.novels?.length);
+        console.log("🔍 [AuthorPage] data:", JSON.stringify(data, null, 2));
     } catch {
         return (
             <main style={{ padding: 24, textAlign: "center", color: "#999" }}>
