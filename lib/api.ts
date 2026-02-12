@@ -1,5 +1,3 @@
-import { cookies } from 'next/headers';
-
 export async function fetchNovels() {
   const base = process.env.NEXT_PUBLIC_STORAGE_BASE_URL;
 
@@ -7,21 +5,8 @@ export async function fetchNovels() {
     throw new Error("STORAGE BASE URL NOT SET");
   }
 
-  // 서버사이드에서 쿠키로 auth 토큰 읽기 (로그인한 유저 식별)
-  const headers: Record<string, string> = {};
-  try {
-    const cookieStore = await cookies();
-    const authToken = cookieStore.get('authToken')?.value;
-    if (authToken) {
-      headers['Authorization'] = `Bearer ${authToken}`;
-    }
-  } catch {
-    // 쿠키 접근 실패 시 무시 (비로그인 취급)
-  }
-
   const res = await fetch(`${base}/novels`, {
     cache: "no-store",
-    headers,
   });
 
   if (!res.ok) {
