@@ -128,7 +128,41 @@ export default async function Page({ params }: PageProps) {
       )}
 
       {/* 작가 정보 */}
-      {(novel.author_name || novel.author_username) && (
+      {(novel.author_name || novel.author_username) && novel.author_id && (
+        <>
+          <style>{`.author-link { color: #666; transition: color 0.2s; } .author-link:hover { color: #243A6E; }`}</style>
+          <Link
+            href={`/authors/${novel.author_id}`}
+            className="author-link"
+            style={{
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              marginBottom: 24,
+              fontSize: "14px",
+            }}
+          >
+            <div style={{
+              width: 24,
+              height: 24,
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "white",
+              fontSize: "12px",
+              fontWeight: 600
+            }}>
+              {(novel.author_name || novel.author_username || "?").charAt(0).toUpperCase()}
+            </div>
+            <span>Written by {novel.author_name || novel.author_username}</span>
+          </Link>
+        </>
+      )}
+      {/* author_id 없는 경우 링크 없이 표시 */}
+      {(novel.author_name || novel.author_username) && !novel.author_id && (
         <div style={{
           display: "flex",
           alignItems: "center",
