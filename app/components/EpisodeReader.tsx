@@ -218,7 +218,7 @@ export default function EpisodeReader({
     return () => {
       document.removeEventListener('copy', handleCopy);
     };
-  }, [novelId, episode]);
+  }, [episode.id]);
 
   // ?쎌? ?꾩튂 蹂듭썝 諛?異붿쟻 (?섏씠吏 ?꾩껜 ?ㅽ겕濡?
   useEffect(() => {
