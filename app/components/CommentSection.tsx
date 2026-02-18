@@ -149,8 +149,8 @@ export default function CommentSection({ episodeId }: CommentSectionProps) {
                     >
                         {/* Fallback avatar logic usually goes here */}
                         <img
-                            src={`https://api.dicebear.com/7.x/initials/svg?seed=${comment.username || "Guest"}`}
-                            alt={comment.username}
+                            src={`https://api.dicebear.com/7.x/initials/svg?seed=${comment.name || comment.username || "Guest"}`}
+                            alt={comment.name || comment.username}
                             style={{ width: "100%", height: "100%", objectFit: "cover" }}
                         />
                     </div>

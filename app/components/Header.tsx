@@ -177,6 +177,7 @@ export default function Header() {
           {[
             { href: "/novels", label: "All Novels" },
             { href: "/browse", label: "Browse" },
+            { href: "/dashboard", label: "내 작품", requireLogin: true },
             { href: "/library", label: "My Library", requireLogin: true },
             { href: "/guide", label: "Guide" },
             { href: "/notes", label: "Notes" },
