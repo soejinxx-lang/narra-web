@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   // Turbopack 설정 (Next.js 16에서 기본 활성화, webpack 사용 시 빈 설정 필요)
   turbopack: {},
 
-  // 파일 감시 설정 (OneDrive 및 Windows 경로 지원)
+  // 파일 감시 설정 (OneDrive 및 Windows 경로 지원) 
   // --webpack 플래그를 사용하므로 webpack 설정이 적용됩니다
   webpack: (config, { dev }) => {
     if (dev) {
