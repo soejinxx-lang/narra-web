@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { sanitizeInput, isValidInput, checkLoginAttempts, recordLoginAttempt } from "@/app/utils/security";
 import { secureSetItem } from "@/app/utils/localStorageSecurity";
+import { useLocale } from "../../lib/i18n";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useLocale();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -103,7 +105,7 @@ export default function LoginPage() {
       router.push("/daily-checkin");
     } catch (error) {
       console.error("Login error:", error);
-      setError("Network error. Please try again.");
+      setError(t("login.networkError"));
       setLoading(false);
     }
   };
@@ -124,7 +126,7 @@ export default function LoginPage() {
           textAlign: "center",
         }}
       >
-        Login
+        {t("login.title")}
       </h1>
 
       <div
@@ -146,7 +148,7 @@ export default function LoginPage() {
                 color: "#243A6E",
               }}
             >
-              ID
+              {t("login.username")}
             </label>
             <input
               type="text"
@@ -182,7 +184,7 @@ export default function LoginPage() {
                 color: "#243A6E",
               }}
             >
-              Password
+              {t("login.password")}
             </label>
             <div style={{ position: "relative" }}>
               <input
@@ -279,13 +281,13 @@ export default function LoginPage() {
               if (!loading) e.currentTarget.style.background = "#243A6E";
             }}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? t("login.loading") : t("login.submit")}
           </button>
         </form>
 
         <div style={{ marginTop: "24px", textAlign: "center" }}>
           <span style={{ color: "#666", fontSize: "14px" }}>
-            Don't have an account?{" "}
+            {t("login.noAccount")}{" "}
           </span>
           <Link
             href="/signup"
@@ -295,7 +297,7 @@ export default function LoginPage() {
               textDecoration: "none",
             }}
           >
-            Sign up
+            {t("login.signup")}
           </Link>
         </div>
       </div>

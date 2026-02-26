@@ -8,6 +8,7 @@ import { getFavorites, getCompleted, getLibraryStats } from "@/app/utils/library
 import { fetchNovels } from "@/lib/api";
 import NovelCard from "@/app/components/NovelCard";
 import { toRoman } from "@/lib/utils";
+import { useLocale } from "../../lib/i18n";
 
 type LibraryTab = "reading" | "completed" | "favorites" | "stats";
 
@@ -17,6 +18,7 @@ export default function LibraryPage() {
   const router = useRouter();
   const [currentTab, setCurrentTab] = useState<LibraryTab>("reading");
   const [sortOption, setSortOption] = useState<SortOption>("recent");
+  const { t } = useLocale();
   const [userId, setUserId] = useState<string | null>(null);
   const [readingNovels, setReadingNovels] = useState<Array<{ novelId: string; episodeEp: string; progress: number; lastReadAt: number }>>([]);
   const [novels, setNovels] = useState<any[]>([]);
@@ -145,7 +147,7 @@ export default function LibraryPage() {
   if (!mounted || !userId) {
     return (
       <main style={{ padding: "40px 24px", textAlign: "center" }}>
-        <div style={{ color: "#999", fontSize: "16px" }}>Loading...</div>
+        <div style={{ color: "#999", fontSize: "16px" }}>{t("common.loading")}</div>
       </main>
     );
   }
@@ -169,7 +171,7 @@ export default function LibraryPage() {
           fontFamily: '"KoPub Batang", serif',
         }}
       >
-        My Library
+        {t("library.title")}
       </h1>
 
       {/* 탭 */}
@@ -199,9 +201,9 @@ export default function LibraryPage() {
                 transition: "all 0.2s",
               }}
             >
-              {tab === "reading" && "Reading"}
-              {tab === "completed" && "Completed"}
-              {tab === "favorites" && "Favorites"}
+              {tab === "reading" && t("library.reading")}
+              {tab === "completed" && t("browse.completed")}
+              {tab === "favorites" && t("library.favorites")}
               {tab === "stats" && "Stats"}
             </button>
           ))}
@@ -235,7 +237,7 @@ export default function LibraryPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           {readingNovelsWithInfo.length === 0 ? (
             <div style={{ padding: "40px 20px", textAlign: "center", color: "#999", fontSize: "16px" }}>
-              No reading history.
+              {t("library.empty")}
             </div>
           ) : (
             readingNovelsWithInfo.map((novel: any) => (
@@ -282,7 +284,7 @@ export default function LibraryPage() {
                       fontWeight: 500,
                     }}
                   >
-                    Continue Reading
+                    {t("library.continueReading")}
                   </Link>
                 </div>
               </div>
@@ -295,7 +297,7 @@ export default function LibraryPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           {completedNovelsWithInfo.length === 0 ? (
             <div style={{ padding: "40px 20px", textAlign: "center", color: "#999", fontSize: "16px" }}>
-              No completed novels.
+              {t("library.empty")}
             </div>
           ) : (
             completedNovelsWithInfo.map((novel: any) => (
@@ -346,7 +348,7 @@ export default function LibraryPage() {
         >
           {favoriteNovelsWithInfo.length === 0 ? (
             <div style={{ padding: "40px 20px", textAlign: "center", color: "#999", fontSize: "16px", gridColumn: "1 / -1" }}>
-              No favorite novels.
+              {t("library.empty")}
             </div>
           ) : (
             favoriteNovelsWithInfo.map((novel: any) => (

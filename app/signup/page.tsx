@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { sanitizeInput, isValidInput, validateUsername, validatePasswordStrength } from "@/app/utils/security";
 import { secureSetItem } from "@/app/utils/localStorageSecurity";
+import { useLocale } from "../../lib/i18n";
 
 export default function SignUpPage() {
   const router = useRouter();
+  const { t } = useLocale();
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -64,7 +66,7 @@ export default function SignUpPage() {
         setLoading(false);
         return;
       }
-      
+
       const response = await fetch(`${storageBase}/api/auth/signup`, {
         method: "POST",
         headers: {
@@ -115,7 +117,7 @@ export default function SignUpPage() {
           textAlign: "center",
         }}
       >
-        Sign Up
+        {t("login.signupTitle")}
       </h1>
 
       <div
@@ -137,7 +139,7 @@ export default function SignUpPage() {
                 color: "#243A6E",
               }}
             >
-              Name
+              {t("login.name")}
             </label>
             <input
               type="text"
@@ -166,7 +168,7 @@ export default function SignUpPage() {
                 color: "#243A6E",
               }}
             >
-              ID
+              {t("login.username")}
             </label>
             <input
               type="text"
@@ -204,7 +206,7 @@ export default function SignUpPage() {
                 color: "#243A6E",
               }}
             >
-              Password
+              {t("login.password")}
             </label>
             <div style={{ position: "relative" }}>
               <input
@@ -274,7 +276,7 @@ export default function SignUpPage() {
                 color: "#243A6E",
               }}
             >
-              Confirm Password
+              {t("login.confirmPassword")}
             </label>
             <div style={{ position: "relative" }}>
               <input
@@ -372,13 +374,13 @@ export default function SignUpPage() {
               if (!loading) e.currentTarget.style.background = "#243A6E";
             }}
           >
-            {loading ? "Signing up..." : "Sign Up"}
+            {loading ? t("login.signingUp") : t("login.signupSubmit")}
           </button>
         </form>
 
         <div style={{ marginTop: "24px", textAlign: "center" }}>
           <span style={{ color: "#666", fontSize: "14px" }}>
-            Already have an account?{" "}
+            {t("login.haveAccount")}{" "}
           </span>
           <Link
             href="/login"
@@ -388,7 +390,7 @@ export default function SignUpPage() {
               textDecoration: "none",
             }}
           >
-            Login
+            {t("login.title")}
           </Link>
         </div>
       </div>

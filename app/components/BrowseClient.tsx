@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import NovelCard from "./NovelCard";
 import BrowseFilters from "./BrowseFilters";
+import { useLocale } from "../../lib/i18n";
 
 type BrowseClientProps = {
   novels: any[];
@@ -14,6 +15,7 @@ export default function BrowseClient({ novels, initialQuery = "" }: BrowseClient
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [sortBy, setSortBy] = useState("latest");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const { t } = useLocale();
 
   // 모든 태그 추출 (실제로는 API에서 가져올 수 있음)
   const allTags = useMemo(() => {
@@ -82,7 +84,7 @@ export default function BrowseClient({ novels, initialQuery = "" }: BrowseClient
           fontFamily: '"KoPub Batang", serif',
         }}
       >
-        Browse Novels
+        {t("browse.title")}
       </h1>
 
       {/* 검색바 */}
@@ -122,7 +124,7 @@ export default function BrowseClient({ novels, initialQuery = "" }: BrowseClient
 
       {/* 결과 수 */}
       <div style={{ marginBottom: "20px", color: "#666", fontSize: "14px" }}>
-        {filteredAndSortedNovels.length} novels found
+        {filteredAndSortedNovels.length} {t("browse.novelsFound")}
       </div>
 
       {/* 소설 그리드 */}
@@ -135,7 +137,7 @@ export default function BrowseClient({ novels, initialQuery = "" }: BrowseClient
             fontSize: "16px",
           }}
         >
-          No results found.
+          {t("browse.noResults")}
         </div>
       ) : (
         <div

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { useLocale } from "../../../../lib/i18n";
 
 const STORAGE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace("/api", "") ?? "";
 
@@ -27,11 +28,7 @@ type Novel = {
     author_id: string;
 };
 
-const STATUS_LABEL: Record<string, string> = {
-    published: "발행",
-    scheduled: "예약",
-    draft: "임시저장",
-};
+
 
 type TranslationInfo = {
     episode_id: string;
@@ -45,6 +42,7 @@ export default function NovelManagePage() {
     const router = useRouter();
     const params = useParams();
     const novelId = params.id as string;
+    const { t } = useLocale();
 
     const [novel, setNovel] = useState<Novel | null>(null);
     const [episodes, setEpisodes] = useState<Episode[]>([]);
@@ -124,7 +122,7 @@ export default function NovelManagePage() {
     useEffect(() => { fetchData(); }, [fetchData]);
 
     const handleDelete = async () => {
-        if (!confirm(`"${novel?.title}" 소설을 삭제하시겠습니까?\n(복구 가능)`)) return;
+        if (!confirm(t("dashboard.deleteConfirm"))) return;
         const token = getToken();
         if (!token) return;
 
@@ -138,17 +136,17 @@ export default function NovelManagePage() {
             router.push("/dashboard");
         } else {
             const data = await res.json();
-            setError(data.error ?? "삭제에 실패했습니다.");
+            setError(data.error ?? t("common.error"));
             setDeleting(false);
         }
     };
 
     if (loading) {
-        return <div style={{ padding: "48px 24px", textAlign: "center", color: "#666" }}>불러오는 중...</div>;
+        return <div style={{ padding: "48px 24px", textAlign: "center", color: "#666" }}>{t("common.loading")}</div>;
     }
 
     if (!novel) {
-        return <div style={{ padding: "48px 24px", textAlign: "center", color: "#999" }}>소설을 찾을 수 없습니다.</div>;
+        return <div style={{ padding: "48px 24px", textAlign: "center", color: "#999" }}>{t("common.notFound")}</div>;
     }
 
     return (
@@ -180,12 +178,12 @@ export default function NovelManagePage() {
                         </h1>
                         {novel.source === "user" && (
                             <span style={{ fontSize: 10, padding: "2px 7px", background: "#e8ecf5", color: "#243A6E", fontWeight: 600 }}>
-                                내 작품
+                                {t("dashboard.myWork")}
                             </span>
                         )}
                     </div>
                     <div style={{ fontSize: 13, color: "#666", marginBottom: 12, lineHeight: 1.6 }}>
-                        {novel.description || <span style={{ color: "#bbb" }}>소개글 없음</span>}
+                        {novel.description || <span style={{ color: "#bbb" }}>{t("novel.noDescription")}</span>}
                     </div>
                     <div style={{ display: "flex", gap: 8 }}>
                         <Link
@@ -200,7 +198,7 @@ export default function NovelManagePage() {
                                 borderRadius: 0,
                             }}
                         >
-                            소설 정보 수정
+                            {t("dashboard.editInfo")}
                         </Link>
                         <button
                             onClick={handleDelete}
@@ -215,7 +213,7 @@ export default function NovelManagePage() {
                                 borderRadius: 0,
                             }}
                         >
-                            {deleting ? "삭제 중..." : "소설 삭제"}
+                            {deleting ? t("dashboard.deleting") : t("dashboard.deleteNovel")}
                         </button>
                     </div>
                 </div>
@@ -230,7 +228,7 @@ export default function NovelManagePage() {
             {/* 에피소드 목록 */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
                 <h2 style={{ fontSize: 16, fontWeight: 600, color: "#333" }}>
-                    에피소드 <span style={{ color: "#999", fontWeight: 400 }}>{episodes.length}화</span>
+                    {t("dashboard.episodes")} <span style={{ color: "#999", fontWeight: 400 }}>{episodes.length}{t("dashboard.episodeCount")}</span>
                 </h2>
                 <Link
                     href={`/dashboard/novels/${novelId}/episodes/new`}
@@ -244,7 +242,7 @@ export default function NovelManagePage() {
                         borderRadius: 0,
                     }}
                 >
-                    + 새 에피소드
+                    {t("dashboard.newEpisode")}
                 </Link>
             </div>
 
@@ -258,7 +256,7 @@ export default function NovelManagePage() {
                         fontSize: 13,
                     }}
                 >
-                    아직 에피소드가 없습니다. 첫 화를 작성해보세요.
+                    {t("dashboard.noEpisodes")}
                 </div>
             ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
@@ -278,7 +276,7 @@ export default function NovelManagePage() {
                                 }}
                             >
                                 <span style={{ fontSize: 12, color: "#999", width: 36, flexShrink: 0 }}>
-                                    {ep.ep}화
+                                    {ep.ep}{t("dashboard.episodeCount")}
                                 </span>
                                 <span style={{ flex: 1, fontSize: 14, color: "#333", fontWeight: 500, minWidth: 120 }}>
                                     {ep.title || `제${ep.ep}화`}
@@ -350,7 +348,7 @@ export default function NovelManagePage() {
                                         color: ep.status === "published" ? "#2e7d32" : ep.status === "scheduled" ? "#b7791f" : "#999",
                                     }}
                                 >
-                                    {STATUS_LABEL[ep.status ?? ""] ?? ep.status ?? "발행"}
+                                    {t(`dashboard.${ep.status ?? "published"}`)}
                                 </span>
                                 {ep.scheduled_at && (
                                     <span style={{ fontSize: 11, color: "#999" }}>
@@ -378,7 +376,7 @@ export default function NovelManagePage() {
 
             <div style={{ marginTop: 24 }}>
                 <Link href="/dashboard" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>
-                    ← 내 작품 목록으로
+                    {t("dashboard.backToList")}
                 </Link>
             </div>
         </main>

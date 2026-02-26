@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useLocale } from "../../lib/i18n";
 
 const STORAGE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace("/api", "") ?? "";
 
@@ -40,6 +41,7 @@ export default function DashboardPage() {
     const [countdown, setCountdown] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const { t } = useLocale();
 
     const getToken = () => {
         try {
@@ -85,7 +87,7 @@ export default function DashboardPage() {
                 setCountdown(data.translation.resetIn);
             }
         } catch {
-            setError("데이터를 불러오지 못했습니다.");
+            setError(t("common.error"));
         } finally {
             setLoading(false);
         }
@@ -114,7 +116,7 @@ export default function DashboardPage() {
     if (loading) {
         return (
             <div style={{ padding: "48px 24px", textAlign: "center", color: "#666" }}>
-                불러오는 중...
+                {t("common.loading")}
             </div>
         );
     }
@@ -131,7 +133,7 @@ export default function DashboardPage() {
                         color: "#243A6E",
                     }}
                 >
-                    내 작품
+                    {t("dashboard.title")}
                 </h1>
                 <Link
                     href="/dashboard/novels/create"
@@ -146,7 +148,7 @@ export default function DashboardPage() {
                         letterSpacing: "0.02em",
                     }}
                 >
-                    + 새 소설
+                    {t("dashboard.newNovel")}
                 </Link>
             </div>
 
@@ -163,7 +165,7 @@ export default function DashboardPage() {
                     <div style={{ display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
                         <div>
                             <div style={{ fontSize: 11, color: "#999", marginBottom: 4, letterSpacing: "0.05em", textTransform: "uppercase" }}>
-                                오늘 번역
+                                {t("dashboard.translationQuota")}
                             </div>
                             <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
                                 {[0, 1, 2].map((i) => (
@@ -177,14 +179,14 @@ export default function DashboardPage() {
                                     />
                                 ))}
                                 <span style={{ marginLeft: 8, fontSize: 13, color: "#333", fontWeight: 500 }}>
-                                    {quota.translation.remaining}/3 남음
+                                    {quota.translation.remaining}/3 {t("dashboard.remaining")}
                                 </span>
                             </div>
                         </div>
 
                         <div style={{ borderLeft: "1px solid #e5e5e5", paddingLeft: 24 }}>
                             <div style={{ fontSize: 11, color: "#999", marginBottom: 4, letterSpacing: "0.05em", textTransform: "uppercase" }}>
-                                리셋까지
+                                {t("dashboard.resetIn")}
                             </div>
                             <div
                                 style={{
@@ -237,7 +239,7 @@ export default function DashboardPage() {
                         color: "#999",
                     }}
                 >
-                    <div style={{ fontSize: 14, marginBottom: 16 }}>아직 등록한 소설이 없습니다.</div>
+                    <div style={{ fontSize: 14, marginBottom: 16 }}>{t("dashboard.noNovels")}</div>
                     <Link
                         href="/dashboard/novels/create"
                         style={{
@@ -250,7 +252,7 @@ export default function DashboardPage() {
                             borderRadius: 0,
                         }}
                     >
-                        첫 소설 만들기
+                        {t("dashboard.createFirst")}
                     </Link>
                 </div>
             ) : (
@@ -298,7 +300,7 @@ export default function DashboardPage() {
                                     </span>
                                     {novel.source === "user" && (
                                         <span style={{ fontSize: 10, padding: "1px 6px", background: "#e8ecf5", color: "#243A6E", fontWeight: 600, flexShrink: 0 }}>
-                                            내 작품
+                                            {t("dashboard.myWork")}
                                         </span>
                                     )}
                                     {novel.is_hidden && (
@@ -308,7 +310,7 @@ export default function DashboardPage() {
                                     )}
                                 </div>
                                 <div style={{ fontSize: 12, color: "#999" }}>
-                                    에피소드 {novel.episode_count}화
+                                    {t("dashboard.episodes")} {novel.episode_count}{t("dashboard.episodeCount")}
                                     {novel.failed_count > 0 && (
                                         <span style={{ marginLeft: 8, color: "#c0392b" }}>
                                             ⚠ 번역 실패 {novel.failed_count}건

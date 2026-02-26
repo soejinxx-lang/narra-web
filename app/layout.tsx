@@ -5,6 +5,7 @@ import "./globals.css";
 import Header from "./components/Header";
 import MusicPlayer from "./components/MusicPlayer";
 import BottomBar from "./components/BottomBar";
+import Providers from "./components/Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,16 +60,18 @@ export default function RootLayout({
           `}
         </Script>
 
-        <Header />
-        <main
-          style={{
-            paddingTop: 56, // ✅ 헤더 높이만큼 밀어줌
-          }}
-        >
-          {children}
-        </main>
-        <MusicPlayer />
-        <BottomBar />
+        <Providers>
+          <Header />
+          <main
+            style={{
+              paddingTop: 56,
+            }}
+          >
+            {children}
+          </main>
+          <MusicPlayer />
+          <BottomBar />
+        </Providers>
       </body>
     </html>
   );

@@ -4,11 +4,13 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SearchBar from "./SearchBar";
+import { useLocale } from "../../lib/i18n";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<{ id: string; username: string; name?: string; role?: string } | null>(null);
   const router = useRouter();
+  const { t } = useLocale();
 
   const checkLoginStatus = () => {
     const loggedInUser = localStorage.getItem("loggedInUser") || localStorage.getItem("currentUser");
@@ -126,7 +128,7 @@ export default function Header() {
                   e.currentTarget.style.background = "#243A6E";
                 }}
               >
-                Logout
+                {t("header.logout")}
               </button>
             </div>
           ) : (
@@ -142,7 +144,7 @@ export default function Header() {
                 fontWeight: 500,
               }}
             >
-              Login
+              {t("header.login")}
             </Link>
           )}
           <div
@@ -175,13 +177,13 @@ export default function Header() {
           }}
         >
           {[
-            { href: "/novels", label: "All Novels" },
-            { href: "/browse", label: "Browse" },
-            { href: "/dashboard", label: "My Page", requireLogin: true, requireRole: "author" },
-            { href: "/library", label: "My Library", requireLogin: true },
-            { href: "/guide", label: "Guide" },
-            { href: "/notes", label: "Notes" },
-            { href: "/settings", label: "Settings" },
+            { href: "/novels", labelKey: "header.allNovels" },
+            { href: "/browse", labelKey: "header.browse" },
+            { href: "/dashboard", labelKey: "header.myPage", requireLogin: true, requireRole: "author" },
+            { href: "/library", labelKey: "header.library", requireLogin: true },
+            { href: "/guide", labelKey: "header.guide" },
+            { href: "/notes", labelKey: "header.notes" },
+            { href: "/settings", labelKey: "header.settings" },
           ].filter((item) => {
             if (item.requireLogin && !user) return false;
             if (item.requireRole && user?.role !== item.requireRole && user?.role !== 'admin') return false;
@@ -199,7 +201,7 @@ export default function Header() {
                 color: "black",
               }}
             >
-              {item.label}
+              {t(item.labelKey)}
             </Link>
           ))}
         </nav>
