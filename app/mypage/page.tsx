@@ -131,15 +131,22 @@ export default function MyPage() {
             const [novelsRes, quotaRes] = await Promise.all([
                 fetch(`${STORAGE}/api/user/novels`, {
                     headers: { Authorization: `Bearer ${token}` },
+                    cache: "no-store",
                 }),
                 fetch(`${STORAGE}/api/user/quota`, {
                     headers: { Authorization: `Bearer ${token}` },
+                    cache: "no-store",
                 }),
             ]);
 
             if (novelsRes.ok) {
                 const data = await novelsRes.json();
-                setMyNovels(data.novels ?? []);
+                // Handle different response formats
+                const novels = data.novels ?? data.data ?? (Array.isArray(data) ? data : []);
+                console.log("[MyPage] novels response:", data, "→ parsed:", novels.length);
+                setMyNovels(novels);
+            } else {
+                console.warn("[MyPage] novels fetch failed:", novelsRes.status, novelsRes.statusText);
             }
 
             if (quotaRes.ok) {
@@ -147,8 +154,8 @@ export default function MyPage() {
                 setQuota(data);
                 setCountdown(data.translation.resetIn);
             }
-        } catch {
-            // silently fail
+        } catch (err) {
+            console.error("[MyPage] fetchWritingData error:", err);
         } finally {
             setWritingLoading(false);
         }
