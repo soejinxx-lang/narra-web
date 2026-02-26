@@ -97,6 +97,20 @@ textarea {
   }
 }
 
+/* 노트북 해상도 자동 스케일링 (1600px 이하 = 125% 스케일링 노트북) */
+@media (max-width: 1600px) {
+  html {
+    zoom: 0.9;
+  }
+}
+
+/* 작은 노트북 (1366px 이하) */
+@media (max-width: 1366px) {
+  html {
+    zoom: 0.85;
+  }
+}
+
 /* 반응형 유틸리티 */
 @media (max-width: 768px) {
   body {
