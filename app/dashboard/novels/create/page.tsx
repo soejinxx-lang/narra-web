@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/lib/i18n/useI18n";
 
 const STORAGE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace("/api", "") ?? "";
 
@@ -13,13 +14,14 @@ const LANGUAGES = [
     { value: "es", label: "Español" },
 ];
 
-const GENRES = [
-    "판타지", "로맨스", "현대판타지", "무협", "SF", "미스터리", "스릴러",
-    "역사", "일상", "성장", "액션", "드라마", "공포", "기타",
-];
+const GENRE_KEYS = [
+    "fantasy", "romance", "modernFantasy", "martialArts", "sf", "mystery", "thriller",
+    "historical", "sliceOfLife", "comingOfAge", "action", "drama", "horror", "other",
+] as const;
 
 export default function CreateNovelPage() {
     const router = useRouter();
+    const { t } = useI18n();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [genre, setGenre] = useState("");
@@ -58,7 +60,7 @@ export default function CreateNovelPage() {
         setCooldownMsg("");
 
         if (!title.trim()) {
-            setError("제목을 입력해주세요.");
+            setError(t("createNovel.errorNoTitle"));
             return;
         }
 
@@ -68,7 +70,6 @@ export default function CreateNovelPage() {
         setLoading(true);
 
         try {
-            // 1. 소설 생성
             const res = await fetch(`${STORAGE}/api/novels`, {
                 method: "POST",
                 headers: {
@@ -89,25 +90,28 @@ export default function CreateNovelPage() {
                 if (res.status === 429) {
                     if (data.error === "SIGNUP_COOLDOWN") {
                         const mins = Math.ceil((data.waitSeconds ?? 600) / 60);
-                        setCooldownMsg(`가입 후 ${mins}분 후에 소설을 만들 수 있습니다.`);
+                        setCooldownMsg(t("createNovel.errorCooldown").replace("{mins}", String(mins)));
                     } else if (data.error === "NOVEL_QUOTA_EXCEEDED") {
                         const h = Math.floor((data.resetIn ?? 0) / 3600);
                         const m = Math.floor(((data.resetIn ?? 0) % 3600) / 60);
-                        setCooldownMsg(`오늘 소설 생성 횟수를 모두 사용했습니다. ${h}시간 ${m}분 후 초기화됩니다.`);
+                        setCooldownMsg(
+                            t("createNovel.errorQuotaExceeded")
+                                .replace("{h}", String(h))
+                                .replace("{m}", String(m))
+                        );
                     } else {
-                        setError(data.error ?? "소설 생성에 실패했습니다.");
+                        setError(data.error ?? t("createNovel.errorGeneric"));
                     }
                     setLoading(false);
                     return;
                 }
-                setError(data.error ?? "소설 생성에 실패했습니다.");
+                setError(data.error ?? t("createNovel.errorGeneric"));
                 setLoading(false);
                 return;
             }
 
             const novelId = data.novel.id;
 
-            // 2. 커버 이미지 업로드 (선택)
             if (coverFile) {
                 const formData = new FormData();
                 formData.append("file", coverFile);
@@ -120,7 +124,7 @@ export default function CreateNovelPage() {
 
             router.push(`/dashboard/novels/${novelId}`);
         } catch {
-            setError("네트워크 오류가 발생했습니다.");
+            setError(t("createNovel.errorNetwork"));
             setLoading(false);
         }
     };
@@ -136,14 +140,14 @@ export default function CreateNovelPage() {
                     marginBottom: 32,
                 }}
             >
-                새 소설 만들기
+                {t("createNovel.title")}
             </h1>
 
             <form onSubmit={handleSubmit}>
-                {/* 커버 이미지 */}
+                {/* Cover image */}
                 <div style={{ marginBottom: 28 }}>
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
-                        표지 이미지
+                        {t("createNovel.coverImage")}
                     </label>
                     <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
                         <div
@@ -160,7 +164,7 @@ export default function CreateNovelPage() {
                                 flexShrink: 0,
                             }}
                         >
-                            {!coverPreview && "표지 없음"}
+                            {!coverPreview && t("createNovel.noCover")}
                         </div>
                         <div>
                             <input
@@ -170,22 +174,22 @@ export default function CreateNovelPage() {
                                 style={{ fontSize: 13, color: "#666" }}
                             />
                             <div style={{ fontSize: 11, color: "#999", marginTop: 6 }}>
-                                JPG, PNG, WEBP 권장 (최대 5MB)
+                                {t("createNovel.coverHint")}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* 제목 */}
+                {/* Title */}
                 <div style={{ marginBottom: 20 }}>
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
-                        제목 <span style={{ color: "#c0392b" }}>*</span>
+                        {t("createNovel.novelTitle")} <span style={{ color: "#c0392b" }}>*</span>
                     </label>
                     <input
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        placeholder="소설 제목을 입력하세요"
+                        placeholder={t("createNovel.titlePlaceholder")}
                         maxLength={100}
                         required
                         disabled={loading}
@@ -200,15 +204,15 @@ export default function CreateNovelPage() {
                     />
                 </div>
 
-                {/* 설명 */}
+                {/* Description */}
                 <div style={{ marginBottom: 20 }}>
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
-                        소개글
+                        {t("createNovel.description")}
                     </label>
                     <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        placeholder="소설 소개를 입력하세요 (독자에게 보여집니다)"
+                        placeholder={t("createNovel.descPlaceholder")}
                         maxLength={1000}
                         rows={4}
                         disabled={loading}
@@ -224,10 +228,10 @@ export default function CreateNovelPage() {
                     />
                 </div>
 
-                {/* 장르 */}
+                {/* Genre */}
                 <div style={{ marginBottom: 20 }}>
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
-                        장르
+                        {t("createNovel.genre")}
                     </label>
                     <select
                         value={genre}
@@ -244,17 +248,17 @@ export default function CreateNovelPage() {
                             cursor: "pointer",
                         }}
                     >
-                        <option value="">장르 선택 (선택사항)</option>
-                        {GENRES.map((g) => (
-                            <option key={g} value={g}>{g}</option>
+                        <option value="">{t("createNovel.genreSelect")}</option>
+                        {GENRE_KEYS.map((key) => (
+                            <option key={key} value={t(`createNovel.genres.${key}`)}>{t(`createNovel.genres.${key}`)}</option>
                         ))}
                     </select>
                 </div>
 
-                {/* 원본 언어 */}
+                {/* Source language */}
                 <div style={{ marginBottom: 32 }}>
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
-                        원본 언어
+                        {t("createNovel.sourceLanguage")}
                     </label>
                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         {LANGUAGES.map((lang) => (
@@ -280,7 +284,7 @@ export default function CreateNovelPage() {
                     </div>
                 </div>
 
-                {/* 에러 / 쿨다운 메시지 */}
+                {/* Error / cooldown */}
                 {error && (
                     <div style={{ padding: "12px", background: "#fee", color: "#c33", marginBottom: 20, fontSize: 13 }}>
                         {error}
@@ -308,7 +312,7 @@ export default function CreateNovelPage() {
                             cursor: loading ? "not-allowed" : "pointer",
                         }}
                     >
-                        {loading ? "저장 중..." : "소설 만들기"}
+                        {loading ? t("createNovel.submitting") : t("createNovel.submit")}
                     </button>
                     <button
                         type="button"
@@ -324,7 +328,7 @@ export default function CreateNovelPage() {
                             cursor: "pointer",
                         }}
                     >
-                        취소
+                        {t("createNovel.cancel")}
                     </button>
                 </div>
             </form>
