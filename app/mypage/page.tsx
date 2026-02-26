@@ -249,8 +249,6 @@ export default function MyPage() {
         return `${days}d`;
     };
 
-    const isAuthor = user?.role === "author" || user?.role === "admin";
-
     if (!mounted || !userId) {
         return (
             <main style={{ padding: "40px 24px", textAlign: "center" }}>
@@ -481,8 +479,10 @@ export default function MyPage() {
 
                 {writingOpen && (
                     <>
-                        {!isAuthor ? (
-                            /* CTA for non-authors */
+                        {writingLoading ? (
+                            <div style={{ padding: "32px", textAlign: "center", color: "#999" }}>{t("common.loading")}</div>
+                        ) : myNovels.length === 0 && !quota ? (
+                            /* No novels AND no quota → show CTA */
                             <div
                                 style={{
                                     border: "1px dashed #ccc",
@@ -560,9 +560,7 @@ export default function MyPage() {
                                 </div>
 
                                 {/* Novel list */}
-                                {writingLoading ? (
-                                    <div style={{ padding: "32px", textAlign: "center", color: "#999" }}>{t("common.loading")}</div>
-                                ) : myNovels.length === 0 ? (
+                                {myNovels.length === 0 ? (
                                     <div style={{ border: "1px dashed #ddd", padding: "40px 24px", textAlign: "center", color: "#999" }}>
                                         <div style={{ fontSize: "14px", marginBottom: "16px" }}>{t("dashboard.noNovels")}</div>
                                         <Link
