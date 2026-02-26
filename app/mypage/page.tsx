@@ -129,11 +129,11 @@ export default function MyPage() {
 
         try {
             const [novelsRes, quotaRes] = await Promise.all([
-                fetch(`${STORAGE}/api/user/novels`, {
+                fetch(`/api/user/novels`, {
                     headers: { Authorization: `Bearer ${token}` },
                     cache: "no-store",
                 }),
-                fetch(`${STORAGE}/api/user/quota`, {
+                fetch(`/api/user/quota`, {
                     headers: { Authorization: `Bearer ${token}` },
                     cache: "no-store",
                 }),
@@ -141,12 +141,8 @@ export default function MyPage() {
 
             if (novelsRes.ok) {
                 const data = await novelsRes.json();
-                // Handle different response formats
                 const novels = data.novels ?? data.data ?? (Array.isArray(data) ? data : []);
-                console.log("[MyPage] novels response:", data, "→ parsed:", novels.length);
                 setMyNovels(novels);
-            } else {
-                console.warn("[MyPage] novels fetch failed:", novelsRes.status, novelsRes.statusText);
             }
 
             if (quotaRes.ok) {
@@ -175,7 +171,7 @@ export default function MyPage() {
         if (!token) return;
 
         // Fetch user posts
-        fetch(`${STORAGE}/api/community/posts`, {
+        fetch(`/api/community/posts`, {
             headers: { Authorization: `Bearer ${token}` },
         })
             .then((r) => r.ok ? r.json() : { posts: [] })
