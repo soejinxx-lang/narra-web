@@ -7,7 +7,7 @@ import SearchBar from "./SearchBar";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const [user, setUser] = useState<{ id: string; username: string; name?: string } | null>(null);
+  const [user, setUser] = useState<{ id: string; username: string; name?: string; role?: string } | null>(null);
   const router = useRouter();
 
   const checkLoginStatus = () => {
@@ -177,12 +177,16 @@ export default function Header() {
           {[
             { href: "/novels", label: "All Novels" },
             { href: "/browse", label: "Browse" },
-            { href: "/dashboard", label: "내 작품", requireLogin: true },
+            { href: "/dashboard", label: "My Page", requireLogin: true, requireRole: "author" },
             { href: "/library", label: "My Library", requireLogin: true },
             { href: "/guide", label: "Guide" },
             { href: "/notes", label: "Notes" },
             { href: "/settings", label: "Settings" },
-          ].filter((item) => !item.requireLogin || user).map((item) => (
+          ].filter((item) => {
+            if (item.requireLogin && !user) return false;
+            if (item.requireRole && user?.role !== item.requireRole && user?.role !== 'admin') return false;
+            return true;
+          }).map((item) => (
             <Link
               key={item.href}
               href={item.href}

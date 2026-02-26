@@ -33,6 +33,14 @@ const STATUS_LABEL: Record<string, string> = {
     draft: "임시저장",
 };
 
+type TranslationInfo = {
+    episode_id: string;
+    done: number;
+    failed: number;
+    pending: number;
+    total: number;
+};
+
 export default function NovelManagePage() {
     const router = useRouter();
     const params = useParams();
@@ -40,8 +48,10 @@ export default function NovelManagePage() {
 
     const [novel, setNovel] = useState<Novel | null>(null);
     const [episodes, setEpisodes] = useState<Episode[]>([]);
+    const [translations, setTranslations] = useState<Record<string, TranslationInfo>>({});
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState(false);
+    const [retrying, setRetrying] = useState<string | null>(null);
     const [error, setError] = useState("");
 
     const getToken = () => {
@@ -79,6 +89,31 @@ export default function NovelManagePage() {
                 const data = await epsRes.json();
                 setEpisodes(data.episodes ?? []);
             }
+
+            // 번역 상태 조회
+            const transRes = await fetch(`${STORAGE}/api/novels/${novelId}/episodes/translations-status`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (transRes.ok) {
+                const transData = await transRes.json();
+                // 기존 API 형식: { statuses: { [ep]: { [lang]: status } } }
+                // → TranslationInfo 맵으로 변환 (ep번호 기준)
+                const transMap: Record<number, TranslationInfo> = {};
+                const statuses = transData.statuses ?? {};
+                for (const [epStr, langs] of Object.entries(statuses)) {
+                    const epNum = Number(epStr);
+                    const langMap = langs as Record<string, string>;
+                    const info: TranslationInfo = { episode_id: "", done: 0, failed: 0, pending: 0, total: 0 };
+                    for (const status of Object.values(langMap)) {
+                        info.total++;
+                        if (status === "DONE") info.done++;
+                        else if (status === "FAILED") info.failed++;
+                        else info.pending++;
+                    }
+                    transMap[epNum] = info;
+                }
+                setTranslations(transMap);
+            }
         } catch {
             setError("데이터를 불러오지 못했습니다.");
         } finally {
@@ -89,7 +124,7 @@ export default function NovelManagePage() {
     useEffect(() => { fetchData(); }, [fetchData]);
 
     const handleDelete = async () => {
-        if (!confirm(`"${novel?.title}" 소설을 삭제하시겠습니까?\n에피소드와 번역 데이터가 모두 삭제됩니다.`)) return;
+        if (!confirm(`"${novel?.title}" 소설을 삭제하시겠습니까?\n(복구 가능)`)) return;
         const token = getToken();
         if (!token) return;
 
@@ -227,54 +262,117 @@ export default function NovelManagePage() {
                 </div>
             ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                    {episodes.map((ep) => (
-                        <div
-                            key={ep.id}
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                padding: "14px 16px",
-                                background: "#fff",
-                                border: "1px solid #e5e5e5",
-                                gap: 12,
-                            }}
-                        >
-                            <span style={{ fontSize: 12, color: "#999", width: 36, flexShrink: 0 }}>
-                                {ep.ep}화
-                            </span>
-                            <span style={{ flex: 1, fontSize: 14, color: "#333", fontWeight: 500 }}>
-                                {ep.title || `제${ep.ep}화`}
-                            </span>
-                            <span
+                    {episodes.map((ep) => {
+                        const trans = translations[ep.ep];
+                        return (
+                            <div
+                                key={ep.id}
                                 style={{
-                                    fontSize: 11,
-                                    padding: "2px 7px",
-                                    background: ep.status === "published" ? "#e8f5e9" : ep.status === "scheduled" ? "#fff8e1" : "#f5f5f5",
-                                    color: ep.status === "published" ? "#2e7d32" : ep.status === "scheduled" ? "#b7791f" : "#999",
-                                }}
-                            >
-                                {STATUS_LABEL[ep.status ?? ""] ?? ep.status ?? "발행"}
-                            </span>
-                            {ep.scheduled_at && (
-                                <span style={{ fontSize: 11, color: "#999" }}>
-                                    {new Date(ep.scheduled_at).toLocaleDateString("ko-KR")}
-                                </span>
-                            )}
-                            <Link
-                                href={`/dashboard/novels/${novelId}/episodes/${ep.ep}/edit`}
-                                style={{
-                                    fontSize: 12,
-                                    color: "#243A6E",
-                                    textDecoration: "none",
-                                    padding: "4px 10px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    padding: "14px 16px",
+                                    background: "#fff",
                                     border: "1px solid #e5e5e5",
-                                    borderRadius: 0,
+                                    gap: 12,
+                                    flexWrap: "wrap",
                                 }}
                             >
-                                수정
-                            </Link>
-                        </div>
-                    ))}
+                                <span style={{ fontSize: 12, color: "#999", width: 36, flexShrink: 0 }}>
+                                    {ep.ep}화
+                                </span>
+                                <span style={{ flex: 1, fontSize: 14, color: "#333", fontWeight: 500, minWidth: 120 }}>
+                                    {ep.title || `제${ep.ep}화`}
+                                </span>
+                                {/* 번역 상태 */}
+                                {trans && (
+                                    <span style={{ fontSize: 11, display: "flex", gap: 4, alignItems: "center" }}>
+                                        {trans.done > 0 && (
+                                            <span style={{ padding: "2px 6px", background: "#e8f5e9", color: "#2e7d32" }}>
+                                                ✓ {trans.done}
+                                            </span>
+                                        )}
+                                        {trans.failed > 0 && (
+                                            <span style={{ padding: "2px 6px", background: "#fef0f0", color: "#c33" }}>
+                                                ✗ {trans.failed}
+                                            </span>
+                                        )}
+                                        {trans.pending > 0 && (
+                                            <span style={{ padding: "2px 6px", background: "#fff8e1", color: "#b7791f" }}>
+                                                ⏳ {trans.pending}
+                                            </span>
+                                        )}
+                                    </span>
+                                )}
+                                {/* 실패 번역 Retry */}
+                                {trans && trans.failed > 0 && (
+                                    <button
+                                        disabled={retrying === ep.id}
+                                        onClick={async () => {
+                                            setRetrying(ep.id);
+                                            const token = getToken();
+                                            if (!token) return;
+                                            const res = await fetch(
+                                                `${STORAGE}/api/novels/${novelId}/episodes/${ep.ep}/translate-all`,
+                                                {
+                                                    method: "POST",
+                                                    headers: { Authorization: `Bearer ${token}` },
+                                                }
+                                            );
+                                            if (res.ok) {
+                                                fetchData();
+                                            } else {
+                                                const data = await res.json();
+                                                setError(data.error === "TRANSLATION_QUOTA_EXCEEDED"
+                                                    ? `번역 쿼터 초과. ${Math.ceil((data.resetIn ?? 0) / 60)}분 후 재시도 가능`
+                                                    : data.message ?? data.error ?? "재시도 실패"
+                                                );
+                                            }
+                                            setRetrying(null);
+                                        }}
+                                        style={{
+                                            fontSize: 11,
+                                            padding: "4px 10px",
+                                            border: "1px solid #c33",
+                                            background: retrying === ep.id ? "#eee" : "#fff",
+                                            color: "#c33",
+                                            cursor: retrying === ep.id ? "wait" : "pointer",
+                                            borderRadius: 0,
+                                        }}
+                                    >
+                                        {retrying === ep.id ? "재시도 중..." : `실패 ${trans.failed}건 재시도`}
+                                    </button>
+                                )}
+                                <span
+                                    style={{
+                                        fontSize: 11,
+                                        padding: "2px 7px",
+                                        background: ep.status === "published" ? "#e8f5e9" : ep.status === "scheduled" ? "#fff8e1" : "#f5f5f5",
+                                        color: ep.status === "published" ? "#2e7d32" : ep.status === "scheduled" ? "#b7791f" : "#999",
+                                    }}
+                                >
+                                    {STATUS_LABEL[ep.status ?? ""] ?? ep.status ?? "발행"}
+                                </span>
+                                {ep.scheduled_at && (
+                                    <span style={{ fontSize: 11, color: "#999" }}>
+                                        {new Date(ep.scheduled_at).toLocaleDateString("ko-KR")}
+                                    </span>
+                                )}
+                                <Link
+                                    href={`/dashboard/novels/${novelId}/episodes/${ep.ep}/edit`}
+                                    style={{
+                                        fontSize: 12,
+                                        color: "#243A6E",
+                                        textDecoration: "none",
+                                        padding: "4px 10px",
+                                        border: "1px solid #e5e5e5",
+                                        borderRadius: 0,
+                                    }}
+                                >
+                                    수정
+                                </Link>
+                            </div>
+                        );
+                    })}
                 </div>
             )}
 
