@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useLocale } from "../../lib/i18n";
 
 export default function FeatureGrid() {
+  const { t } = useLocale();
   const [shouldAnimateQnA, setShouldAnimateQnA] = useState(false);
 
   useEffect(() => {
@@ -20,15 +22,15 @@ export default function FeatureGrid() {
   }, []);
 
   const features = [
-    { title: "Author", href: "/authors" },
-    { title: "Daily Check-in", href: "/daily-checkin" },
-    { title: "Fan Art", href: "/fanart" },
-    { title: "Philosophy", href: "/guide" },
-    { title: "Community", href: "/community" },
-    { title: "Music", href: "/music" },
-    { title: "Browse All", href: "/novels" },
-    { title: "Search", href: "/browse" },
-    { title: "QNA", href: "/support" },
+    { title: t("feature.author"), key: "author", href: "/authors" },
+    { title: t("feature.dailyCheckin"), key: "dailyCheckin", href: "/daily-checkin" },
+    { title: t("feature.fanArt"), key: "fanArt", href: "/fanart" },
+    { title: t("feature.philosophy"), key: "philosophy", href: "/guide" },
+    { title: t("feature.community"), key: "community", href: "/community" },
+    { title: t("feature.music"), key: "music", href: "/music" },
+    { title: t("feature.browseAll"), key: "browseAll", href: "/novels" },
+    { title: t("feature.search"), key: "search", href: "/browse" },
+    { title: t("feature.qna"), key: "qna", href: "/support" },
   ];
 
   return (
@@ -41,7 +43,7 @@ export default function FeatureGrid() {
       }}
     >
       {features.map((feature, index) => (
-        feature.title === "Philosophy" ? (
+        feature.key === "philosophy" ? (
           <div
             key={index}
             style={{
@@ -83,7 +85,7 @@ export default function FeatureGrid() {
                 alignItems: "center",
                 justifyContent: "center",
                 minHeight: "0",
-                ...(feature.title === "QNA" && shouldAnimateQnA ? {
+                ...(feature.key === "qna" && shouldAnimateQnA ? {
                   animation: "rollQnA 2s ease-in-out forwards",
                 } : {}),
               }}

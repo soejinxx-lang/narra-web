@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { sanitizeInput, isValidInput } from "@/app/utils/security";
+import { useLocale } from "../../lib/i18n";
 
 interface Comment {
   id: string;
@@ -34,6 +35,13 @@ interface ForumTopic {
   title: string;
 }
 
+const FORUM_TOPIC_KEYS: Record<string, string> = {
+  general: "community.general",
+  recommendations: "community.recommendations",
+  character: "community.character",
+  translation: "community.translation",
+};
+
 const FORUM_TOPICS: ForumTopic[] = [
   { id: "general", title: "General Discussion" },
   { id: "recommendations", title: "Novel Recommendations" },
@@ -42,6 +50,7 @@ const FORUM_TOPICS: ForumTopic[] = [
 ];
 
 export default function CommunityPage() {
+  const { t } = useLocale();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -108,7 +117,7 @@ export default function CommunityPage() {
     const token = localStorage.getItem("authToken");
 
     if (!token) {
-      alert("Please log in to create a post.");
+      alert(t("community.loginToPost"));
       return;
     }
 
@@ -135,7 +144,7 @@ export default function CommunityPage() {
         setShowPostModal(false);
         fetchPosts(filteredTopic || undefined);
       } else {
-        alert("Failed to create post. Please try again.");
+        alert(t("community.postFailed"));
       }
     } catch (error) {
       console.error("Create post error", error);
@@ -144,7 +153,7 @@ export default function CommunityPage() {
 
   // 4. Delete Post
   const handleDeletePost = async (postId: string) => {
-    if (!confirm("Are you sure you want to delete this post?")) return;
+    if (!confirm(t("community.deleteConfirm"))) return;
 
     const token = localStorage.getItem("authToken");
     if (!token) return;
@@ -159,7 +168,7 @@ export default function CommunityPage() {
         setPosts(prev => prev.filter(p => p.id !== postId));
         if (selectedPost?.id === postId) setSelectedPost(null);
       } else {
-        alert("Failed to delete post.");
+        alert(t("community.deleteFailed"));
       }
     } catch (error) {
       console.error("Delete post error", error);
@@ -238,7 +247,7 @@ export default function CommunityPage() {
 
     const token = localStorage.getItem("authToken");
     if (!token) {
-      alert("Please log in to comment.");
+      alert(t("community.loginToComment"));
       return;
     }
 
@@ -314,10 +323,10 @@ export default function CommunityPage() {
             letterSpacing: "-0.5px",
             marginBottom: "16px"
           }}>
-            Community
+            {t("community.title")}
           </h1>
           <p style={{ color: "#666", fontSize: "16px", fontFamily: '"KoPub Batang", serif' }}>
-            Share your thoughts on novels, characters, and translations.
+            {t("community.subtitle")}
           </p>
         </div>
         <button
@@ -338,7 +347,7 @@ export default function CommunityPage() {
             transition: "all 0.2s"
           }}
         >
-          WRITE A POST
+          {t("community.writePost")}
         </button>
       </div>
 
@@ -353,7 +362,7 @@ export default function CommunityPage() {
             textTransform: "uppercase",
             letterSpacing: "1px"
           }}>
-            Topics
+            {t("community.topics")}
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div
@@ -368,7 +377,7 @@ export default function CommunityPage() {
                 borderLeft: !filteredTopic ? "2px solid #243A6E" : "none",
                 transition: "all 0.2s ease"
               }}>
-              All Posts
+              {t("community.allPosts")}
             </div>
             {FORUM_TOPICS.map(topic => (
               <div key={topic.id}
@@ -383,7 +392,7 @@ export default function CommunityPage() {
                   borderLeft: filteredTopic === topic.id ? "2px solid #243A6E" : "none",
                   transition: "all 0.2s ease"
                 }}>
-                {topic.title}
+                {t(FORUM_TOPIC_KEYS[topic.id] || topic.title)}
               </div>
             ))}
           </div>
@@ -393,14 +402,14 @@ export default function CommunityPage() {
         <div style={{ flex: 1 }}>
           <div style={{ borderBottom: "1px solid #243A6E", marginBottom: "32px", paddingBottom: "16px" }}>
             <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#243A6E", textTransform: "uppercase", letterSpacing: "1px" }}>
-              {filteredTopic ? FORUM_TOPICS.find(t => t.id === filteredTopic)?.title : "Recent Posts"}
+              {filteredTopic ? t(FORUM_TOPIC_KEYS[filteredTopic] || "") : t("community.recentPosts")}
             </h2>
           </div>
 
           {loading ? (
-            <div style={{ padding: "40px", textAlign: "center", color: "#999" }}>Loading...</div>
+            <div style={{ padding: "40px", textAlign: "center", color: "#999" }}>{t("common.loading")}</div>
           ) : posts.length === 0 ? (
-            <div style={{ padding: "40px", textAlign: "center", color: "#999", border: "1px dashed #ddd" }}>No posts yet. Be the first to write!</div>
+            <div style={{ padding: "40px", textAlign: "center", color: "#999", border: "1px dashed #ddd" }}>{t("community.noPosts")}</div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column" }}>
               {posts.map(post => (
@@ -426,7 +435,7 @@ export default function CommunityPage() {
                     </span>
                     {isOwner(post.author, post.user_id) && (
                       <button onClick={(e) => { e.stopPropagation(); handleDeletePost(post.id); }}
-                        style={{ color: "#999", background: "none", border: "none", cursor: "pointer", fontSize: "12px" }}>Delete</button>
+                        style={{ color: "#999", background: "none", border: "none", cursor: "pointer", fontSize: "12px" }}>{t("community.delete")}</button>
                     )}
                   </div>
 
@@ -464,7 +473,7 @@ export default function CommunityPage() {
             <h2 style={{ fontSize: "32px", fontWeight: 600, color: "#171717", marginBottom: "24px", fontFamily: '"KoPub Batang", serif', lineHeight: 1.3 }}>{selectedPost.title}</h2>
 
             <div style={{ fontSize: "14px", color: "#666", marginBottom: "40px", borderBottom: "1px solid #eee", paddingBottom: "24px", display: "flex", justifyContent: "space-between" }}>
-              <span>by <strong style={{ color: "#243A6E" }}>{selectedPost.author_name || selectedPost.author}</strong></span>
+              <span>{t("community.by")} <strong style={{ color: "#243A6E" }}>{selectedPost.author_name || selectedPost.author}</strong></span>
               <span>{getTimeAgo(selectedPost.created_at)}</span>
             </div>
 
@@ -475,26 +484,26 @@ export default function CommunityPage() {
             {/* Comments */}
             <div style={{ marginTop: "40px", borderTop: "2px solid #171717", paddingTop: "40px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
-                <h3 style={{ fontSize: "18px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>Comments</h3>
+                <h3 style={{ fontSize: "18px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>{t("community.comments")}</h3>
                 <button onClick={() => setShowCommentForm(!showCommentForm)}
                   style={{ fontSize: "14px", textDecoration: "underline", background: "none", border: "none", cursor: "pointer", color: "#243A6E" }}>
-                  Write Comment
+                  {t("community.writeComment")}
                 </button>
               </div>
 
               {showCommentForm && (
                 <form onSubmit={(e) => handleCreateComment(e)} style={{ marginBottom: "40px" }}>
                   <textarea value={newComment} onChange={e => setNewComment(e.target.value)}
-                    placeholder="Share your thoughts..."
+                    placeholder={t("comment.placeholder")}
                     style={{ width: "100%", padding: "16px", border: "1px solid #ddd", minHeight: "100px", marginBottom: "12px", fontFamily: "inherit", fontSize: "15px", outline: "none" }} />
                   <div style={{ textAlign: "right" }}>
-                    <button type="submit" style={{ padding: "10px 24px", background: "#243A6E", color: "#fff", border: "none", cursor: "pointer", fontWeight: 600 }}>Submit</button>
+                    <button type="submit" style={{ padding: "10px 24px", background: "#243A6E", color: "#fff", border: "none", cursor: "pointer", fontWeight: 600 }}>{t("community.submitComment")}</button>
                   </div>
                 </form>
               )}
 
               <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-                {comments.length === 0 && <div style={{ color: "#999", fontStyle: "italic" }}>No comments yet.</div>}
+                {comments.length === 0 && <div style={{ color: "#999", fontStyle: "italic" }}>{t("community.noComments")}</div>}
                 {comments.map(comment => (
                   <div key={comment.id}>
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
@@ -502,14 +511,14 @@ export default function CommunityPage() {
                       <span style={{ fontSize: "12px", color: "#999" }}>{getTimeAgo(comment.created_at)}</span>
                     </div>
                     <div style={{ fontSize: "15px", lineHeight: 1.6, marginBottom: "12px", color: "#444" }}>{comment.content}</div>
-                    <button onClick={() => setReplyingTo(comment.id)} style={{ fontSize: "12px", color: "#999", background: "none", border: "none", cursor: "pointer", padding: 0 }}>Reply</button>
+                    <button onClick={() => setReplyingTo(comment.id)} style={{ fontSize: "12px", color: "#999", background: "none", border: "none", cursor: "pointer", padding: 0 }}>{t("comment.reply")}</button>
 
                     {/* Reply Form */}
                     {replyingTo === comment.id && (
                       <form onSubmit={(e) => handleCreateComment(e, comment.id)} style={{ marginTop: "16px", paddingLeft: "16px", borderLeft: "2px solid #ddd" }}>
-                        <input value={newReply} onChange={e => setNewReply(e.target.value)} placeholder="Write a reply..."
+                        <input value={newReply} onChange={e => setNewReply(e.target.value)} placeholder={t("community.replyPlaceholder")}
                           style={{ width: "100%", padding: "8px", marginBottom: "8px", border: "none", borderBottom: "1px solid #ddd", outline: "none" }} />
-                        <button type="submit" style={{ fontSize: "12px", fontWeight: 600, color: "#243A6E", background: "none", border: "none", cursor: "pointer" }}>Submit Reply</button>
+                        <button type="submit" style={{ fontSize: "12px", fontWeight: 600, color: "#243A6E", background: "none", border: "none", cursor: "pointer" }}>{t("community.submitReply")}</button>
                       </form>
                     )}
 
@@ -536,10 +545,10 @@ export default function CommunityPage() {
       {showPostModal && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(255,255,255,0.95)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}>
           <form onSubmit={handleCreatePost} style={{ background: "#fff", padding: "60px", boxShadow: "0 20px 40px rgba(0,0,0,0.1)", width: "600px", maxWidth: "90%", border: "1px solid #eee" }}>
-            <h2 style={{ marginBottom: "40px", fontSize: "28px", fontFamily: '"KoPub Batang", serif', textAlign: "center", color: "#243A6E" }}>Start a Discussion</h2>
+            <h2 style={{ marginBottom: "40px", fontSize: "28px", fontFamily: '"KoPub Batang", serif', textAlign: "center", color: "#243A6E" }}>{t("community.startDiscussion")}</h2>
 
             <div style={{ marginBottom: "24px" }}>
-              <label style={{ display: "block", marginBottom: "12px", fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: "#999" }}>Category</label>
+              <label style={{ display: "block", marginBottom: "12px", fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: "#999" }}>{t("community.category")}</label>
               <select value={selectedTopic} onChange={e => setSelectedTopic(e.target.value)}
                 style={{ width: "100%", padding: "12px", border: "none", borderBottom: "2px solid #eee", fontSize: "16px", outline: "none", background: "none" }}>
                 {FORUM_TOPICS.map(t => <option key={t.id} value={t.id}>{t.title}</option>)}
@@ -547,22 +556,22 @@ export default function CommunityPage() {
             </div>
 
             <div style={{ marginBottom: "24px" }}>
-              <label style={{ display: "block", marginBottom: "12px", fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: "#999" }}>Title</label>
-              <input value={newPostTitle} onChange={e => setNewPostTitle(e.target.value)} required placeholder="What's on your mind?"
+              <label style={{ display: "block", marginBottom: "12px", fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: "#999" }}>{t("community.postTitle")}</label>
+              <input value={newPostTitle} onChange={e => setNewPostTitle(e.target.value)} required placeholder={t("community.titlePlaceholder")}
                 style={{ width: "100%", padding: "12px", border: "none", borderBottom: "2px solid #eee", fontSize: "18px", outline: "none", fontFamily: '"KoPub Batang", serif' }} />
             </div>
 
             <div style={{ marginBottom: "40px" }}>
-              <label style={{ display: "block", marginBottom: "12px", fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: "#999" }}>Content</label>
-              <textarea value={newPostContent} onChange={e => setNewPostContent(e.target.value)} required placeholder="Write your story..."
+              <label style={{ display: "block", marginBottom: "12px", fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: "#999" }}>{t("community.content")}</label>
+              <textarea value={newPostContent} onChange={e => setNewPostContent(e.target.value)} required placeholder={t("community.contentPlaceholder")}
                 style={{ width: "100%", padding: "12px", border: "1px solid #eee", minHeight: "200px", fontSize: "16px", outline: "none", fontFamily: '"KoPub Batang", serif', lineHeight: 1.6 }} />
             </div>
 
             <div style={{ display: "flex", gap: "16px", justifyContent: "center" }}>
               <button type="button" onClick={() => setShowPostModal(false)}
-                style={{ padding: "12px 32px", background: "none", border: "1px solid #ddd", cursor: "pointer", fontSize: "14px" }}>CANCEL</button>
+                style={{ padding: "12px 32px", background: "none", border: "1px solid #ddd", cursor: "pointer", fontSize: "14px" }}>{t("community.cancel")}</button>
               <button type="submit"
-                style={{ padding: "12px 32px", background: "#243A6E", color: "#fff", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "14px" }}>PUBLISH</button>
+                style={{ padding: "12px 32px", background: "#243A6E", color: "#fff", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "14px" }}>{t("community.publish")}</button>
             </div>
           </form>
         </div>

@@ -4,19 +4,21 @@ import { useMemo, useState, useEffect } from "react";
 import NovelCardWithTracking from "./NovelCardWithTracking";
 import Link from "next/link";
 import { getNovelClicks } from "@/app/utils/clickTracking";
+import { useLocale } from "../../lib/i18n";
 
 type PopularRankingsProps = {
   novels: any[];
 };
 
 export default function PopularRankings({ novels }: PopularRankingsProps) {
+  const { t } = useLocale();
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     // 클라이언트에서만 실행되도록 마운트 상태 설정
     setMounted(true);
-    
+
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
@@ -30,17 +32,17 @@ export default function PopularRankings({ novels }: PopularRankingsProps) {
     if (!mounted) {
       return novels;
     }
-    
+
     const clicks = getNovelClicks();
-    
+
     return [...novels].sort((a, b) => {
       const clicksA = clicks[a.id] || 0;
       const clicksB = clicks[b.id] || 0;
-      
+
       if (clicksB !== clicksA) {
         return clicksB - clicksA;
       }
-      
+
       // 클릭 수가 같으면 ID 기반 정렬
       return Number(b.id.replace("novel-", "")) - Number(a.id.replace("novel-", ""));
     });
@@ -69,7 +71,7 @@ export default function PopularRankings({ novels }: PopularRankingsProps) {
             fontFamily: '"KoPub Batang", serif',
           }}
         >
-          Popular Rankings
+          {t("ranking.title")}
         </div>
         <Link
           href="/browse"
@@ -80,7 +82,7 @@ export default function PopularRankings({ novels }: PopularRankingsProps) {
             fontWeight: 500,
           }}
         >
-          View All →
+          {t("ranking.viewAll")}
         </Link>
       </div>
       <div

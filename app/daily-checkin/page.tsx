@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useLocale } from "../../lib/i18n";
 
 interface Mission {
   id: string;
@@ -13,9 +14,9 @@ interface Mission {
 }
 
 const dailyMissions: Mission[] = [
-  { id: "share", title: "Share a Novel", description: "Share a novel with someone", target: 1, type: "share" },
-  { id: "read5", title: "Read 5 Episodes", description: "Read 5 episodes today", target: 5, type: "read" },
-  { id: "checkin", title: "Daily Check-in", description: "Check in today", target: 1, type: "checkin" },
+  { id: "share", title: "share", description: "shareDesc", target: 1, type: "share" },
+  { id: "read5", title: "readEpisodes", description: "readDesc", target: 5, type: "read" },
+  { id: "checkin", title: "dailyCheckinMission", description: "checkinDesc", target: 1, type: "checkin" },
 ];
 
 // 미국 동부 시간(EST/EDT) 기준 날짜 가져오기 (컴포넌트 외부에서 정의)
@@ -31,6 +32,7 @@ const getUSEasternDate = (): Date => {
 
 export default function DailyCheckInPage() {
   const router = useRouter();
+  const { t } = useLocale();
   const [checkIns, setCheckIns] = useState<Set<string>>(new Set());
   const [currentMonth, setCurrentMonth] = useState(() => getUSEasternDate());
   const [streak, setStreak] = useState(0);
@@ -267,7 +269,7 @@ export default function DailyCheckInPage() {
   if (isLoading) {
     return (
       <main style={{ padding: "32px 24px", maxWidth: "1000px", margin: "0 auto", textAlign: "center" }}>
-        <div style={{ color: "#666" }}>Loading...</div>
+        <div style={{ color: "#666" }}>{t("common.loading")}</div>
       </main>
     );
   }
@@ -368,11 +370,11 @@ export default function DailyCheckInPage() {
             margin: 0,
           }}
         >
-          Daily Check-in
+          {t("checkin.title")}
         </h1>
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <span style={{ color: "#666", fontSize: "14px" }}>
-            Welcome, {currentUser.name || currentUser.username}!
+            {t("checkin.welcome").replace("{name}", currentUser.name || currentUser.username)}
           </span>
           <button
             onClick={handleLogout}
@@ -393,7 +395,7 @@ export default function DailyCheckInPage() {
               e.currentTarget.style.background = "transparent";
             }}
           >
-            Logout
+            {t("checkin.logout")}
           </button>
         </div>
       </div>
@@ -410,7 +412,7 @@ export default function DailyCheckInPage() {
           }}
         >
           <div style={{ fontSize: "32px", fontWeight: 600, color: "#243A6E", marginBottom: "8px" }}>{streak}</div>
-          <div style={{ fontSize: "14px", color: "#666" }}>Day Streak</div>
+          <div style={{ fontSize: "14px", color: "#666" }}>{t("checkin.dayStreak")}</div>
         </div>
         <div
           style={{
@@ -422,7 +424,7 @@ export default function DailyCheckInPage() {
           }}
         >
           <div style={{ fontSize: "32px", fontWeight: 600, color: "#243A6E", marginBottom: "8px" }}>{totalDays}</div>
-          <div style={{ fontSize: "14px", color: "#666" }}>Total Check-ins</div>
+          <div style={{ fontSize: "14px", color: "#666" }}>{t("checkin.totalCheckins")}</div>
         </div>
       </div>
 
@@ -445,7 +447,7 @@ export default function DailyCheckInPage() {
             fontFamily: '"KoPub Batang", serif',
           }}
         >
-          Daily Missions
+          {t("checkin.dailyMissions")}
         </h2>
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {dailyMissions.map((mission) => {
@@ -467,13 +469,13 @@ export default function DailyCheckInPage() {
                   <div style={{ flex: 1 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
                       <h3 style={{ fontSize: "16px", fontWeight: 600, color: "#243A6E", margin: 0 }}>
-                        {mission.title}
+                        {t(`checkin.${mission.title}`)}
                       </h3>
                       {completed && (
                         <span style={{ color: "#4CAF50", fontSize: "18px" }}>✓</span>
                       )}
                     </div>
-                    <p style={{ fontSize: "13px", color: "#666", margin: 0 }}>{mission.description}</p>
+                    <p style={{ fontSize: "13px", color: "#666", margin: 0 }}>{t(`checkin.${mission.description}`)}</p>
                   </div>
                   <div style={{ fontSize: "14px", fontWeight: 500, color: "#243A6E", marginLeft: "12px" }}>
                     {progress} / {mission.target}
@@ -509,7 +511,7 @@ export default function DailyCheckInPage() {
                         textDecoration: "underline",
                       }}
                     >
-                      Go to novels →
+                      {t("checkin.goToNovels")}
                     </Link>
                   </div>
                 )}
@@ -523,7 +525,7 @@ export default function DailyCheckInPage() {
                         textDecoration: "underline",
                       }}
                     >
-                      Start reading →
+                      {t("checkin.startReading")}
                     </Link>
                   </div>
                 )}
@@ -557,7 +559,7 @@ export default function DailyCheckInPage() {
               e.currentTarget.style.background = "#243A6E";
             }}
           >
-            ✓ Check In Today
+            {t("checkin.checkInToday")}
           </button>
         </div>
       )}
@@ -574,7 +576,7 @@ export default function DailyCheckInPage() {
             fontWeight: 500,
           }}
         >
-          ✓ You've already checked in today!
+          {t("checkin.alreadyChecked")}
         </div>
       )}
 
@@ -601,7 +603,7 @@ export default function DailyCheckInPage() {
               fontSize: "14px",
             }}
           >
-            ← Previous
+            ← {t("common.prev")}
           </button>
           <h2
             style={{
@@ -625,7 +627,7 @@ export default function DailyCheckInPage() {
               fontSize: "14px",
             }}
           >
-            Next →
+            {t("common.next")} →
           </button>
         </div>
 
@@ -744,7 +746,7 @@ export default function DailyCheckInPage() {
               border: "2px solid #243A6E",
             }}
           />
-          <span style={{ fontSize: "12px", color: "#666" }}>Checked In</span>
+          <span style={{ fontSize: "12px", color: "#666" }}>{t("checkin.checkedIn")}</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <div
@@ -756,7 +758,7 @@ export default function DailyCheckInPage() {
               border: "2px solid #243A6E",
             }}
           />
-          <span style={{ fontSize: "12px", color: "#666" }}>Today</span>
+          <span style={{ fontSize: "12px", color: "#666" }}>{t("checkin.today")}</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <div
@@ -768,7 +770,7 @@ export default function DailyCheckInPage() {
               border: "1px solid #e5e5e5",
             }}
           />
-          <span style={{ fontSize: "12px", color: "#666" }}>Not Checked</span>
+          <span style={{ fontSize: "12px", color: "#666" }}>{t("checkin.notChecked")}</span>
         </div>
       </div>
     </main>

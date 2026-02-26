@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState } from "react";
+import { useLocale } from "../../lib/i18n";
 
 interface Track {
   id: string;
@@ -147,6 +148,7 @@ const royaltyFreeMusic: Tone[] = [
 ];
 
 export default function MusicPage() {
+  const { t } = useLocale();
   const [isSpotifyConnected, setIsSpotifyConnected] = useState(false);
   const [selectedOption, setSelectedOption] = useState<"spotify" | "royalty" | null>(null);
   const [selectedTone, setSelectedTone] = useState<Tone | null>(null);
@@ -218,10 +220,10 @@ export default function MusicPage() {
               fontFamily: '"KoPub Batang", serif',
             }}
           >
-            Spotify Music
+            {t("music.spotifyTitle")}
           </h2>
           <p style={{ color: "#666", marginBottom: "24px", lineHeight: 1.6 }}>
-            Connect your Spotify account to listen to your favorite playlists while reading.
+            {t("music.spotifyDesc")}
           </p>
           <button
             onClick={handleSpotifyConnect}
@@ -243,7 +245,7 @@ export default function MusicPage() {
               e.currentTarget.style.background = isSpotifyConnected ? "#1DB954" : "#243A6E";
             }}
           >
-            {isSpotifyConnected ? "??Connected" : "Connect to Spotify"}
+            {isSpotifyConnected ? t("music.spotifyConnected") : t("music.spotifyConnect")}
           </button>
         </div>
 
@@ -276,12 +278,12 @@ export default function MusicPage() {
               textAlign: "center",
             }}
           >
-            Royalty Free Music
+            {t("music.royaltyTitle")}
           </h2>
           {!selectedTone ? (
             <>
               <p style={{ color: "#666", marginBottom: "24px", lineHeight: 1.6, textAlign: "center" }}>
-                Choose a tone to explore our collection of royalty-free tracks.
+                {t("music.royaltyDesc")}
               </p>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px" }}>
                 {royaltyFreeMusic.map((tone) => (
@@ -350,7 +352,7 @@ export default function MusicPage() {
                     e.currentTarget.style.background = "none";
                   }}
                 >
-                  ??Back to Tones
+                  {t("music.backToTones")}
                 </button>
               </div>
               <p style={{ color: "#666", marginBottom: "24px", lineHeight: 1.6 }}>{selectedTone.description}</p>
@@ -404,12 +406,12 @@ export default function MusicPage() {
             </>
           )}
         </div>
-            
-      {/* Attribution */}
-      <div style={{ marginTop: "48px", padding: "16px", background: "#f8f9fa", borderRadius: "8px", fontSize: "13px", color: "#666", textAlign: "center" }}>
-        Music by Kevin MacLeod (incompetech.com) • Licensed under Creative Commons: By Attribution 4.0
+
+        {/* Attribution */}
+        <div style={{ marginTop: "48px", padding: "16px", background: "#f8f9fa", borderRadius: "8px", fontSize: "13px", color: "#666", textAlign: "center" }}>
+          Music by Kevin MacLeod (incompetech.com) • Licensed under Creative Commons: By Attribution 4.0
+        </div>
       </div>
-</div>
     </main>
   );
 }

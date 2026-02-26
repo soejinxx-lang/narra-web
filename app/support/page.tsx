@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "../../lib/i18n";
 
 type QnAItem = {
   question: string;
@@ -8,6 +9,7 @@ type QnAItem = {
 };
 
 export default function SupportPage() {
+  const { t } = useLocale();
   const readersQnA: QnAItem[] = [
     {
       question: "What is NARRA?",
@@ -82,7 +84,7 @@ export default function SupportPage() {
           letterSpacing: "-0.5px",
         }}
       >
-        FAQ & Support
+        {t("support.title")}
       </h1>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "80px" }}>
@@ -99,7 +101,7 @@ export default function SupportPage() {
               opacity: 0.8,
             }}
           >
-            For Readers
+            {t("support.forReaders")}
           </h2>
           <div style={{ display: "flex", flexDirection: "column" }}>
             {readersQnA.map((item, index) => (
@@ -121,7 +123,7 @@ export default function SupportPage() {
               opacity: 0.8,
             }}
           >
-            For Creators
+            {t("support.forCreators")}
           </h2>
           <div style={{ display: "flex", flexDirection: "column" }}>
             {creatorsQnA.map((item, index) => (
@@ -147,10 +149,10 @@ export default function SupportPage() {
               fontFamily: '"KoPub Batang", serif',
             }}
           >
-            Contact
+            {t("support.contact")}
           </h2>
           <p style={{ fontSize: "16px", color: "#444", lineHeight: 1.6, marginBottom: "16px" }}>
-            Have a question or suggestion? Feel free to email us at any time.
+            {t("support.contactDesc")}
           </p>
           <div
             style={{

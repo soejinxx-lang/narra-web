@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { sanitizeInput, isValidInput } from "@/app/utils/security";
+import { useLocale } from "../../lib/i18n";
 
 interface FanArt {
   id: string;
@@ -15,6 +16,7 @@ interface FanArt {
 }
 
 export default function FanArtPage() {
+  const { t } = useLocale();
   const [fanArts, setFanArts] = useState<FanArt[]>([]);
   const [novels, setNovels] = useState<any[]>([]);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -73,13 +75,13 @@ export default function FanArtPage() {
     if (file) {
       // 파일 크기 제한 (5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert("Image size must be less than 5MB");
+        alert(t("fanart.imageSizeError"));
         return;
       }
 
       // 이미지 파일만 허용
       if (!file.type.startsWith("image/")) {
-        alert("Please select an image file");
+        alert(t("fanart.imageTypeError"));
         return;
       }
 
@@ -102,24 +104,24 @@ export default function FanArtPage() {
     const sanitizedDescription = sanitizeInput(description.trim());
 
     if (!sanitizedAuthor || !selectedNovelId || !sanitizedDescription || !imageFile) {
-      alert("Please fill in all fields and select an image");
+      alert(t("fanart.fillAllFields"));
       return;
     }
 
     // 입력 유효성 검사
     if (!isValidInput(sanitizedAuthor, 100) || !isValidInput(sanitizedDescription, 2000)) {
-      alert("Invalid input detected");
+      alert(t("fanart.invalidInput"));
       return;
     }
 
     if (!imagePreview) {
-      alert("Please select an image");
+      alert(t("fanart.selectImage"));
       return;
     }
 
     const selectedNovel = novels.find((n) => n.id === selectedNovelId);
     if (!selectedNovel) {
-      alert("Please select a novel");
+      alert(t("fanart.selectNovel"));
       return;
     }
 
@@ -188,7 +190,7 @@ export default function FanArtPage() {
             fontFamily: '"KoPub Batang", serif',
           }}
         >
-          Fan Art
+          {t("fanart.title")}
         </h1>
         <button
           onClick={() => setShowUploadModal(true)}
@@ -210,7 +212,7 @@ export default function FanArtPage() {
             e.currentTarget.style.background = "#243A6E";
           }}
         >
-          + Upload Fan Art
+          {t("fanart.upload")}
         </button>
       </div>
 
@@ -224,7 +226,7 @@ export default function FanArtPage() {
             fontSize: "16px",
           }}
         >
-          No fan art yet. Be the first to share!
+          {t("fanart.noArt")}
         </div>
       ) : (
         <div
@@ -286,7 +288,7 @@ export default function FanArtPage() {
                   {fanArt.description}
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ fontSize: "12px", color: "#999" }}>by {fanArt.author}</div>
+                  <div style={{ fontSize: "12px", color: "#999" }}>{t("fanart.by")} {fanArt.author}</div>
                   <div style={{ fontSize: "12px", color: "#999" }}>{getTimeAgo(fanArt.time)}</div>
                 </div>
               </div>
@@ -334,7 +336,7 @@ export default function FanArtPage() {
                 fontFamily: '"KoPub Batang", serif',
               }}
             >
-              Upload Fan Art
+              {t("fanart.uploadTitle")}
             </h2>
 
             <form onSubmit={handleSubmit}>
@@ -348,13 +350,13 @@ export default function FanArtPage() {
                     color: "#243A6E",
                   }}
                 >
-                  Author Name
+                  {t("fanart.authorName")}
                 </label>
                 <input
                   type="text"
                   value={authorName}
                   onChange={(e) => setAuthorName(e.target.value)}
-                  placeholder="Enter your name"
+                  placeholder={t("fanart.enterName")}
                   required
                   disabled={!!currentUser}
                   style={{
@@ -369,7 +371,7 @@ export default function FanArtPage() {
                 />
                 {currentUser && (
                   <div style={{ fontSize: "12px", color: "#666", marginTop: "4px" }}>
-                    Using your account name
+                    {t("fanart.usingAccount")}
                   </div>
                 )}
               </div>
@@ -384,7 +386,7 @@ export default function FanArtPage() {
                     color: "#243A6E",
                   }}
                 >
-                  Novel
+                  {t("fanart.novel")}
                 </label>
                 <select
                   value={selectedNovelId}
@@ -418,7 +420,7 @@ export default function FanArtPage() {
                     color: "#243A6E",
                   }}
                 >
-                  Image
+                  {t("fanart.image")}
                 </label>
                 <input
                   type="file"
@@ -468,12 +470,12 @@ export default function FanArtPage() {
                     color: "#243A6E",
                   }}
                 >
-                  Description
+                  {t("fanart.description")}
                 </label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Write a description..."
+                  placeholder={t("fanart.descPlaceholder")}
                   required
                   rows={4}
                   style={{
@@ -510,7 +512,7 @@ export default function FanArtPage() {
                     cursor: "pointer",
                   }}
                 >
-                  Cancel
+                  {t("fanart.cancel")}
                 </button>
                 <button
                   type="submit"
@@ -532,7 +534,7 @@ export default function FanArtPage() {
                     e.currentTarget.style.background = "#243A6E";
                   }}
                 >
-                  Upload
+                  {t("fanart.uploadBtn")}
                 </button>
               </div>
             </form>

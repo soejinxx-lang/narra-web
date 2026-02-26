@@ -7,12 +7,14 @@ import { getSessionClickedNovels } from "@/app/utils/clickTracking";
 import { fetchNovels } from "@/lib/api";
 import NovelCard from "@/app/components/NovelCard";
 import { toRoman } from "@/lib/utils";
+import { useLocale } from "../../lib/i18n";
 
 type ReadingNovelsProps = {
   allNovels?: any[];
 };
 
 export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
+  const { t } = useLocale();
   const [readingNovels, setReadingNovels] = useState<Array<{ novelId: string; episodeEp: string; progress: number; lastReadAt: number; history?: Record<string, { progress: number; scrollPosition?: number; lastReadAt: number }> }>>([]);
   const [sessionClickedNovels, setSessionClickedNovels] = useState<Array<{ novelId: string; lastClickedAt: number }>>([]);
   const [novels, setNovels] = useState<any[]>(allNovels);
@@ -204,7 +206,7 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
             fontFamily: '"KoPub Batang", serif',
           }}
         >
-          Continue Reading
+          {t("reading.title")}
         </div>
         {mounted && allReadingNovelsCount > 3 && readingNovelsWithInfo.length > 0 && (
           <button
@@ -219,7 +221,7 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
               textDecoration: "none",
             }}
           >
-            {showAll ? "Show Less" : `View All (${allReadingNovelsCount}) →`}
+            {showAll ? t("reading.showLess") : t("reading.viewAll").replace("{count}", String(allReadingNovelsCount))}
           </button>
         )}
       </div>
@@ -233,7 +235,7 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
             fontSize: "16px",
           }}
         >
-          Loading...
+          {t("reading.loading")}
         </div>
       ) : readingNovelsWithInfo.length === 0 ? (
         <div
@@ -244,7 +246,7 @@ export default function ReadingNovels({ allNovels = [] }: ReadingNovelsProps) {
             fontSize: "16px",
           }}
         >
-          No recent reading history.
+          {t("reading.noHistory")}
         </div>
       ) : (
         <div
