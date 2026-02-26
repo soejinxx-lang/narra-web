@@ -1,20 +1,20 @@
 .homeGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
   gap: 40px;
   align-items: start;
   margin-bottom: 60px;
+  overflow: hidden;
 }
 
 .leftSection {
-  margin-right: auto;
-  max-width: 600px;
-  margin-left: -1.3cm;
+  max-width: 100%;
 }
 
 .carouselSection {
   position: sticky;
   top: 80px;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
@@ -24,7 +24,6 @@
   }
 
   .leftSection {
-    margin-left: 0;
     max-width: 100%;
   }
 
@@ -33,4 +32,3 @@
     top: 0;
   }
 }
-

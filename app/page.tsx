@@ -21,6 +21,7 @@ export default async function Page() {
         minHeight: "100vh",
         maxWidth: "1400px",
         margin: "0 auto",
+        overflowX: "hidden",
       }}
     >
       <div className={styles.homeGrid}>
