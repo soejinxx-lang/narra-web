@@ -179,14 +179,12 @@ export default function Header() {
           {[
             { href: "/novels", labelKey: "header.allNovels" },
             { href: "/browse", labelKey: "header.browse" },
-            { href: "/dashboard", labelKey: "header.myPage", requireLogin: true, requireRole: "author" },
-            { href: "/library", labelKey: "header.library", requireLogin: true },
+            { href: "/mypage", labelKey: "header.myPage", requireLogin: true },
             { href: "/guide", labelKey: "header.guide" },
             { href: "/notes", labelKey: "header.notes" },
             { href: "/settings", labelKey: "header.settings" },
           ].filter((item) => {
             if (item.requireLogin && !user) return false;
-            if (item.requireRole && user?.role !== item.requireRole && user?.role !== 'admin') return false;
             return true;
           }).map((item) => (
             <Link
