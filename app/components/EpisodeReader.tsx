@@ -9,6 +9,7 @@ import CommentSection from "./CommentSection";
 import { saveReadingProgress, getCurrentUserId, getNovelProgress, saveSessionScrollPosition, getSessionReadingProgress } from "@/app/utils/readingProgress";
 import { markAsCompleted } from "@/app/utils/library";
 import { toRoman } from "@/lib/utils";
+import DOMPurify from "isomorphic-dompurify";
 
 type EpisodeReaderProps = {
   episode: any;
@@ -484,7 +485,10 @@ export default function EpisodeReader({
         .map((p: string) => `<p>${p.trim().replace(/\n/g, '<br>')}</p>`)
         .join('');
 
-      return paragraphs || processedContent;
+      return DOMPurify.sanitize(paragraphs || processedContent, {
+        ALLOWED_TAGS: ["p", "br", "em", "strong", "b", "i", "span", "div", "hr"],
+        ALLOWED_ATTR: ["class"],
+      });
     }
 
     // ?쒓뎅?대뒗 湲곕낯 episode ?ъ슜
