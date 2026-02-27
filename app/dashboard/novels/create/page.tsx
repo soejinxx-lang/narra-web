@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useI18n } from "@/lib/i18n/useI18n";
+import { useLocale } from "../../../../lib/i18n";
 
 const STORAGE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace("/api", "") ?? "";
 
@@ -21,7 +21,7 @@ const GENRE_KEYS = [
 
 export default function CreateNovelPage() {
     const router = useRouter();
-    const { t } = useI18n();
+    const { t } = useLocale();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [genre, setGenre] = useState("");
