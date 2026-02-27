@@ -51,6 +51,7 @@ const ja = {
         deleteNovel: "小説を削除",
         deleting: "削除中...",
         deleteConfirm: "この小説を削除しますか？（復元可能）",
+        deleteConfirmFinal: "本当に削除しますか？削除されたデータは7日間保管されます。",
         episodes: "エピソード",
         episodeCount: "話",
         edit: "編集",

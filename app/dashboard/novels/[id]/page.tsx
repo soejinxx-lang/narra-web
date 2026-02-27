@@ -124,6 +124,7 @@ export default function NovelManagePage() {
 
     const handleDelete = async () => {
         if (!confirm(t("dashboard.deleteConfirm"))) return;
+        if (!confirm(t("dashboard.deleteConfirmFinal"))) return;
         const token = getToken();
         if (!token) return;
 

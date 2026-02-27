@@ -51,6 +51,7 @@ const en = {
         deleteNovel: "Delete Novel",
         deleting: "Deleting...",
         deleteConfirm: "Delete this novel? (recoverable)",
+        deleteConfirmFinal: "Are you sure? Deleted data will be kept for 7 days.",
         episodes: "Episodes",
         episodeCount: "ep",
         edit: "Edit",

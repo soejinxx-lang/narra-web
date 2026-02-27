@@ -51,6 +51,7 @@ const ko = {
         deleteNovel: "소설 삭제",
         deleting: "삭제 중...",
         deleteConfirm: "이 소설을 삭제하시겠습니까? (복구 가능)",
+        deleteConfirmFinal: "정말로 삭제하시겠습니까? 삭제된 데이터는 7일간 보관됩니다.",
         episodes: "에피소드",
         episodeCount: "화",
         edit: "수정",
