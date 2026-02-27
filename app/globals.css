@@ -13,12 +13,7 @@
   --border-color: #e5e5e5;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+
 
 html,
 body {
@@ -85,17 +80,17 @@ button {
   font-family: inherit;
 }
 
-/* 입력 필드 기본 스타일 */
+/* 입력 필드 기본 스타일 — 라이트 모드 강제 */
 input,
-textarea {
+textarea,
+select {
   font-family: inherit;
+  background-color: #fff;
+  color: #333;
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-}
+
 
 
 
