@@ -57,6 +57,7 @@ export default function NovelCard({ novel }: NovelCardProps) {
           fontWeight: 600,
           textAlign: "center",
           lineHeight: 1.3,
+          color: "#222",
           flexGrow: 1,
           maxHeight: "60px",
           display: "flex",
