@@ -71,6 +71,9 @@ const ko = {
         novelQuota: "소설 생성",
         remaining: "남음",
         resetIn: "초기화까지",
+        deleteEpisode: "삭제",
+        deleteEpConfirm: "{ep}화를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+        untitledEp: "제{ep}화",
     },
     createNovel: {
         title: "새 소설 만들기",

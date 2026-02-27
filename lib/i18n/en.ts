@@ -71,6 +71,9 @@ const en = {
         novelQuota: "Novel creation",
         remaining: "left",
         resetIn: "resets in",
+        deleteEpisode: "Delete",
+        deleteEpConfirm: "Delete episode {ep}? This cannot be undone.",
+        untitledEp: "Episode {ep}",
     },
     createNovel: {
         title: "Create New Novel",

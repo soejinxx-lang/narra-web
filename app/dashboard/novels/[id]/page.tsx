@@ -279,7 +279,7 @@ export default function NovelManagePage() {
                                     {ep.ep}{t("dashboard.episodeCount")}
                                 </span>
                                 <span style={{ flex: 1, fontSize: 14, color: "#333", fontWeight: 500, minWidth: 120 }}>
-                                    {ep.title || `제${ep.ep}화`}
+                                    {ep.title || t("dashboard.untitledEp").replace("{ep}", String(ep.ep))}
                                 </span>
                                 {/* 번역 상태 */}
                                 {trans && (
@@ -337,7 +337,7 @@ export default function NovelManagePage() {
                                             borderRadius: 0,
                                         }}
                                     >
-                                        {retrying === ep.id ? "재시도 중..." : `실패 ${trans.failed}건 재시도`}
+                                        {retrying === ep.id ? t("dashboard.retrying") : t("dashboard.retryFailedCount").replace("{count}", String(trans.failed))}
                                     </button>
                                 )}
                                 <span
@@ -366,8 +366,43 @@ export default function NovelManagePage() {
                                         borderRadius: 0,
                                     }}
                                 >
-                                    수정
+                                    {t("dashboard.edit")}
                                 </Link>
+                                <button
+                                    onClick={async () => {
+                                        if (!confirm(t("dashboard.deleteEpConfirm").replace("{ep}", String(ep.ep)))) return;
+                                        const token = getToken();
+                                        if (!token) return;
+                                        try {
+                                            const res = await fetch(
+                                                `${STORAGE}/api/novels/${novelId}/episodes/${ep.ep}`,
+                                                {
+                                                    method: "DELETE",
+                                                    headers: { Authorization: `Bearer ${token}` },
+                                                }
+                                            );
+                                            if (res.ok) {
+                                                fetchData();
+                                            } else {
+                                                const data = await res.json();
+                                                setError(data.error ?? "Failed to delete episode");
+                                            }
+                                        } catch {
+                                            setError(t("episodeNew.networkError"));
+                                        }
+                                    }}
+                                    style={{
+                                        fontSize: 12,
+                                        color: "#c0392b",
+                                        padding: "4px 10px",
+                                        border: "1px solid #f5c6c6",
+                                        background: "#fff",
+                                        borderRadius: 0,
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    {t("dashboard.deleteEpisode")}
+                                </button>
                             </div>
                         );
                     })}
