@@ -378,5 +378,15 @@ const en = {
         saveAndTranslate: "Save + Start Translation",
         cancel: "Cancel",
     },
+    entities: {
+        title: "Proper Nouns",
+        add: "+ Add",
+        sourceText: "Original Text",
+        sourcePlaceholder: "Character name, place name, etc.",
+        deleteConfirm: "Delete this entity?",
+        empty: "No proper nouns registered. Add character names and places for consistent translations.",
+        collapse: "Show less",
+        showMore: "+{count} more",
+    },
 };
 export default en;

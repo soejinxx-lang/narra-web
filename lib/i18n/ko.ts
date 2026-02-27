@@ -378,5 +378,15 @@ const ko = {
         saveAndTranslate: "저장 + 번역 시작",
         cancel: "취소",
     },
+    entities: {
+        title: "고유명사 관리",
+        add: "+ 추가",
+        sourceText: "원문",
+        sourcePlaceholder: "캐릭터명, 지명 등",
+        deleteConfirm: "이 고유명사를 삭제하시겠습니까?",
+        empty: "등록된 고유명사가 없습니다. 캐릭터명, 지명 등을 등록하면 번역 일관성이 높아집니다.",
+        collapse: "접기",
+        showMore: "+{count}개 더 보기",
+    },
 };
 export default ko;
