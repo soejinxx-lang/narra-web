@@ -381,6 +381,13 @@ const ko = {
     entities: {
         title: "고유명사 관리",
         add: "+ 추가",
+        extract: "AI 추출",
+        extracting: "추출 중...",
+        candidates: "추출된 후보",
+        extractFail: "고유명사 추출에 실패했습니다.",
+        extractEpFail: "에피소드 목록을 가져올 수 없습니다.",
+        extractNoEp: "먼저 에피소드를 등록해주세요.",
+        extractNoText: "에피소드에 원문 텍스트가 없습니다.",
         sourceText: "원문",
         sourcePlaceholder: "캐릭터명, 지명 등",
         deleteConfirm: "이 고유명사를 삭제하시겠습니까?",

@@ -410,7 +410,7 @@ export default function NovelManagePage() {
                 </div>
             )}
 
-            <EntityManager novelId={novelId} t={t} />
+            <EntityManager novelId={novelId} novelTitle={novel?.title} t={t} />
 
             <div style={{ marginTop: 24 }}>
                 <Link href="/dashboard" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>

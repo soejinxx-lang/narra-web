@@ -13,12 +13,18 @@ type Entity = {
     locked?: boolean;
 };
 
+type Candidate = {
+    source_text: string;
+    translations: Record<string, string>;
+};
+
 type EntityManagerProps = {
     novelId: string;
+    novelTitle?: string;
     t: (key: string) => string;
 };
 
-export default function EntityManager({ novelId, t }: EntityManagerProps) {
+export default function EntityManager({ novelId, novelTitle, t }: EntityManagerProps) {
     const [entities, setEntities] = useState<Entity[]>([]);
     const [loading, setLoading] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -30,6 +36,10 @@ export default function EntityManager({ novelId, t }: EntityManagerProps) {
     const [newSource, setNewSource] = useState("");
     const [newTranslations, setNewTranslations] = useState<Record<string, string>>({});
     const [saving, setSaving] = useState(false);
+
+    // AI 추출
+    const [extracting, setExtracting] = useState(false);
+    const [extractedCandidates, setExtractedCandidates] = useState<Candidate[]>([]);
 
     const getToken = () => {
         try {
@@ -62,6 +72,123 @@ export default function EntityManager({ novelId, t }: EntityManagerProps) {
         if (savedLang) setPreferredLang(savedLang);
         loadEntities();
     }, [loadEntities]);
+
+    // AI 고유명사 추출
+    const handleExtract = async () => {
+        setExtracting(true);
+        const token = getToken();
+        if (!token) { setExtracting(false); return; }
+
+        try {
+            // 1. 에피소드 목록 가져오기
+            const epsRes = await fetch(
+                `${STORAGE}/api/novels/${novelId}/episodes?include_scheduled=true`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            if (!epsRes.ok) {
+                alert(t("entities.extractEpFail"));
+                setExtracting(false);
+                return;
+            }
+
+            const epsData = await epsRes.json();
+            const episodes = epsData.episodes ?? epsData ?? [];
+            if (episodes.length === 0) {
+                alert(t("entities.extractNoEp"));
+                setExtracting(false);
+                return;
+            }
+
+            // 2. 첫 10개 에피소드의 원문 수집
+            const textsToProcess = episodes
+                .slice(0, 10)
+                .map((ep: { source_text?: string; korean_text?: string; content?: string }) =>
+                    ep.source_text || ep.korean_text || ep.content || ""
+                )
+                .filter((text: string) => text && text.trim());
+
+            if (textsToProcess.length === 0) {
+                alert(t("entities.extractNoText"));
+                setExtracting(false);
+                return;
+            }
+
+            const episodeText = textsToProcess.join("\n\n");
+
+            // 3. Pipeline 호출
+            const pipelineBase =
+                process.env.NEXT_PUBLIC_PIPELINE_BASE_URL ||
+                "https://railway-ocr-server-2-production.up.railway.app";
+
+            const res = await fetch(`${pipelineBase}/extract_entities`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-access-pin": "060704",
+                },
+                body: JSON.stringify({
+                    novel_title: novelTitle || novelId,
+                    episode_text: episodeText,
+                    languages: ["en", "ja", "zh", "es", "fr", "de", "pt", "id"],
+                }),
+            });
+
+            if (!res.ok) {
+                alert(t("entities.extractFail"));
+                setExtracting(false);
+                return;
+            }
+
+            const data = await res.json();
+            const extracted = (data.candidates || [])
+                .map((c: { source_text?: string; translations?: Record<string, string> }) => ({
+                    source_text: c.source_text || "",
+                    translations: c.translations || {},
+                }))
+                .filter((e: Candidate) => e.source_text && Object.keys(e.translations).length > 0);
+
+            // 기존 엔티티와 중복 제거
+            const existing = new Set(entities.map((e) => e.source_text));
+            const newCandidates = extracted.filter((e: Candidate) => !existing.has(e.source_text));
+            setExtractedCandidates(newCandidates);
+        } catch (error) {
+            console.error("Entity extraction failed:", error);
+            alert(t("entities.extractFail"));
+        } finally {
+            setExtracting(false);
+        }
+    };
+
+    const handleSaveCandidate = async (candidate: Candidate, index: number) => {
+        const token = getToken();
+        if (!token) return;
+
+        try {
+            const res = await fetch(`${STORAGE}/api/novels/${novelId}/entities`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    source_text: candidate.source_text,
+                    translations: candidate.translations,
+                    category: "default",
+                }),
+            });
+
+            if (res.ok || res.status === 409) {
+                setExtractedCandidates((prev) => prev.filter((_, i) => i !== index));
+                loadEntities();
+            }
+        } catch (e) {
+            console.error("Failed to save candidate:", e);
+        }
+    };
+
+    const handleDiscardCandidate = (index: number) => {
+        setExtractedCandidates((prev) => prev.filter((_, i) => i !== index));
+    };
 
     const handleAdd = async () => {
         if (!newSource.trim()) return;
@@ -124,7 +251,7 @@ export default function EntityManager({ novelId, t }: EntityManagerProps) {
         });
     };
 
-    const getDisplayTranslation = (entity: Entity) => {
+    const getDisplayTranslation = (entity: Entity | Candidate) => {
         if (!entity.translations) return entity.source_text;
         return entity.translations[preferredLang] || entity.translations["en"] || entity.source_text;
     };
@@ -152,6 +279,22 @@ export default function EntityManager({ novelId, t }: EntityManagerProps) {
                         ))}
                     </select>
                     <button
+                        onClick={handleExtract}
+                        disabled={extracting}
+                        style={{
+                            padding: "6px 14px",
+                            background: extracting ? "#9ca3af" : "#4a6fa5",
+                            color: "#fff",
+                            border: "none",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            cursor: extracting ? "wait" : "pointer",
+                            borderRadius: 0,
+                        }}
+                    >
+                        {extracting ? t("entities.extracting") : t("entities.extract")}
+                    </button>
+                    <button
                         onClick={() => setShowForm(!showForm)}
                         style={{
                             padding: "6px 14px",
@@ -168,6 +311,93 @@ export default function EntityManager({ novelId, t }: EntityManagerProps) {
                     </button>
                 </div>
             </div>
+
+            {/* AI 추출 후보 */}
+            {extractedCandidates.length > 0 && (
+                <div style={{
+                    padding: 16,
+                    background: "#fffbeb",
+                    border: "1px solid #fbbf24",
+                    marginBottom: 16,
+                }}>
+                    <h3 style={{ fontSize: 13, fontWeight: 600, color: "#92400e", marginTop: 0, marginBottom: 10 }}>
+                        {t("entities.candidates")} ({extractedCandidates.length})
+                    </h3>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        {extractedCandidates.map((candidate, idx) => (
+                            <div
+                                key={idx}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    padding: "10px 12px",
+                                    background: "#fff",
+                                    gap: 10,
+                                }}
+                            >
+                                <div style={{ flex: 1 }}>
+                                    <span style={{ fontWeight: 600, fontSize: 13 }}>
+                                        {candidate.source_text}
+                                    </span>
+                                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 4 }}>
+                                        {Object.entries(candidate.translations)
+                                            .slice(0, 3)
+                                            .map(([lang, trans]) => (
+                                                <span key={lang} style={{
+                                                    padding: "2px 6px",
+                                                    background: "#e0f2fe",
+                                                    color: "#0369a1",
+                                                    fontSize: 11,
+                                                }}>
+                                                    {lang.toUpperCase()}: {trans}
+                                                </span>
+                                            ))}
+                                        {Object.keys(candidate.translations).length > 3 && (
+                                            <span style={{
+                                                padding: "2px 6px",
+                                                background: "#f0f0f0",
+                                                color: "#999",
+                                                fontSize: 11,
+                                            }}>
+                                                +{Object.keys(candidate.translations).length - 3}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => handleSaveCandidate(candidate, idx)}
+                                    style={{
+                                        padding: "4px 12px",
+                                        background: "#243A6E",
+                                        color: "#fff",
+                                        border: "none",
+                                        fontSize: 11,
+                                        fontWeight: 600,
+                                        cursor: "pointer",
+                                        borderRadius: 0,
+                                    }}
+                                >
+                                    {t("common.save")}
+                                </button>
+                                <button
+                                    onClick={() => handleDiscardCandidate(idx)}
+                                    style={{
+                                        padding: "4px 8px",
+                                        background: "#fff",
+                                        color: "#c0392b",
+                                        border: "1px solid #f5c6c6",
+                                        fontSize: 11,
+                                        cursor: "pointer",
+                                        borderRadius: 0,
+                                    }}
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* 수동 추가 폼 */}
             {showForm && (
@@ -273,23 +503,57 @@ export default function EntityManager({ novelId, t }: EntityManagerProps) {
                                         → {getDisplayTranslation(entity)}
                                     </span>
                                 </div>
-                                {expandedEntities.has(entity.id) && entity.translations && (
+                                {/* 축소: 첫 3개 번역 배지 / 확장: 전체 번역 */}
+                                {entity.translations && Object.keys(entity.translations).length > 0 && (
                                     <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 6 }}>
-                                        {Object.entries(entity.translations)
-                                            .filter(([lang]) => lang !== preferredLang)
-                                            .map(([lang, trans]) => (
-                                                <span
-                                                    key={lang}
-                                                    style={{
+                                        {expandedEntities.has(entity.id) ? (
+                                            // 확장: 선호 언어 제외 전체
+                                            Object.entries(entity.translations)
+                                                .filter(([lang]) => lang !== preferredLang)
+                                                .map(([lang, trans]) => (
+                                                    <span
+                                                        key={lang}
+                                                        style={{
+                                                            padding: "2px 6px",
+                                                            background: "#e8f0fe",
+                                                            color: "#1a56db",
+                                                            fontSize: 11,
+                                                        }}
+                                                    >
+                                                        {lang.toUpperCase()}: {trans}
+                                                    </span>
+                                                ))
+                                        ) : (
+                                            // 축소: 선호 언어 제외 첫 3개 + more
+                                            <>
+                                                {Object.entries(entity.translations)
+                                                    .filter(([lang]) => lang !== preferredLang)
+                                                    .slice(0, 3)
+                                                    .map(([lang, trans]) => (
+                                                        <span
+                                                            key={lang}
+                                                            style={{
+                                                                padding: "2px 6px",
+                                                                background: "#dbeafe",
+                                                                color: "#1e40af",
+                                                                fontSize: 11,
+                                                            }}
+                                                        >
+                                                            {lang.toUpperCase()}: {trans}
+                                                        </span>
+                                                    ))}
+                                                {Object.entries(entity.translations).filter(([lang]) => lang !== preferredLang).length > 3 && (
+                                                    <span style={{
                                                         padding: "2px 6px",
-                                                        background: "#e8f0fe",
-                                                        color: "#1a56db",
+                                                        background: "#f0f0f0",
+                                                        color: "#999",
                                                         fontSize: 11,
-                                                    }}
-                                                >
-                                                    {lang.toUpperCase()}: {trans}
-                                                </span>
-                                            ))}
+                                                    }}>
+                                                        +{Object.entries(entity.translations).filter(([lang]) => lang !== preferredLang).length - 3}
+                                                    </span>
+                                                )}
+                                            </>
+                                        )}
                                     </div>
                                 )}
                             </div>

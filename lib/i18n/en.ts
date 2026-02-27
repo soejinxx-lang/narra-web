@@ -381,6 +381,13 @@ const en = {
     entities: {
         title: "Proper Nouns",
         add: "+ Add",
+        extract: "AI Extract",
+        extracting: "Extracting...",
+        candidates: "Extracted Candidates",
+        extractFail: "Entity extraction failed.",
+        extractEpFail: "Failed to fetch episodes.",
+        extractNoEp: "Please add episodes first.",
+        extractNoText: "No source text found in episodes.",
         sourceText: "Original Text",
         sourcePlaceholder: "Character name, place name, etc.",
         deleteConfirm: "Delete this entity?",
