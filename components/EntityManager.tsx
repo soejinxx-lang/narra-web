@@ -127,7 +127,7 @@ export default function EntityManager({ novelId, novelTitle, locale, showExtract
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "x-access-pin": "060704",
+                    "x-access-pin": process.env.NEXT_PUBLIC_PIPELINE_PIN || "",
                 },
                 body: JSON.stringify({
                     novel_title: novelTitle || novelId,
