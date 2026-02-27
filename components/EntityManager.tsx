@@ -56,7 +56,10 @@ export default function EntityManager({ novelId, novelTitle, locale, t }: Entity
     const loadEntities = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${STORAGE}/api/novels/${novelId}/entities`);
+            const token = getToken();
+            const res = await fetch(`${STORAGE}/api/novels/${novelId}/entities`, {
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
             if (res.ok) {
                 const data = await res.json();
                 setEntities(data?.entities || []);
