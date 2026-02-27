@@ -472,105 +472,65 @@ export default function EntityManager({ novelId, novelTitle, locale, t }: Entity
                         <div
                             key={entity.id}
                             style={{
-                                display: "flex",
-                                alignItems: "flex-start",
                                 padding: "12px 16px",
                                 background: "#fff",
                                 border: "1px solid #e5e5e5",
-                                gap: 12,
                             }}
                         >
-                            <div style={{ flex: 1 }}>
+                            <div
+                                onClick={() => toggleExpand(entity.id)}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    cursor: "pointer",
+                                }}
+                            >
                                 <div style={{ fontSize: 14, fontWeight: 600, color: "#333" }}>
                                     {entity.source_text}
-                                    <span style={{ fontWeight: 400, color: "#666", marginLeft: 8 }}>
+                                    <span style={{ fontWeight: 400, color: "#333", marginLeft: 8 }}>
                                         → {getDisplayTranslation(entity)}
                                     </span>
                                 </div>
-                                {/* 축소: 첫 3개 번역 배지 / 확장: 전체 번역 */}
-                                {entity.translations && Object.keys(entity.translations).length > 0 && (
-                                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 6 }}>
-                                        {expandedEntities.has(entity.id) ? (
-                                            // 확장: 선호 언어 제외 전체
-                                            Object.entries(entity.translations)
-                                                .filter(([lang]) => lang !== preferredLang)
-                                                .map(([lang, trans]) => (
-                                                    <span
-                                                        key={lang}
-                                                        style={{
-                                                            padding: "2px 6px",
-                                                            background: "#e8f0fe",
-                                                            color: "#1a56db",
-                                                            fontSize: 11,
-                                                        }}
-                                                    >
-                                                        {lang.toUpperCase()}: {trans}
-                                                    </span>
-                                                ))
-                                        ) : (
-                                            // 축소: 선호 언어 제외 첫 3개 + more
-                                            <>
-                                                {Object.entries(entity.translations)
-                                                    .filter(([lang]) => lang !== preferredLang)
-                                                    .slice(0, 3)
-                                                    .map(([lang, trans]) => (
-                                                        <span
-                                                            key={lang}
-                                                            style={{
-                                                                padding: "2px 6px",
-                                                                background: "#dbeafe",
-                                                                color: "#1e40af",
-                                                                fontSize: 11,
-                                                            }}
-                                                        >
-                                                            {lang.toUpperCase()}: {trans}
-                                                        </span>
-                                                    ))}
-                                                {Object.entries(entity.translations).filter(([lang]) => lang !== preferredLang).length > 3 && (
-                                                    <span style={{
-                                                        padding: "2px 6px",
-                                                        background: "#f0f0f0",
-                                                        color: "#999",
-                                                        fontSize: 11,
-                                                    }}>
-                                                        +{Object.entries(entity.translations).filter(([lang]) => lang !== preferredLang).length - 3}
-                                                    </span>
-                                                )}
-                                            </>
-                                        )}
-                                    </div>
-                                )}
+                                <div style={{ display: "flex", gap: 4, alignItems: "center", flexShrink: 0 }}>
+                                    <span style={{ fontSize: 11, color: "#999" }}>
+                                        {expandedEntities.has(entity.id) ? "▲" : "▼"}
+                                    </span>
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); handleDelete(entity); }}
+                                        style={{
+                                            padding: "4px 8px",
+                                            border: "1px solid #f5c6c6",
+                                            background: "#fff",
+                                            fontSize: 11,
+                                            cursor: "pointer",
+                                            borderRadius: 0,
+                                            color: "#c0392b",
+                                        }}
+                                    >
+                                        ×
+                                    </button>
+                                </div>
                             </div>
-                            <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
-                                <button
-                                    onClick={() => toggleExpand(entity.id)}
-                                    style={{
-                                        padding: "4px 8px",
-                                        border: "1px solid #e5e5e5",
-                                        background: "#fff",
-                                        fontSize: 11,
-                                        cursor: "pointer",
-                                        borderRadius: 0,
-                                        color: "#666",
-                                    }}
-                                >
-                                    {expandedEntities.has(entity.id) ? "▲" : "▼"}
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(entity)}
-                                    style={{
-                                        padding: "4px 8px",
-                                        border: "1px solid #f5c6c6",
-                                        background: "#fff",
-                                        fontSize: 11,
-                                        cursor: "pointer",
-                                        borderRadius: 0,
-                                        color: "#c0392b",
-                                    }}
-                                >
-                                    ×
-                                </button>
-                            </div>
+                            {/* 확장: 전체 번역 표시 */}
+                            {expandedEntities.has(entity.id) && entity.translations && (
+                                <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 8 }}>
+                                    {Object.entries(entity.translations).map(([lang, trans]) => (
+                                        <span
+                                            key={lang}
+                                            style={{
+                                                padding: "2px 6px",
+                                                background: lang === preferredLang ? "#e8f0fe" : "#f3f4f6",
+                                                color: lang === preferredLang ? "#1a56db" : "#555",
+                                                fontSize: 11,
+                                                fontWeight: lang === preferredLang ? 600 : 400,
+                                            }}
+                                        >
+                                            {lang.toUpperCase()}: {trans}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     ))}
                     {entities.length > 5 && (
