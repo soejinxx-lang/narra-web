@@ -532,8 +532,8 @@ export default function EntityManager({ novelId, novelTitle, locale, showExtract
                                             key={lang}
                                             style={{
                                                 padding: "2px 6px",
-                                                background: lang === preferredLang ? "#e8f0fe" : "#f3f4f6",
-                                                color: lang === preferredLang ? "#1a56db" : "#555",
+                                                background: lang === preferredLang ? "#e0e0e0" : "#f3f4f6",
+                                                color: lang === preferredLang ? "#111" : "#555",
                                                 fontSize: 11,
                                                 fontWeight: lang === preferredLang ? 600 : 400,
                                             }}
