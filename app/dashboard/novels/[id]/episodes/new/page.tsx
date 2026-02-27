@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { useLocale } from "../../../../../lib/i18n";
 
 const STORAGE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace("/api", "") ?? "";
 
@@ -17,6 +18,7 @@ export default function NewEpisodePage() {
     const router = useRouter();
     const params = useParams();
     const novelId = params.id as string;
+    const { t } = useLocale();
 
     const [ep, setEp] = useState<number>(1);
     const [title, setTitle] = useState("");
@@ -95,7 +97,7 @@ export default function NewEpisodePage() {
         setError("");
 
         if (!content.trim()) {
-            setError("본문을 입력해주세요.");
+            setError(t("episodeNew.bodyRequired"));
             return;
         }
 
@@ -123,12 +125,11 @@ export default function NewEpisodePage() {
 
             if (!res.ok) {
                 if (res.status === 429) {
-                    setError(`오늘 번역 횟수를 모두 사용했습니다. ${formatCountdown(data.resetIn ?? quotaResetIn)} 후 초기화됩니다.`);
-                    setQuotaRemaining(0);
+                    setError(t("episodeNew.quotaError").replace("{time}", formatCountdown(data.resetIn ?? quotaResetIn)));
                 } else if (res.status === 409) {
-                    setError(`${ep}화가 이미 존재합니다. 다른 회차 번호를 사용해주세요.`);
+                    setError(t("episodeNew.duplicateEp").replace("{ep}", String(ep)));
                 } else {
-                    setError(data.error ?? "에피소드 저장에 실패했습니다.");
+                    setError(data.error ?? t("episodeNew.saveFailed"));
                 }
                 setLoading(false);
                 return;
@@ -136,7 +137,7 @@ export default function NewEpisodePage() {
 
             router.push(`/dashboard/novels/${novelId}`);
         } catch {
-            setError("네트워크 오류가 발생했습니다.");
+            setError(t("episodeNew.networkError"));
             setLoading(false);
         }
     };
@@ -147,10 +148,10 @@ export default function NewEpisodePage() {
         <main style={{ maxWidth: 760, margin: "0 auto", padding: "40px 24px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
                 <h1 style={{ fontFamily: '"KoPub Batang", serif', fontSize: 22, fontWeight: 600, color: "#243A6E" }}>
-                    새 에피소드 작성
+                    {t("episodeNew.title")}
                 </h1>
                 <Link href={`/dashboard/novels/${novelId}`} style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>
-                    ← 소설 관리로
+                    {t("episodeNew.backToNovel")}
                 </Link>
             </div>
 
@@ -169,10 +170,10 @@ export default function NewEpisodePage() {
                     }}
                 >
                     <div style={{ fontSize: 13, color: quotaExhausted ? "#c0392b" : "#243A6E" }}>
-                        오늘 번역 남은 횟수: <strong>{quotaRemaining}/3</strong>
+                        {t("episodeNew.quotaRemaining")} <strong>{quotaRemaining}/3</strong>
                     </div>
                     <div style={{ fontSize: 13, color: "#666" }}>
-                        리셋까지:{" "}
+                        {t("episodeNew.resetIn")}{" "}
                         <span
                             style={{
                                 fontWeight: 700,
@@ -185,7 +186,7 @@ export default function NewEpisodePage() {
                     </div>
                     {quotaExhausted && (
                         <div style={{ fontSize: 12, color: "#c0392b", width: "100%" }}>
-                            오늘 번역 횟수를 모두 사용했습니다. 내일 자정에 초기화됩니다.
+                            {t("episodeNew.quotaExhausted")}
                         </div>
                     )}
                 </div>
@@ -196,7 +197,7 @@ export default function NewEpisodePage() {
                 <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
                     <div style={{ width: 100, flexShrink: 0 }}>
                         <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
-                            회차
+                            {t("episodeNew.epNumber")}
                         </label>
                         <input
                             type="number"
@@ -218,13 +219,13 @@ export default function NewEpisodePage() {
                     </div>
                     <div style={{ flex: 1 }}>
                         <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
-                            제목 (선택)
+                            {t("episodeNew.epTitle")}
                         </label>
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder={`제${ep}화`}
+                            placeholder={t("episodeNew.epPlaceholder").replace("{ep}", String(ep))}
                             maxLength={200}
                             disabled={loading}
                             style={{
@@ -242,15 +243,15 @@ export default function NewEpisodePage() {
                 {/* 본문 */}
                 <div style={{ marginBottom: 20 }}>
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
-                        본문 <span style={{ color: "#c0392b" }}>*</span>
+                        {t("episodeNew.body")} <span style={{ color: "#c0392b" }}>*</span>
                         <span style={{ fontWeight: 400, color: "#999", marginLeft: 8, fontSize: 12 }}>
-                            {content.length.toLocaleString()}자
+                            {t("episodeNew.charCount").replace("{count}", content.length.toLocaleString())}
                         </span>
                     </label>
                     <textarea
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
-                        placeholder="에피소드 내용을 입력하세요..."
+                        placeholder={t("episodeNew.bodyPlaceholder")}
                         rows={24}
                         required
                         disabled={loading}
@@ -271,7 +272,7 @@ export default function NewEpisodePage() {
                 {/* 예약 발행 */}
                 <div style={{ marginBottom: 28 }}>
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
-                        예약 발행 (선택)
+                        {t("episodeNew.schedule")}
                     </label>
                     <input
                         type="datetime-local"
@@ -289,7 +290,7 @@ export default function NewEpisodePage() {
                     />
                     {scheduledAt && (
                         <div style={{ fontSize: 11, color: "#999", marginTop: 6 }}>
-                            ※ 번역은 저장 즉시 시작됩니다. 예약 시간에 독자에게 공개됩니다.
+                            {t("episodeNew.scheduleHint")}
                         </div>
                     )}
                 </div>
@@ -316,7 +317,7 @@ export default function NewEpisodePage() {
                             cursor: loading || quotaExhausted ? "not-allowed" : "pointer",
                         }}
                     >
-                        {loading ? "저장 중..." : quotaExhausted ? "번역 횟수 초과 (내일 가능)" : "저장 + 번역 시작"}
+                        {loading ? t("episodeNew.saving") : quotaExhausted ? t("episodeNew.quotaOver") : t("episodeNew.saveAndTranslate")}
                     </button>
                     <button
                         type="button"
@@ -332,7 +333,7 @@ export default function NewEpisodePage() {
                             cursor: "pointer",
                         }}
                     >
-                        취소
+                        {t("episodeNew.cancel")}
                     </button>
                 </div>
             </form>
