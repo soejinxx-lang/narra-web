@@ -152,7 +152,7 @@ export default function NovelManagePage() {
     }
 
     return (
-        <main style={{ maxWidth: 860, margin: "0 auto", padding: "40px 24px" }}>
+        <main style={{ maxWidth: 1060, margin: "0 auto", padding: "40px 24px" }}>
             {/* 상단 */}
             <div style={{ display: "flex", alignItems: "flex-start", gap: 20, marginBottom: 36 }}>
                 {/* 커버 */}
