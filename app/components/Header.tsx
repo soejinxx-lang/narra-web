@@ -8,6 +8,7 @@ import { useLocale } from "../../lib/i18n";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const [pinned, setPinned] = useState(false);
   const [user, setUser] = useState<{ id: string; username: string; name?: string; role?: string } | null>(null);
   const router = useRouter();
   const { t } = useLocale();
@@ -57,7 +58,32 @@ export default function Header() {
     };
   }, []);
 
-  const closeMenu = () => setOpen(false);
+  const closeMenu = () => {
+    setOpen(false);
+    setPinned(false);
+  };
+
+  const handleHamburgerClick = () => {
+    if (pinned) {
+      // 이미 고정됨 → 해제 + 닫기
+      setPinned(false);
+      setOpen(false);
+    } else if (open) {
+      // hover로 열려있는 상태에서 클릭 → 고정
+      setPinned(true);
+    } else {
+      // 닫혀있는 상태에서 클릭 → 열기 + 고정
+      setOpen(true);
+      setPinned(true);
+    }
+  };
+
+  const handleNavMouseLeave = () => {
+    // 고정 상태면 닫히지 않음
+    if (!pinned) {
+      setOpen(false);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("loggedInUser");
@@ -148,13 +174,16 @@ export default function Header() {
             </Link>
           )}
           <div
-            onMouseEnter={() => setOpen(true)}
+            onMouseEnter={() => { if (!pinned) setOpen(true); }}
+            onClick={handleHamburgerClick}
             style={{
               fontSize: 20,
               background: "none",
               border: "none",
               cursor: "pointer",
               padding: "8px",
+              color: "#243A6E",
+              userSelect: "none",
             }}
           >
             ☰
@@ -164,7 +193,7 @@ export default function Header() {
 
       {open && (
         <nav
-          onMouseLeave={closeMenu}
+          onMouseLeave={handleNavMouseLeave}
           style={{
             position: "absolute",
             top: 56,
@@ -207,3 +236,4 @@ export default function Header() {
     </header>
   );
 }
+
