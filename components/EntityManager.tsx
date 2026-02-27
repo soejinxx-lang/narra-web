@@ -413,6 +413,8 @@ export default function EntityManager({ novelId, novelTitle, locale, showExtract
                                 fontSize: 13,
                                 borderRadius: 0,
                                 outline: "none",
+                                background: "#fff",
+                                color: "#333",
                             }}
                         />
                     </div>
@@ -433,6 +435,8 @@ export default function EntityManager({ novelId, novelTitle, locale, showExtract
                                         fontSize: 12,
                                         borderRadius: 0,
                                         outline: "none",
+                                        background: "#fff",
+                                        color: "#333",
                                     }}
                                 />
                             </div>
@@ -494,9 +498,11 @@ export default function EntityManager({ novelId, novelTitle, locale, showExtract
                             >
                                 <div style={{ fontSize: 14, fontWeight: 600, color: "#333" }}>
                                     {entity.source_text}
-                                    <span style={{ fontWeight: 400, color: "#333", marginLeft: 8 }}>
-                                        → {getDisplayTranslation(entity)}
-                                    </span>
+                                    {getDisplayTranslation(entity) !== entity.source_text && (
+                                        <span style={{ fontWeight: 400, color: "#333", marginLeft: 8 }}>
+                                            → {getDisplayTranslation(entity)}
+                                        </span>
+                                    )}
                                 </div>
                                 <div style={{ display: "flex", gap: 4, alignItems: "center", flexShrink: 0 }}>
                                     <span style={{ fontSize: 11, color: "#999" }}>
