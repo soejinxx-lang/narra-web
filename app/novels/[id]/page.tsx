@@ -242,10 +242,10 @@ export default async function Page({ params }: PageProps) {
                     Views {formatViewCount(ep.views)}
                   </span>
                 ) : null}
-                {/* 날짜 */}
-                {ep.created_at && (
+                {/* 날짜: 예약 공개 날짜 우선, 없으면 등록 날짜 */}
+                {(ep.scheduled_at || ep.created_at) && (
                   <span>
-                    {formatDistanceToNow(new Date(ep.created_at), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(ep.scheduled_at ?? ep.created_at), { addSuffix: true })}
                   </span>
                 )}
               </div>
