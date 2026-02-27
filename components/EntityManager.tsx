@@ -22,10 +22,11 @@ type EntityManagerProps = {
     novelId: string;
     novelTitle?: string;
     locale?: string;
+    showExtract?: boolean;
     t: (key: string) => string;
 };
 
-export default function EntityManager({ novelId, novelTitle, locale, t }: EntityManagerProps) {
+export default function EntityManager({ novelId, novelTitle, locale, showExtract = false, t }: EntityManagerProps) {
     const preferredLang = locale || "en";
     const [entities, setEntities] = useState<Entity[]>([]);
     const [loading, setLoading] = useState(false);
@@ -265,22 +266,24 @@ export default function EntityManager({ novelId, novelTitle, locale, t }: Entity
                     {t("entities.title")} ({entities.length})
                 </h2>
                 <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    <button
-                        onClick={handleExtract}
-                        disabled={extracting}
-                        style={{
-                            padding: "6px 14px",
-                            background: extracting ? "#9ca3af" : "#4a6fa5",
-                            color: "#fff",
-                            border: "none",
-                            fontSize: 12,
-                            fontWeight: 600,
-                            cursor: extracting ? "wait" : "pointer",
-                            borderRadius: 0,
-                        }}
-                    >
-                        {extracting ? t("entities.extracting") : t("entities.extract")}
-                    </button>
+                    {showExtract && (
+                        <button
+                            onClick={handleExtract}
+                            disabled={extracting}
+                            style={{
+                                padding: "6px 14px",
+                                background: extracting ? "#9ca3af" : "#4a6fa5",
+                                color: "#fff",
+                                border: "none",
+                                fontSize: 12,
+                                fontWeight: 600,
+                                cursor: extracting ? "wait" : "pointer",
+                                borderRadius: 0,
+                            }}
+                        >
+                            {extracting ? t("entities.extracting") : t("entities.extract")}
+                        </button>
+                    )}
                     <button
                         onClick={() => setShowForm(!showForm)}
                         style={{
@@ -300,7 +303,7 @@ export default function EntityManager({ novelId, novelTitle, locale, t }: Entity
             </div>
 
             {/* AI 추출 후보 */}
-            {extractedCandidates.length > 0 && (
+            {showExtract && extractedCandidates.length > 0 && (
                 <div style={{
                     padding: 16,
                     background: "#fffbeb",

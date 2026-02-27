@@ -293,7 +293,7 @@ export default function EditNovelPage() {
                 </div>
             </form>
 
-            <EntityManager novelId={novelId} novelTitle={title} locale={locale} t={t} />
+            <EntityManager novelId={novelId} novelTitle={title} locale={locale} showExtract={true} t={t} />
         </main>
     );
 }

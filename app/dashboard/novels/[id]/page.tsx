@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useLocale } from "../../../../lib/i18n";
+import EntityManager from "../../../../components/EntityManager";
 
 const STORAGE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace("/api", "") ?? "";
 
@@ -42,7 +43,7 @@ export default function NovelManagePage() {
     const router = useRouter();
     const params = useParams();
     const novelId = params.id as string;
-    const { t } = useLocale();
+    const { t, locale } = useLocale();
 
     const [novel, setNovel] = useState<Novel | null>(null);
     const [episodes, setEpisodes] = useState<Episode[]>([]);
@@ -409,6 +410,8 @@ export default function NovelManagePage() {
                 </div>
             )}
 
+
+            <EntityManager novelId={novelId} locale={locale} t={t} />
 
             <div style={{ marginTop: 24 }}>
                 <Link href="/dashboard" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>
