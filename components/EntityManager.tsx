@@ -21,15 +21,16 @@ type Candidate = {
 type EntityManagerProps = {
     novelId: string;
     novelTitle?: string;
+    locale?: string;
     t: (key: string) => string;
 };
 
-export default function EntityManager({ novelId, novelTitle, t }: EntityManagerProps) {
+export default function EntityManager({ novelId, novelTitle, locale, t }: EntityManagerProps) {
+    const preferredLang = locale || "en";
     const [entities, setEntities] = useState<Entity[]>([]);
     const [loading, setLoading] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [expandedEntities, setExpandedEntities] = useState<Set<string>>(new Set());
-    const [preferredLang, setPreferredLang] = useState("en");
 
     // 수동 추가 폼
     const [showForm, setShowForm] = useState(false);
@@ -68,8 +69,6 @@ export default function EntityManager({ novelId, novelTitle, t }: EntityManagerP
     }, [novelId]);
 
     useEffect(() => {
-        const savedLang = localStorage.getItem("narra-locale");
-        if (savedLang) setPreferredLang(savedLang);
         loadEntities();
     }, [loadEntities]);
 
@@ -263,21 +262,6 @@ export default function EntityManager({ novelId, novelTitle, t }: EntityManagerP
                     {t("entities.title")} ({entities.length})
                 </h2>
                 <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    <select
-                        value={preferredLang}
-                        onChange={(e) => setPreferredLang(e.target.value)}
-                        style={{
-                            padding: "4px 8px",
-                            border: "1px solid #e5e5e5",
-                            fontSize: 12,
-                            color: "#333",
-                            borderRadius: 0,
-                        }}
-                    >
-                        {ALL_LANGUAGES.map((l) => (
-                            <option key={l} value={l}>{l.toUpperCase()}</option>
-                        ))}
-                    </select>
                     <button
                         onClick={handleExtract}
                         disabled={extracting}

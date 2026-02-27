@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useLocale } from "../../../../lib/i18n";
-import EntityManager from "../../../../components/EntityManager";
 
 const STORAGE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace("/api", "") ?? "";
 
@@ -410,7 +409,6 @@ export default function NovelManagePage() {
                 </div>
             )}
 
-            <EntityManager novelId={novelId} novelTitle={novel?.title} t={t} />
 
             <div style={{ marginTop: 24 }}>
                 <Link href="/dashboard" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>
