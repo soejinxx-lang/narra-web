@@ -108,21 +108,28 @@ export default function NovelManagePage() {
                 const transData = await transRes.json();
                 const transMap: Record<number, TranslationInfo> = {};
                 const statuses = transData.statuses ?? {};
-                let totalUsed = 0;
                 for (const [epStr, langs] of Object.entries(statuses)) {
                     const epNum = Number(epStr);
                     const langMap = langs as Record<string, string>;
                     const info: TranslationInfo = { episode_id: "", done: 0, failed: 0, pending: 0, total: 0 };
                     for (const status of Object.values(langMap)) {
                         info.total++;
-                        if (status === "DONE") { info.done++; totalUsed++; }
+                        if (status === "DONE") info.done++;
                         else if (status === "FAILED") info.failed++;
                         else info.pending++;
                     }
                     transMap[epNum] = info;
                 }
                 setTranslations(transMap);
-                setTranslationUsed(totalUsed);
+            }
+
+            // 실제 오늘 쿼터 사용량 조회
+            const quotaRes = await fetch(`${STORAGE}/api/user/quota`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (quotaRes.ok) {
+                const quotaData = await quotaRes.json();
+                setTranslationUsed(quotaData.translation?.used ?? 0);
             }
         } catch {
             setError("데이터를 불러오지 못했습니다.");

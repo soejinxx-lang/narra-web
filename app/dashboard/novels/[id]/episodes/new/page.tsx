@@ -10,6 +10,30 @@ const PIPELINE_BASE = process.env.NEXT_PUBLIC_PIPELINE_BASE_URL || "https://rail
 const PIPELINE_PIN = process.env.NEXT_PUBLIC_PIPELINE_PIN || "";
 const ALL_LANGUAGES = ["ko", "en", "ja", "zh", "es", "fr", "de", "pt", "id"];
 
+const LANG_NAMES: Record<string, string> = {
+    ko: "한국어", en: "영어", ja: "일본어", zh: "중국어",
+    es: "스페인어", fr: "프랑스어", de: "독일어", pt: "포르투갈어", id: "인도네시아어",
+};
+
+function detectLanguage(text: string): string {
+    const clean = text.replace(/\s|\d|[\p{P}\p{S}]/gu, "");
+    if (!clean.length) return "unknown";
+    let ko = 0, ja = 0, zh = 0, latin = 0;
+    for (const ch of clean) {
+        const c = ch.codePointAt(0) ?? 0;
+        if (c >= 0xAC00 && c <= 0xD7AF) ko++;
+        else if ((c >= 0x3040 && c <= 0x30FF) || (c >= 0x31F0 && c <= 0x31FF)) ja++;
+        else if (c >= 0x4E00 && c <= 0x9FFF) zh++;
+        else if ((c >= 0x41 && c <= 0x5A) || (c >= 0x61 && c <= 0x7A) || (c >= 0xC0 && c <= 0x024F)) latin++;
+    }
+    const total = clean.length;
+    if (ko / total > 0.3) return "ko";
+    if ((ja + zh) / total > 0.3 && ja > 0) return "ja";
+    if (zh / total > 0.3) return "zh";
+    if (latin / total > 0.3) return "en";
+    return "unknown";
+}
+
 type LangStatus = {
     language: string;
     status: "PENDING" | "PROCESSING" | "DONE" | "FAILED";
@@ -139,6 +163,17 @@ export default function NewEpisodePage() {
     const handleSaveOnly = async () => {
         setError("");
         if (!content.trim()) { setError(t("episodeNew.bodyRequired")); return; }
+
+        // 언어 불일치 경고
+        const detected = detectLanguage(content);
+        if (detected !== "unknown" && detected !== sourceLanguage) {
+            const ok = confirm(
+                `이 소설의 원문 언어는 ${LANG_NAMES[sourceLanguage] || sourceLanguage}이지만, ` +
+                `입력한 본문이 ${LANG_NAMES[detected] || detected}(으)로 감지되었습니다.\n` +
+                `이대로 진행하시겠습니까?`
+            );
+            if (!ok) return;
+        }
 
         // 번역 안 했으면 확인
         const translated = langStatuses.some(l => l.status === "DONE" && l.language !== sourceLanguage);
@@ -566,7 +601,7 @@ export default function NewEpisodePage() {
                     disabled={extracting || !content.trim()}
                     style={{
                         flex: 1, padding: "13px",
-                        background: extracting || !content.trim() ? "#9ca3af" : "#6c5ce7",
+                        background: extracting || !content.trim() ? "#9ca3af" : "#243A6E",
                         color: "#fff", border: "none", borderRadius: 0, fontSize: 15, fontWeight: 600,
                         cursor: extracting || !content.trim() ? "not-allowed" : "pointer",
                     }}
@@ -580,7 +615,7 @@ export default function NewEpisodePage() {
                     disabled={translating || quotaExhausted || !content.trim()}
                     style={{
                         flex: 1, padding: "13px",
-                        background: translating || quotaExhausted || !content.trim() ? "#9ca3af" : "#e67e22",
+                        background: translating || quotaExhausted || !content.trim() ? "#9ca3af" : "#243A6E",
                         color: "#fff", border: "none", borderRadius: 0, fontSize: 15, fontWeight: 600,
                         cursor: translating || quotaExhausted ? "not-allowed" : "pointer",
                     }}
