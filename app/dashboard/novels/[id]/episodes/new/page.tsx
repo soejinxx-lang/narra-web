@@ -501,7 +501,7 @@ export default function NewEpisodePage() {
                         style={{ width: "100%", padding: "11px 12px", border: "1px solid #e5e5e5", borderRadius: 0, fontSize: 14, outline: "none", background: "#fff" }}
                     >
                         {Array.from({ length: 200 }, (_, i) => i + 1).map(n => (
-                            <option key={n} value={n} disabled={existingEps.has(n)}>
+                            <option key={n} value={n} disabled={existingEps.has(n)} style={existingEps.has(n) ? { background: "#e0e0e0", color: "#888" } : {}}>
                                 {n}{existingEps.has(n) ? " (업로드됨)" : ""}
                             </option>
                         ))}
