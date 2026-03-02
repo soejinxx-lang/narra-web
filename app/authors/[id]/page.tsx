@@ -79,6 +79,63 @@ export default async function AuthorPage({ params }: PageProps) {
                 </div>
             </div>
 
+            {/* Support Links */}
+            {(author.kofi_url || author.patreon_url) && (
+                <div
+                    style={{
+                        display: "flex",
+                        gap: "12px",
+                        marginBottom: 32,
+                        flexWrap: "wrap",
+                    }}
+                >
+                    {author.kofi_url && (
+                        <a
+                            href={author.kofi_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                padding: "8px 16px",
+                                borderRadius: "8px",
+                                background: "#FF5E5B",
+                                color: "#fff",
+                                fontSize: "13px",
+                                fontWeight: 600,
+                                textDecoration: "none",
+                                transition: "opacity 0.2s",
+                            }}
+                        >
+                            ☕ Ko-fi
+                        </a>
+                    )}
+                    {author.patreon_url && (
+                        <a
+                            href={author.patreon_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                padding: "8px 16px",
+                                borderRadius: "8px",
+                                background: "#FF424D",
+                                color: "#fff",
+                                fontSize: "13px",
+                                fontWeight: 600,
+                                textDecoration: "none",
+                                transition: "opacity 0.2s",
+                            }}
+                        >
+                            🎨 Patreon
+                        </a>
+                    )}
+                </div>
+            )}
+
             {/* 작품 목록 */}
             <h2 style={{
                 fontSize: "18px",

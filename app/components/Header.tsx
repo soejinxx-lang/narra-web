@@ -211,6 +211,7 @@ export default function Header() {
             { href: "/mypage", labelKey: "header.myPage", requireLogin: true },
             { href: "/guide", labelKey: "header.guide" },
             { href: "/notes", labelKey: "header.notes" },
+            { href: "/premium", labelKey: "header.premium" },
             { href: "/settings", labelKey: "header.settings" },
           ].filter((item) => {
             if (item.requireLogin && !user) return false;

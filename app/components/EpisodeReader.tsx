@@ -10,6 +10,8 @@ import { saveReadingProgress, getCurrentUserId, getNovelProgress, saveSessionScr
 import { markAsCompleted } from "@/app/utils/library";
 import { toRoman } from "@/lib/utils";
 import DOMPurify from "isomorphic-dompurify";
+import AdBanner from "./AdBanner";
+import ReadingProgressBar from "./ReadingProgressBar";
 
 type EpisodeReaderProps = {
   episode: any;
@@ -540,6 +542,7 @@ export default function EpisodeReader({
         transition: "background 0.3s",
       }}
     >
+      <ReadingProgressBar />
       {/* ?ㅻ뜑 ?곸뿭 */}
       <div
         style={{
@@ -728,6 +731,9 @@ export default function EpisodeReader({
               Next → </div>
           )}
         </div>
+
+        {/* Ad Banner */}
+        <AdBanner slot="bottom" />
 
         {/* ✅ Community: Comment Section */}
         <CommentSection episodeId={episode.id} />

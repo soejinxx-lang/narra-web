@@ -1,5 +1,5 @@
 const zh = {
-    header: { login: "登录", logout: "退出", allNovels: "全部作品", browse: "浏览", myPage: "我的", library: "书架", guide: "关于", notes: "翻译笔记", settings: "设置" },
+    header: { login: "登录", logout: "退出", allNovels: "全部作品", browse: "浏览", myPage: "我的", library: "书架", guide: "关于", notes: "翻译笔记", settings: "设置", premium: "高级版" },
     settings: { title: "设置", language: "语言", languageDesc: "选择显示语言", theme: "主题", saved: "设置已保存" },
     home: { tagline: "仿佛为你而写的小说。", subtitle: "探索来自世界各地的故事。" },
     feature: { author: "作者", dailyCheckin: "每日签到", fanArt: "同人画", philosophy: "理念", community: "社区", music: "音乐", browseAll: "全部浏览", search: "搜索", qna: "问答" },
@@ -34,7 +34,7 @@ const zh = {
     community: { title: "社区", subtitle: "聊聊小说、角色和翻译。", writePost: "发帖", topics: "话题", allPosts: "全部帖子", recentPosts: "最新帖子", general: "自由讨论", recommendations: "小说推荐", character: "角色分析", translation: "翻译讨论", noPosts: "暂无帖子。来写第一篇吧！", delete: "删除", deleteConfirm: "确定删除这篇帖子？", loginToPost: "请登录后发帖。", postFailed: "发帖失败，请重试。", deleteFailed: "删除失败。", comments: "评论", writeComment: "写评论", submitComment: "发布", noComments: "暂无评论。", loginToComment: "请登录后评论。", replyPlaceholder: "写回复...", submitReply: "发布回复", startDiscussion: "发起讨论", category: "分类", postTitle: "标题", titlePlaceholder: "你想聊什么？", content: "内容", contentPlaceholder: "写下你的故事...", cancel: "取消", publish: "发布", by: "作者" },
     music: { title: "音乐", spotifyTitle: "Spotify", spotifyDesc: "连接你的Spotify账号，边阅读边听喜欢的歌单。", spotifyConnect: "连接Spotify", spotifyConnected: "已连接", royaltyTitle: "免费音乐", royaltyDesc: "选择一种氛围，探索我们的免费音乐。", tracks: "首", backToTones: "返回氛围选择", relaxing: "舒缓", relaxingDesc: "平静祥和的旋律，沉浸阅读", epic: "史诗", epicDesc: "恢弘壮丽的原声配乐", focus: "专注", focusDesc: "帮助你集中注意力的纯音乐", mystery: "悬疑", mysteryDesc: "充满悬念的紧张旋律" },
     fanart: { title: "同人画", upload: "+ 上传同人画", noArt: "暂无同人画。来分享第一幅吧！", uploadTitle: "上传同人画", authorName: "作者名", enterName: "输入你的名字", usingAccount: "使用账号名称", novel: "小说", image: "图片", description: "描述", descPlaceholder: "写一段描述...", cancel: "取消", uploadBtn: "上传", by: "by", imageSizeError: "图片不能超过5MB", imageTypeError: "请选择图片文件", fillAllFields: "请填写所有字段并选择图片", selectImage: "请选择图片", selectNovel: "请选择小说", invalidInput: "输入无效" },
-    support: { title: "常见问题", forReaders: "读者", forCreators: "作者", contact: "联系我们", contactDesc: "有任何问题或建议，欢迎随时发邮件。" },
+    support: { title: "常见问题", forReaders: "读者", forCreators: "作者", contact: "联系我们", contactDesc: "有任何问题或建议，欢迎随时发邮件。", legal: "法律信息" },
     guide: { title: "关于NARRA", intro: "NARRA是一个结合系统化策划与编辑判断的网络小说翻译阅读平台。我们汇集世界各地精选的翻译网络小说。", mission: "我们的使命", missionDesc: "打造一个让读者发现高质量翻译网络小说、让不同文化的优秀故事走向全球读者的平台。" },
     notes: { title: "翻译笔记", intro: "我们的翻译致力于在保留原文含义和文化背景的同时，让读者自然流畅地阅读。", philosophy: "翻译理念", philosophyItems: ["保持作者的语调和风格", "保留文化细微差别和背景", "确保自然流畅的翻译", "尊重原作的完整性"], qa: "质量保证", qaDesc: "所有翻译都经过多轮编辑和校对，以确保最高质量。我们欢迎读者的反馈。" },
     common: { loading: "加载中...", error: "出了点问题", retry: "重试", save: "保存", cancel: "取消", confirm: "确定", delete: "删除", close: "关闭", more: "查看更多", back: "返回", next: "下一步", prev: "上一步", search: "搜索", noResults: "未找到结果", notFound: "页面未找到" },

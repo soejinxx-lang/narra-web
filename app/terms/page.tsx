@@ -144,9 +144,9 @@ export default function TermsPage() {
 
                 <Section title={isKorean ? "제10조 (서비스 요금)" : "Article 10 (Service Fees)"}>
                     <ol style={{ paddingLeft: "20px" }}>
-                        <li>{isKorean ? "NARRA는 현재 베타 서비스로 운영되며, 대부분의 기능을 무료로 제공합니다." : "NARRA currently operates as a beta service and provides most features free of charge."}</li>
-                        <li>{isKorean ? "정식 서비스 전환 시 일부 기능이 유료로 전환될 수 있으며, 최소 30일 전에 공지합니다." : "Some features may become paid upon full launch, with at least 30 days' prior notice."}</li>
-                        <li>{isKorean ? "베타 기간 가입자에게는 우대 혜택을 제공할 수 있습니다." : "Beta users may receive preferential benefits."}</li>
+                        <li>{isKorean ? "NARRA는 현재 모든 콘텐츠를 무료로 제공합니다." : "NARRA currently provides all content free of charge."}</li>
+                        <li>{isKorean ? "일부 편의 기능(Premium 구독 등)은 유료로 제공될 수 있으며, 세부 사항은 제12조를 참조하시기 바랍니다." : "Some convenience features (e.g., Premium subscription) may be offered as paid services. Please refer to Article 12 for details."}</li>
+                        <li>{isKorean ? "유료 서비스의 가격 또는 조건 변경 시 최소 30일 전에 공지합니다." : "Changes to paid service pricing or terms will be announced at least 30 days in advance."}</li>
                     </ol>
                 </Section>
 
@@ -156,6 +156,37 @@ export default function TermsPage() {
                         <li>{isKorean ? "서비스 이용과 관련한 분쟁은 상호 협의하여 해결합니다." : "Disputes shall be resolved through mutual consultation."}</li>
                         <li>{isKorean ? "협의가 이루어지지 않을 경우 서울중앙지방법원을 제1심 관할법원으로 합니다." : "If consultation fails, the Seoul Central District Court shall have jurisdiction."}</li>
                     </ol>
+                </Section>
+
+                <Section title={isKorean ? "제12조 (수익화 및 서비스 모델)" : "Article 12 (Monetization and Service Model)"}>
+                    <h4 style={{ color: "#243A6E", marginBottom: "8px" }}>{isKorean ? "12.1 콘텐츠 제공" : "12.1 Content Access"}</h4>
+                    <p>{isKorean
+                        ? "NARRA는 현재 모든 에피소드를 무료로 제공합니다."
+                        : "NARRA currently provides all episodes free of charge."}</p>
+
+                    <h4 style={{ color: "#243A6E", marginBottom: "8px", marginTop: "16px" }}>{isKorean ? "12.2 광고" : "12.2 Advertising"}</h4>
+                    <p>{isKorean
+                        ? "플랫폼은 서비스 운영을 위해 에피소드 하단 등에 광고를 게재할 수 있습니다. 광고는 독자의 읽기 경험을 해치지 않는 위치에 게재됩니다."
+                        : "The Platform may display advertisements (e.g., at the bottom of episodes) to support service operations. Ads are placed in locations that do not interfere with the reading experience."}</p>
+
+                    <h4 style={{ color: "#243A6E", marginBottom: "8px", marginTop: "16px" }}>{isKorean ? "12.3 Premium 구독" : "12.3 Premium Subscription"}</h4>
+                    <ol style={{ paddingLeft: "20px" }}>
+                        <li>{isKorean ? "가격: 월 $4.99" : "Price: $4.99/month"}</li>
+                        <li>{isKorean ? "혜택: 광고 제거, 프로필 커스텀, VIP 뱃지, 독서 통계, 오프라인 다운로드 등" : "Benefits: ad removal, profile customization, VIP badge, reading statistics, offline download, etc."}</li>
+                        <li>{isKorean ? "Premium 구독자도 모든 콘텐츠를 동일하게 이용합니다. 유료 전용 콘텐츠는 없습니다." : "Premium subscribers access the same content as free users. There is no premium-exclusive content."}</li>
+                    </ol>
+
+                    <h4 style={{ color: "#243A6E", marginBottom: "8px", marginTop: "16px" }}>{isKorean ? "12.4 작가 외부 후원" : "12.4 Author External Support"}</h4>
+                    <ol style={{ paddingLeft: "20px" }}>
+                        <li>{isKorean ? "작가는 Patreon, Ko-fi 등 외부 플랫폼을 통해 후원을 받을 수 있습니다." : "Authors may receive support through external platforms such as Patreon and Ko-fi."}</li>
+                        <li>{isKorean ? "플랫폼은 외부 후원 수익에서 수수료를 가져가지 않습니다." : "The Platform does not take any commission from external support revenue."}</li>
+                        <li>{isKorean ? "Premium 수익 배분은 파트너 계약을 체결한 작가에 한해 별도 기준에 따라 제공될 수 있습니다." : "Premium revenue sharing may be offered to authors with partner agreements, subject to separate terms."}</li>
+                    </ol>
+
+                    <h4 style={{ color: "#243A6E", marginBottom: "8px", marginTop: "16px" }}>{isKorean ? "12.5 정책 변경" : "12.5 Policy Changes"}</h4>
+                    <p>{isKorean
+                        ? "수익화 정책 변경 시 최소 30일 전에 공지합니다."
+                        : "Any changes to the monetization policy will be announced at least 30 days in advance."}</p>
                 </Section>
 
                 <div style={{ marginTop: "32px", padding: "16px", background: "#f5f5f5", borderRadius: "8px", fontSize: "13px", color: "#888" }}>

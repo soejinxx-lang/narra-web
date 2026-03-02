@@ -9,6 +9,7 @@ const ko = {
         guide: "안내",
         notes: "번역 노트",
         settings: "설정",
+        premium: "프리미엄",
     },
     settings: {
         title: "설정",

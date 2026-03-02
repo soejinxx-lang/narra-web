@@ -9,6 +9,7 @@ const ja = {
         guide: "ガイド",
         notes: "翻訳ノート",
         settings: "設定",
+        premium: "プレミアム",
     },
     settings: {
         title: "設定",
@@ -315,6 +316,7 @@ const ja = {
         forCreators: "作家向け",
         contact: "お問い合わせ",
         contactDesc: "ご質問やご提案がありましたら、いつでもメールをお送りください。",
+        legal: "法的情報",
     },
     guide: {
         title: "NARRAについて",

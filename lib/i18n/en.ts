@@ -9,6 +9,7 @@ const en = {
         guide: "Guide",
         notes: "Notes",
         settings: "Settings",
+        premium: "Premium",
     },
     settings: {
         title: "Settings",
