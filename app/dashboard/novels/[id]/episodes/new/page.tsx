@@ -29,6 +29,7 @@ export default function NewEpisodePage() {
     const { t } = useLocale();
 
     const [ep, setEp] = useState<number>(1);
+    const [existingEps, setExistingEps] = useState<Set<number>>(new Set());
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [scheduledAt, setScheduledAt] = useState("");
@@ -93,7 +94,9 @@ export default function NewEpisodePage() {
             if (res.ok) {
                 const data = await res.json();
                 const eps: { ep: number }[] = data.episodes ?? [];
-                const maxEp = eps.length > 0 ? Math.max(...eps.map((e) => e.ep)) : 0;
+                const epNums = eps.map((e) => e.ep);
+                setExistingEps(new Set(epNums));
+                const maxEp = epNums.length > 0 ? Math.max(...epNums) : 0;
                 setEp(maxEp + 1);
             }
             // 소설 정보 (source_language)
@@ -132,10 +135,18 @@ export default function NewEpisodePage() {
         };
     }, []);
 
-    // ── 1. 저장만 ──
+    // ── 1. 업로드만 ──
     const handleSaveOnly = async () => {
         setError("");
         if (!content.trim()) { setError(t("episodeNew.bodyRequired")); return; }
+
+        // 번역 안 했으면 확인
+        const translated = langStatuses.some(l => l.status === "DONE" && l.language !== sourceLanguage);
+        if (!translated) {
+            const ok = confirm("번역을 진행하지 않은 채로 업로드하시겠습니까?");
+            if (!ok) return;
+        }
+
         const token = getToken();
         if (!token) { router.push("/login"); return; }
 
@@ -484,11 +495,17 @@ export default function NewEpisodePage() {
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
                         {t("episodeNew.epNumber")}
                     </label>
-                    <input
-                        type="number" value={ep} onChange={e => setEp(Number(e.target.value))}
-                        min={1} max={9999} required disabled={saving || saved}
-                        style={{ width: "100%", padding: "11px 12px", border: "1px solid #e5e5e5", borderRadius: 0, fontSize: 14, outline: "none" }}
-                    />
+                    <select
+                        value={ep} onChange={e => setEp(Number(e.target.value))}
+                        disabled={saving || saved}
+                        style={{ width: "100%", padding: "11px 12px", border: "1px solid #e5e5e5", borderRadius: 0, fontSize: 14, outline: "none", background: "#fff" }}
+                    >
+                        {Array.from({ length: 200 }, (_, i) => i + 1).map(n => (
+                            <option key={n} value={n} disabled={existingEps.has(n)}>
+                                {n}{existingEps.has(n) ? " (업로드됨)" : ""}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <div style={{ flex: 1 }}>
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
@@ -543,20 +560,6 @@ export default function NewEpisodePage() {
 
             {/* ── 버튼 3개 ── */}
             <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
-                {/* 저장 */}
-                <button
-                    onClick={handleSaveOnly}
-                    disabled={saving || saved || !content.trim()}
-                    style={{
-                        flex: 1, padding: "13px",
-                        background: saved ? "#27ae60" : saving || !content.trim() ? "#9ca3af" : "#243A6E",
-                        color: "#fff", border: "none", borderRadius: 0, fontSize: 15, fontWeight: 600,
-                        cursor: saving || saved ? "not-allowed" : "pointer",
-                    }}
-                >
-                    {saved ? "✓ 저장 완료" : saving ? "저장 중..." : "저장"}
-                </button>
-
                 {/* 고유명사 추출 */}
                 <button
                     onClick={handleExtract}
@@ -583,6 +586,20 @@ export default function NewEpisodePage() {
                     }}
                 >
                     {translating ? "번역 중..." : quotaExhausted ? t("episodeNew.quotaOver") : "번역 시작"}
+                </button>
+
+                {/* 업로드 */}
+                <button
+                    onClick={handleSaveOnly}
+                    disabled={saving || saved || !content.trim()}
+                    style={{
+                        flex: 1, padding: "13px",
+                        background: saved ? "#27ae60" : saving || !content.trim() ? "#9ca3af" : "#243A6E",
+                        color: "#fff", border: "none", borderRadius: 0, fontSize: 15, fontWeight: 600,
+                        cursor: saving || saved ? "not-allowed" : "pointer",
+                    }}
+                >
+                    {saved ? "✓ 업로드 완료" : saving ? "업로드 중..." : "업로드"}
                 </button>
             </div>
 
