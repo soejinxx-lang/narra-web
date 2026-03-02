@@ -4,6 +4,16 @@ import Link from "next/link";
 import { useState } from "react";
 import { useLocale } from "../../lib/i18n";
 
+// ✅ 사업자 정보 (추후 환경변수 또는 관리자 설정으로 전환 가능)
+const businessInfo = {
+  name: "도파시스",
+  owner: "박서진",
+  registrationNumber: "166-08-03583",
+  address: "대구광역시 동구 송라로10길 33, 103동 902호(신천동, 동대구역센트럴시티자이)",
+  ecommerceNumber: null as string | null, // 통신판매업 신고 전이면 null
+  email: "contact@narra.kr",
+};
+
 export default function BottomBar() {
   const { locale } = useLocale();
   const [showBizInfo, setShowBizInfo] = useState(false);
@@ -111,11 +121,14 @@ export default function BottomBar() {
               lineHeight: 1.8,
             }}
           >
-            <p>{isKorean ? "상호: [사업자 등록 정보]" : "Company: [Business Registration Info]"}</p>
-            <p>{isKorean ? "대표: [대표자명]" : "Representative: [Name]"}</p>
-            <p>{isKorean ? "사업자등록번호: [등록번호]" : "Business Registration No.: [Number]"}</p>
-            <p>{isKorean ? "통신판매업신고번호: [준비 중]" : "E-commerce Registration: [Pending]"}</p>
-            <p>{isKorean ? "이메일: contact@narra.kr" : "Email: contact@narra.kr"}</p>
+            <p>{isKorean ? "상호" : "Company"}: {businessInfo.name}</p>
+            <p>{isKorean ? "대표" : "Representative"}: {businessInfo.owner}</p>
+            <p>{isKorean ? "사업자등록번호" : "Business Reg. No."}: {businessInfo.registrationNumber}</p>
+            <p>{isKorean ? "소재지" : "Address"}: {businessInfo.address}</p>
+            {businessInfo.ecommerceNumber && (
+              <p>{isKorean ? "통신판매업신고번호" : "E-commerce Reg. No."}: {businessInfo.ecommerceNumber}</p>
+            )}
+            <p>{isKorean ? "이메일" : "Email"}: {businessInfo.email}</p>
           </div>
         )}
       </div>
