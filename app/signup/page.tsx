@@ -9,15 +9,19 @@ import { useLocale } from "../../lib/i18n";
 
 export default function SignUpPage() {
   const router = useRouter();
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const isKorean = locale === "ko";
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,6 +61,12 @@ export default function SignUpPage() {
       return;
     }
 
+    // ✅ 약관 동의 검증
+    if (!agreedToTerms || !agreedToPrivacy) {
+      setError(isKorean ? "필수 약관에 동의해주세요" : "Please agree to the required terms");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -76,6 +86,7 @@ export default function SignUpPage() {
           username: sanitizedUsername,
           password,
           name: sanitizedName,
+          agreedToTerms: true,
         }),
         credentials: "same-origin",
       });
@@ -175,7 +186,6 @@ export default function SignUpPage() {
               value={username}
               onChange={(e) => {
                 const value = e.target.value;
-                // 실시간 입력 제한 (최대 20자, 특수문자 제한)
                 const sanitized = value.replace(/[^a-zA-Z0-9_-]/g, "");
                 if (sanitized.length <= 20) {
                   setUsername(sanitized);
@@ -214,7 +224,6 @@ export default function SignUpPage() {
                 value={password}
                 onChange={(e) => {
                   const value = e.target.value;
-                  // 실시간 입력 제한 (최대 128자)
                   if (value.length <= 128) {
                     setPassword(value);
                   }
@@ -252,17 +261,7 @@ export default function SignUpPage() {
                   color: "#666",
                 }}
               >
-                {showPassword ? (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                    <line x1="1" y1="1" x2="23" y2="23" />
-                  </svg>
-                ) : (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                )}
+                {showPassword ? "👁" : "👁‍🗨"}
               </button>
             </div>
           </div>
@@ -284,7 +283,6 @@ export default function SignUpPage() {
                 value={confirmPassword}
                 onChange={(e) => {
                   const value = e.target.value;
-                  // 실시간 입력 제한 (최대 128자)
                   if (value.length <= 128) {
                     setConfirmPassword(value);
                   }
@@ -322,19 +320,77 @@ export default function SignUpPage() {
                   color: "#666",
                 }}
               >
-                {showConfirmPassword ? (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                    <line x1="1" y1="1" x2="23" y2="23" />
-                  </svg>
-                ) : (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                )}
+                {showConfirmPassword ? "👁" : "👁‍🗨"}
               </button>
             </div>
+          </div>
+
+          {/* ✅ 약관 동의 체크박스 (분리형) */}
+          <div style={{ marginBottom: "20px" }}>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "8px",
+                cursor: "pointer",
+                fontSize: "14px",
+                color: "#333",
+                marginBottom: "10px",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                disabled={loading}
+                style={{ marginTop: "3px", accentColor: "#243A6E" }}
+              />
+              <span>
+                <span style={{ color: "#c33", fontWeight: 600, fontSize: "12px" }}>[{isKorean ? "필수" : "Required"}]</span>{" "}
+                {isKorean ? "이용약관에 동의합니다" : "I agree to the Terms of Service"}{" "}
+                <a
+                  href="/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#243A6E", textDecoration: "underline", fontSize: "13px" }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {isKorean ? "(보기)" : "(View)"}
+                </a>
+              </span>
+            </label>
+
+            <label
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "8px",
+                cursor: "pointer",
+                fontSize: "14px",
+                color: "#333",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={agreedToPrivacy}
+                onChange={(e) => setAgreedToPrivacy(e.target.checked)}
+                disabled={loading}
+                style={{ marginTop: "3px", accentColor: "#243A6E" }}
+              />
+              <span>
+                <span style={{ color: "#c33", fontWeight: 600, fontSize: "12px" }}>[{isKorean ? "필수" : "Required"}]</span>{" "}
+                {isKorean ? "개인정보처리방침에 동의합니다" : "I agree to the Privacy Policy"}{" "}
+                <a
+                  href="/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#243A6E", textDecoration: "underline", fontSize: "13px" }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {isKorean ? "(보기)" : "(View)"}
+                </a>
+              </span>
+            </label>
           </div>
 
           {error && (

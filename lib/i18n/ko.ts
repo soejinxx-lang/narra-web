@@ -318,6 +318,7 @@ const ko = {
         forCreators: "작가용",
         contact: "문의하기",
         contactDesc: "궁금한 점이나 제안이 있으시면 언제든 이메일을 보내주세요.",
+        legal: "법적 고지",
     },
     guide: {
         title: "NARRA 소개",

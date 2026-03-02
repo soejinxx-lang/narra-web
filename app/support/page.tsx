@@ -165,6 +165,66 @@ export default function SupportPage() {
             contact@narra.kr
           </div>
         </section>
+
+        {/* Legal */}
+        <section
+          style={{
+            borderTop: "1px solid #e5e5e5",
+            paddingTop: "32px",
+          }}
+        >
+          <h2
+            style={{
+              fontSize: "16px",
+              fontWeight: 700,
+              color: "#243A6E",
+              marginBottom: "16px",
+              letterSpacing: "1px",
+              textTransform: "uppercase",
+              opacity: 0.8,
+            }}
+          >
+            {t("support.legal")}
+          </h2>
+          <div
+            style={{
+              display: "flex",
+              gap: "24px",
+              flexWrap: "wrap",
+            }}
+          >
+            <a
+              href="/terms"
+              style={{
+                color: "#243A6E",
+                textDecoration: "none",
+                fontSize: "16px",
+                fontWeight: 500,
+                borderBottom: "1px solid transparent",
+                transition: "border-color 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#243A6E")}
+              onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}
+            >
+              Terms of Service →
+            </a>
+            <a
+              href="/privacy"
+              style={{
+                color: "#243A6E",
+                textDecoration: "none",
+                fontSize: "16px",
+                fontWeight: 500,
+                borderBottom: "1px solid transparent",
+                transition: "border-color 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#243A6E")}
+              onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}
+            >
+              Privacy Policy →
+            </a>
+          </div>
+        </section>
       </div>
     </main>
   );

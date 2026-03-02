@@ -318,6 +318,7 @@ const en = {
         forCreators: "For Creators",
         contact: "Contact",
         contactDesc: "Have a question or suggestion? Feel free to email us at any time.",
+        legal: "Legal",
     },
     guide: {
         title: "About NARRA",
