@@ -1,5 +1,5 @@
 const zh = {
-    header: { login: "登录", logout: "退出", allNovels: "全部作品", browse: "浏览", myPage: "我的", library: "书架", guide: "关于", notes: "翻译笔记", settings: "设置", premium: "高级版" },
+    header: { login: "登录", logout: "退出", allNovels: "全部作品", browse: "浏览", myPage: "我的", library: "书架", guide: "关于", notes: "翻译笔记", settings: "设置", premium: "高级版", pricing: "作者方案" },
     settings: { title: "设置", language: "语言", languageDesc: "选择显示语言", theme: "主题", saved: "设置已保存" },
     home: { tagline: "仿佛为你而写的小说。", subtitle: "探索来自世界各地的故事。" },
     feature: { author: "作者", dailyCheckin: "每日签到", fanArt: "同人画", philosophy: "理念", community: "社区", music: "音乐", browseAll: "全部浏览", search: "搜索", qna: "问答" },

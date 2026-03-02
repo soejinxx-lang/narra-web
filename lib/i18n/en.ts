@@ -10,6 +10,7 @@ const en = {
         notes: "Notes",
         settings: "Settings",
         premium: "Premium",
+        pricing: "Author Plans",
     },
     settings: {
         title: "Settings",

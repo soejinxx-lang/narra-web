@@ -1,5 +1,5 @@
 const pt = {
-    header: { login: "Entrar", logout: "Sair", allNovels: "Todas", browse: "Explorar", myPage: "Minha página", library: "Biblioteca", guide: "Sobre", notes: "Notas", settings: "Configurações", premium: "Premium" },
+    header: { login: "Entrar", logout: "Sair", allNovels: "Todas", browse: "Explorar", myPage: "Minha página", library: "Biblioteca", guide: "Sobre", notes: "Notas", settings: "Configurações", premium: "Premium", pricing: "Planos de Autor" },
     settings: { title: "Configurações", language: "Idioma", languageDesc: "Escolha seu idioma", theme: "Tema", saved: "Configurações salvas" },
     home: { tagline: "Romances que parecem escritos só para você.", subtitle: "Descubra histórias de todo o mundo." },
     feature: { author: "Autor", dailyCheckin: "Check-in diário", fanArt: "Fan Art", philosophy: "Filosofia", community: "Comunidade", music: "Música", browseAll: "Ver tudo", search: "Buscar", qna: "Perguntas" },

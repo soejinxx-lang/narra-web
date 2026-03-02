@@ -10,6 +10,7 @@ const ja = {
         notes: "翻訳ノート",
         settings: "設定",
         premium: "プレミアム",
+        pricing: "著者プラン",
     },
     settings: {
         title: "設定",

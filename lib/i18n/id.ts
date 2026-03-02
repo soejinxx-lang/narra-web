@@ -1,5 +1,5 @@
 const id = {
-    header: { login: "Masuk", logout: "Keluar", allNovels: "Semua", browse: "Jelajahi", myPage: "Halaman saya", library: "Perpustakaan", guide: "Tentang", notes: "Catatan", settings: "Pengaturan", premium: "Premium" },
+    header: { login: "Masuk", logout: "Keluar", allNovels: "Semua", browse: "Jelajahi", myPage: "Halaman saya", library: "Perpustakaan", guide: "Tentang", notes: "Catatan", settings: "Pengaturan", premium: "Premium", pricing: "Paket Penulis" },
     settings: { title: "Pengaturan", language: "Bahasa", languageDesc: "Pilih bahasa tampilan", theme: "Tema", saved: "Pengaturan disimpan" },
     home: { tagline: "Novel yang terasa ditulis khusus untukmu.", subtitle: "Temukan cerita dari seluruh dunia." },
     feature: { author: "Penulis", dailyCheckin: "Absen Harian", fanArt: "Fan Art", philosophy: "Filosofi", community: "Komunitas", music: "Musik", browseAll: "Lihat Semua", search: "Cari", qna: "Tanya Jawab" },

@@ -1,5 +1,5 @@
 const fr = {
-    header: { login: "Se connecter", logout: "Se déconnecter", allNovels: "Toutes", browse: "Explorer", myPage: "Mon espace", library: "Bibliothèque", guide: "À propos", notes: "Notes", settings: "Paramètres", premium: "Premium" },
+    header: { login: "Se connecter", logout: "Se déconnecter", allNovels: "Toutes", browse: "Explorer", myPage: "Mon espace", library: "Bibliothèque", guide: "À propos", notes: "Notes", settings: "Paramètres", premium: "Premium", pricing: "Plans Auteur" },
     settings: { title: "Paramètres", language: "Langue", languageDesc: "Choisissez votre langue", theme: "Thème", saved: "Paramètres enregistrés" },
     home: { tagline: "Des romans qui semblent écrits rien que pour vous.", subtitle: "Découvrez des histoires du monde entier." },
     feature: { author: "Auteur", dailyCheckin: "Présence", fanArt: "Fan Art", philosophy: "Philosophie", community: "Communauté", music: "Musique", browseAll: "Tout voir", search: "Rechercher", qna: "FAQ" },

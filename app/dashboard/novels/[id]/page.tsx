@@ -52,6 +52,9 @@ export default function NovelManagePage() {
     const [deleting, setDeleting] = useState(false);
     const [retrying, setRetrying] = useState<string | null>(null);
     const [error, setError] = useState("");
+    const [planType, setPlanType] = useState("free");
+    const [translationLimit, setTranslationLimit] = useState(3);
+    const [translationUsed, setTranslationUsed] = useState(0);
 
     const getToken = () => {
         try {
@@ -69,11 +72,14 @@ export default function NovelManagePage() {
         if (!token) { router.push("/login"); return; }
 
         try {
-            const [novelRes, epsRes] = await Promise.all([
+            const [novelRes, epsRes, planRes] = await Promise.all([
                 fetch(`${STORAGE}/api/novels/${novelId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 }),
                 fetch(`${STORAGE}/api/novels/${novelId}/episodes?include_scheduled=true`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                }),
+                fetch(`${STORAGE}/api/user/plan`, {
                     headers: { Authorization: `Bearer ${token}` },
                 }),
             ]);
@@ -88,6 +94,11 @@ export default function NovelManagePage() {
                 const data = await epsRes.json();
                 setEpisodes(data.episodes ?? []);
             }
+            if (planRes.ok) {
+                const planData = await planRes.json();
+                setPlanType(planData.plan_type || "free");
+                setTranslationLimit(planData.translation_limit ?? 3);
+            }
 
             // 번역 상태 조회
             const transRes = await fetch(`${STORAGE}/api/novels/${novelId}/episodes/translations-status`, {
@@ -95,23 +106,23 @@ export default function NovelManagePage() {
             });
             if (transRes.ok) {
                 const transData = await transRes.json();
-                // 기존 API 형식: { statuses: { [ep]: { [lang]: status } } }
-                // → TranslationInfo 맵으로 변환 (ep번호 기준)
                 const transMap: Record<number, TranslationInfo> = {};
                 const statuses = transData.statuses ?? {};
+                let totalUsed = 0;
                 for (const [epStr, langs] of Object.entries(statuses)) {
                     const epNum = Number(epStr);
                     const langMap = langs as Record<string, string>;
                     const info: TranslationInfo = { episode_id: "", done: 0, failed: 0, pending: 0, total: 0 };
                     for (const status of Object.values(langMap)) {
                         info.total++;
-                        if (status === "DONE") info.done++;
+                        if (status === "DONE") { info.done++; totalUsed++; }
                         else if (status === "FAILED") info.failed++;
                         else info.pending++;
                     }
                     transMap[epNum] = info;
                 }
                 setTranslations(transMap);
+                setTranslationUsed(totalUsed);
             }
         } catch {
             setError("데이터를 불러오지 못했습니다.");
@@ -224,6 +235,66 @@ export default function NovelManagePage() {
             {error && (
                 <div style={{ padding: "12px", background: "#fee", color: "#c33", marginBottom: 20, fontSize: 13 }}>
                     {error}
+                </div>
+            )}
+
+            {/* 번역 쿼터 진행 바 (자이가르닉 효과) */}
+            {planType !== "author_pro" && (
+                <div style={{
+                    padding: "16px 20px", marginBottom: 20,
+                    background: translationUsed >= translationLimit ? "#fff5f5" : "#f8f9ff",
+                    border: `1px solid ${translationUsed >= translationLimit ? "#f5c6c6" : "#e0e5f5"}`,
+                    borderRadius: "12px",
+                }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: "#333" }}>
+                            {locale === "ko" ? "번역 사용량" : "Translation Usage"}
+                        </span>
+                        <span style={{ fontSize: 12, color: translationUsed >= translationLimit ? "#c33" : "#888" }}>
+                            {translationUsed}/{translationLimit === 999 ? "∞" : translationLimit}
+                        </span>
+                    </div>
+                    {/* 프로그레스 바 */}
+                    <div style={{ width: "100%", height: 8, background: "#e5e5e5", borderRadius: 4, overflow: "hidden" }}>
+                        <div style={{
+                            width: `${Math.min((translationUsed / translationLimit) * 100, 100)}%`,
+                            height: "100%",
+                            background: translationUsed >= translationLimit
+                                ? "#e53e3e"
+                                : translationUsed >= translationLimit - 1
+                                    ? "#f6ad55"
+                                    : "#243A6E",
+                            borderRadius: 4,
+                            transition: "width 0.5s ease",
+                        }} />
+                    </div>
+                    {/* 경고 메시지 */}
+                    {translationUsed >= translationLimit ? (
+                        <div style={{ marginTop: 12, textAlign: "center" }}>
+                            <p style={{ fontSize: 13, color: "#c33", fontWeight: 500, marginBottom: 8 }}>
+                                {locale === "ko" ? "❌ 번역 횟수를 모두 소진했습니다" : "❌ Translation limit reached"}
+                            </p>
+                            <a
+                                href="/pricing"
+                                style={{
+                                    display: "inline-block", padding: "10px 24px",
+                                    background: "#243A6E", color: "#fff",
+                                    fontSize: 13, fontWeight: 600,
+                                    textDecoration: "none", borderRadius: 8,
+                                }}
+                            >
+                                {locale === "ko" ? "Pro 시작하기 $14.99/월" : "Get Pro $14.99/mo"}
+                            </a>
+                        </div>
+                    ) : translationUsed >= translationLimit - 1 ? (
+                        <p style={{ marginTop: 8, fontSize: 12, color: "#b7791f" }}>
+                            ⚠️ {locale === "ko" ? "마지막 번역 기회입니다!" : "Last translation remaining!"}
+                            {" "}
+                            <a href="/pricing" style={{ color: "#243A6E", fontWeight: 600 }}>
+                                {locale === "ko" ? "Pro로 무제한 →" : "Go unlimited with Pro →"}
+                            </a>
+                        </p>
+                    ) : null}
                 </div>
             )}
 
