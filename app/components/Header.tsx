@@ -6,10 +6,13 @@ import { useRouter } from "next/navigation";
 import SearchBar from "./SearchBar";
 import { useLocale } from "../../lib/i18n";
 
+const STORAGE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace("/api", "") ?? "";
+
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [pinned, setPinned] = useState(false);
   const [user, setUser] = useState<{ id: string; username: string; name?: string; role?: string } | null>(null);
+  const [isPremium, setIsPremium] = useState(false);
   const router = useRouter();
   const { t } = useLocale();
 
@@ -29,6 +32,22 @@ export default function Header() {
   useEffect(() => {
     // 초기 로그인 상태 확인
     checkLoginStatus();
+
+    // Premium 상태 확인
+    const checkPremium = async () => {
+      const token = localStorage.getItem("authToken");
+      if (!token) return;
+      try {
+        const res = await fetch(`${STORAGE}/api/user/plan`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setIsPremium(data.plan_type === "premium");
+        }
+      } catch { /* ignore */ }
+    };
+    checkPremium();
 
     // storage 이벤트 리스너 추가 (다른 탭에서 로그인/로그아웃 시 감지)
     const handleStorageChange = (e: StorageEvent | Event) => {
@@ -131,8 +150,19 @@ export default function Header() {
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           {user ? (
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span style={{ fontSize: "14px", color: "#243A6E", fontWeight: 500 }}>
+              <span style={{ fontSize: "14px", color: "#243A6E", fontWeight: 500, display: "flex", alignItems: "center", gap: "4px" }}>
                 {user.name || user.username}
+                {isPremium && (
+                  <span style={{
+                    fontSize: "10px",
+                    background: "linear-gradient(135deg, #f9a825 0%, #ff8f00 100%)",
+                    color: "#fff",
+                    padding: "2px 6px",
+                    borderRadius: "4px",
+                    fontWeight: 700,
+                    letterSpacing: "0.5px",
+                  }}>VIP</span>
+                )}
               </span>
               <button
                 onClick={handleLogout}

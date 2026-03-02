@@ -1,11 +1,45 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useLocale, LOCALE_NAMES, Locale } from "../../lib/i18n";
 
 const LOCALES = Object.keys(LOCALE_NAMES) as Locale[];
+const STORAGE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace("/api", "") ?? "";
 
 export default function SettingsPage() {
     const { locale, setLocale, t } = useLocale();
+    const [plan, setPlan] = useState<string>("free");
+    const [expiresAt, setExpiresAt] = useState<string | null>(null);
+    const [user, setUser] = useState<{ id: string; name?: string } | null>(null);
+
+    useEffect(() => {
+        const loadPlan = async () => {
+            const stored = localStorage.getItem("loggedInUser") || localStorage.getItem("currentUser");
+            if (!stored) return;
+
+            try {
+                const userData = JSON.parse(stored);
+                setUser(userData);
+
+                const token = localStorage.getItem("authToken") || "";
+                const res = await fetch(`${STORAGE}/api/user/plan`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setPlan(data.plan_type || "free");
+                    setExpiresAt(data.expires_at || null);
+                }
+            } catch {
+                // ignore
+            }
+        };
+        loadPlan();
+    }, []);
+
+    const isKorean = locale === "ko";
+    const isPremium = plan === "premium";
 
     return (
         <main style={{ maxWidth: 600, margin: "0 auto", padding: "48px 24px" }}>
@@ -20,6 +54,77 @@ export default function SettingsPage() {
             >
                 {t("settings.title")}
             </h1>
+
+            {/* Subscription */}
+            {user && (
+                <section style={{ marginBottom: 32 }}>
+                    <h2 style={{ fontSize: 15, fontWeight: 600, color: "#333", marginBottom: 8 }}>
+                        {isKorean ? "구독 상태" : "Subscription"}
+                    </h2>
+
+                    <div
+                        style={{
+                            padding: "16px 20px",
+                            background: isPremium
+                                ? "linear-gradient(135deg, #f3e7ff 0%, #e8eaff 100%)"
+                                : "#fff",
+                            border: `1px solid ${isPremium ? "#d1c4e9" : "#e5e5e5"}`,
+                            borderRadius: "12px",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                        }}
+                    >
+                        <div>
+                            <div style={{ fontWeight: 600, fontSize: "15px", color: isPremium ? "#4a148c" : "#333" }}>
+                                {isPremium ? "✨ Premium" : "Free"}
+                            </div>
+                            {isPremium && expiresAt && (
+                                <div style={{ fontSize: "12px", color: "#888", marginTop: 4 }}>
+                                    {isKorean ? "다음 갱신: " : "Next renewal: "}
+                                    {new Date(expiresAt).toLocaleDateString()}
+                                </div>
+                            )}
+                        </div>
+
+                        {isPremium ? (
+                            <a
+                                href="https://narra.lemonsqueezy.com/billing"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    padding: "8px 16px",
+                                    background: "#243A6E",
+                                    color: "#fff",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    fontSize: "13px",
+                                    fontWeight: 500,
+                                    textDecoration: "none",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                {isKorean ? "구독 관리" : "Manage"}
+                            </a>
+                        ) : (
+                            <Link
+                                href="/premium"
+                                style={{
+                                    padding: "8px 16px",
+                                    background: "#243A6E",
+                                    color: "#fff",
+                                    borderRadius: "8px",
+                                    fontSize: "13px",
+                                    fontWeight: 500,
+                                    textDecoration: "none",
+                                }}
+                            >
+                                {isKorean ? "Premium 구독" : "Get Premium"}
+                            </Link>
+                        )}
+                    </div>
+                </section>
+            )}
 
             {/* Language */}
             <section style={{ marginBottom: 32 }}>
