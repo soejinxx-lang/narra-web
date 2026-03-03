@@ -136,3 +136,8 @@ select {
     transform: translateX(0) rotate(0deg);
   }
 }
+
+/* Support page legal links — replaces JS hover handlers for SSR */
+.support-legal-link:hover {
+  border-bottom-color: #243A6E !important;
+}

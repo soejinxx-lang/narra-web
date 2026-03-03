@@ -1,15 +1,32 @@
-"use client";
+import { cookies } from "next/headers";
+import type { Locale } from "../../lib/i18n";
+import { getDictionary } from "../../lib/i18n/getDictionary";
+import AccordionItem from "../components/AccordionItem";
+import type { QnAItem } from "../components/AccordionItem";
 
-import { useState } from "react";
-import { useLocale } from "../../lib/i18n";
+const VALID_LOCALES: Locale[] = ["ko", "en", "ja", "zh", "es", "fr", "de", "pt", "id"];
 
-type QnAItem = {
-  question: string;
-  answer: string;
-};
+function resolve(dict: Record<string, unknown>, key: string): string {
+  const parts = key.split(".");
+  let cur: unknown = dict;
+  for (const p of parts) {
+    if (cur && typeof cur === "object" && p in (cur as Record<string, unknown>)) {
+      cur = (cur as Record<string, unknown>)[p];
+    } else {
+      return key;
+    }
+  }
+  return typeof cur === "string" ? cur : key;
+}
 
-export default function SupportPage() {
-  const { t } = useLocale();
+export default async function SupportPage() {
+  const cookieStore = await cookies();
+  const saved = cookieStore.get("narra-locale")?.value as Locale | undefined;
+  const locale: Locale = saved && VALID_LOCALES.includes(saved) ? saved : "en";
+  const dict = await getDictionary(locale);
+
+  const t = (key: string) => resolve(dict, key);
+
   const readersQnA: QnAItem[] = [
     {
       question: "What is NARRA?",
@@ -195,6 +212,7 @@ export default function SupportPage() {
           >
             <a
               href="/terms"
+              className="support-legal-link"
               style={{
                 color: "#243A6E",
                 textDecoration: "none",
@@ -203,13 +221,12 @@ export default function SupportPage() {
                 borderBottom: "1px solid transparent",
                 transition: "border-color 0.2s",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#243A6E")}
-              onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}
             >
               Terms of Service →
             </a>
             <a
               href="/privacy"
+              className="support-legal-link"
               style={{
                 color: "#243A6E",
                 textDecoration: "none",
@@ -218,8 +235,6 @@ export default function SupportPage() {
                 borderBottom: "1px solid transparent",
                 transition: "border-color 0.2s",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#243A6E")}
-              onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}
             >
               Privacy Policy →
             </a>
@@ -227,80 +242,5 @@ export default function SupportPage() {
         </section>
       </div>
     </main>
-  );
-}
-
-function AccordionItem({ item }: { item: QnAItem }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <div
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        borderBottom: "1px solid #e5e5e5",
-        backgroundColor: "transparent",
-        transition: "all 0.3s ease",
-      }}
-    >
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        style={{
-          width: "100%",
-          textAlign: "left",
-          padding: "24px 12px",
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-
-        }}
-      >
-        <span
-          style={{
-            fontSize: "20px",
-            fontWeight: 500,
-            color: isHovered || isOpen ? "#243A6E" : "#171717",
-            fontFamily: '"KoPub Batang", serif', // Use serif for questions
-            transition: "color 0.2s",
-          }}
-        >
-          Q. {item.question}
-        </span>
-        <span
-          style={{
-            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-            transition: "transform 0.3s ease",
-            color: isHovered || isOpen ? "#243A6E" : "#999",
-            marginLeft: "24px",
-            fontSize: "14px",
-          }}
-        >
-          ▼
-        </span>
-      </button>
-      <div
-        style={{
-          maxHeight: isOpen ? "800px" : "0",
-          overflow: "hidden",
-          transition: "max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.3s",
-        }}
-      >
-        <div
-          style={{
-            padding: "0 12px 32px 12px",
-            color: "#444",
-            fontSize: "16px",
-            lineHeight: 1.8,
-            whiteSpace: "pre-line",
-          }}
-        >
-          {item.answer}
-        </div>
-      </div>
-    </div>
   );
 }

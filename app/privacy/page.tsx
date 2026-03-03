@@ -1,9 +1,12 @@
-"use client";
+import { cookies } from "next/headers";
+import type { Locale } from "../../lib/i18n";
 
-import { useLocale } from "../../lib/i18n";
+const VALID_LOCALES: Locale[] = ["ko", "en", "ja", "zh", "es", "fr", "de", "pt", "id"];
 
-export default function PrivacyPage() {
-    const { locale } = useLocale();
+export default async function PrivacyPage() {
+    const cookieStore = await cookies();
+    const saved = cookieStore.get("narra-locale")?.value as Locale | undefined;
+    const locale: Locale = saved && VALID_LOCALES.includes(saved) ? saved : "en";
     const isKorean = locale === "ko";
 
     return (
