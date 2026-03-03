@@ -1,12 +1,5 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 
 export default function LibraryRedirect() {
-  const router = useRouter();
-  useEffect(() => {
-    router.replace("/mypage");
-  }, [router]);
-  return null;
+  redirect("/mypage");
 }
