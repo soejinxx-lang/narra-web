@@ -1,7 +1,19 @@
 "use client";
 
-import { LocaleProvider } from "../../lib/i18n";
+import { LocaleProvider, Locale } from "../../lib/i18n";
 
-export default function Providers({ children }: { children: React.ReactNode }) {
-    return <LocaleProvider>{children}</LocaleProvider>;
+type Dict = Record<string, unknown>;
+
+interface ProvidersProps {
+    children: React.ReactNode;
+    initialLocale?: Locale;
+    initialDict?: Dict;
+}
+
+export default function Providers({ children, initialLocale, initialDict }: ProvidersProps) {
+    return (
+        <LocaleProvider initialLocale={initialLocale} initialDict={initialDict}>
+            {children}
+        </LocaleProvider>
+    );
 }
