@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { useLocale } from "../../../../../../../lib/i18n";
 
 const STORAGE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace("/api", "") ?? "";
 
@@ -11,6 +12,7 @@ export default function EditEpisodePage() {
     const params = useParams();
     const novelId = params.id as string;
     const epNum = Number(params.ep);
+    const { t } = useLocale();
 
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
@@ -42,10 +44,10 @@ export default function EditEpisodePage() {
                 setTitle(data.title ?? "");
                 setContent(data.content ?? "");
             } else {
-                setError("에피소드를 불러오지 못했습니다.");
+                setError(t("editEpisode.errorLoad"));
             }
         } catch {
-            setError("네트워크 오류가 발생했습니다.");
+            setError(t("editEpisode.errorNetwork"));
         } finally {
             setLoading(false);
         }
@@ -58,7 +60,7 @@ export default function EditEpisodePage() {
         setError("");
 
         if (!content.trim()) {
-            setError("본문을 입력해주세요.");
+            setError(t("editEpisode.errorNoContent"));
             return;
         }
 
@@ -84,30 +86,30 @@ export default function EditEpisodePage() {
             const data = await res.json();
 
             if (!res.ok) {
-                setError(data.error ?? "저장에 실패했습니다.");
+                setError(data.error ?? t("editEpisode.errorSave"));
                 setSaving(false);
                 return;
             }
 
             router.push(`/dashboard/novels/${novelId}`);
         } catch {
-            setError("네트워크 오류가 발생했습니다.");
+            setError(t("editEpisode.errorNetwork"));
             setSaving(false);
         }
     };
 
     if (loading) {
-        return <div style={{ padding: "48px 24px", textAlign: "center", color: "#666" }}>불러오는 중...</div>;
+        return <div style={{ padding: "48px 24px", textAlign: "center", color: "#666" }}>{t("common.loading")}</div>;
     }
 
     return (
         <main style={{ maxWidth: 760, margin: "0 auto", padding: "40px 24px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
                 <h1 style={{ fontFamily: '"KoPub Batang", serif', fontSize: 22, fontWeight: 600, color: "#243A6E" }}>
-                    {epNum}화 수정
+                    {t("editEpisode.title").replace("{ep}", String(epNum))}
                 </h1>
                 <Link href={`/dashboard/novels/${novelId}`} style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>
-                    ← 소설 관리로
+                    {t("editEpisode.backToNovel")}
                 </Link>
             </div>
 
@@ -121,19 +123,19 @@ export default function EditEpisodePage() {
                     marginBottom: 24,
                 }}
             >
-                ※ 내용을 수정해도 번역 쿼터가 차감되지 않습니다. 단, 번역은 재시작되지 않습니다.
+                {t("editEpisode.notice")}
             </div>
 
             <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: 20 }}>
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
-                        제목 (선택)
+                        {t("editEpisode.epTitle")}
                     </label>
                     <input
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        placeholder={`제${epNum}화`}
+                        placeholder={t("editEpisode.epPlaceholder").replace("{ep}", String(epNum))}
                         maxLength={200}
                         disabled={saving}
                         style={{
@@ -149,9 +151,9 @@ export default function EditEpisodePage() {
 
                 <div style={{ marginBottom: 28 }}>
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
-                        본문 <span style={{ color: "#c0392b" }}>*</span>
+                        {t("editEpisode.body")} <span style={{ color: "#c0392b" }}>*</span>
                         <span style={{ fontWeight: 400, color: "#999", marginLeft: 8, fontSize: 12 }}>
-                            {content.length.toLocaleString()}자
+                            {t("editEpisode.charCount").replace("{count}", content.length.toLocaleString())}
                         </span>
                     </label>
                     <textarea
@@ -196,7 +198,7 @@ export default function EditEpisodePage() {
                             cursor: saving ? "not-allowed" : "pointer",
                         }}
                     >
-                        {saving ? "저장 중..." : "저장"}
+                        {saving ? t("editEpisode.saving") : t("editEpisode.save")}
                     </button>
                     <button
                         type="button"
@@ -212,7 +214,7 @@ export default function EditEpisodePage() {
                             cursor: "pointer",
                         }}
                     >
-                        취소
+                        {t("editEpisode.cancel")}
                     </button>
                 </div>
             </form>

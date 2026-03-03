@@ -188,7 +188,7 @@ export default function NovelManagePage() {
                         color: "#999",
                     }}
                 >
-                    {!novel.cover_url && "표지"}
+                    {!novel.cover_url && t("dashboard.cover")}
                 </div>
 
                 <div style={{ flex: 1 }}>
@@ -255,7 +255,7 @@ export default function NovelManagePage() {
                 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                         <span style={{ fontSize: 13, fontWeight: 600, color: "#333" }}>
-                            {locale === "ko" ? "번역 사용량" : "Translation Usage"}
+                            {t("dashboard.translationUsage")}
                         </span>
                         <span style={{ fontSize: 12, color: translationUsed >= translationLimit ? "#c33" : "#888" }}>
                             {translationUsed}/{translationLimit === 999 ? "∞" : translationLimit}
@@ -279,7 +279,7 @@ export default function NovelManagePage() {
                     {translationUsed >= translationLimit ? (
                         <div style={{ marginTop: 12, textAlign: "center" }}>
                             <p style={{ fontSize: 13, color: "#c33", fontWeight: 500, marginBottom: 8 }}>
-                                {locale === "ko" ? "❌ 번역 횟수를 모두 소진했습니다" : "❌ Translation limit reached"}
+                                {t("dashboard.translationLimitReached")}
                             </p>
                             <a
                                 href="/pricing"
@@ -290,15 +290,15 @@ export default function NovelManagePage() {
                                     textDecoration: "none", borderRadius: 8,
                                 }}
                             >
-                                {locale === "ko" ? "Pro 시작하기 $14.99/월" : "Get Pro $14.99/mo"}
+                                {t("dashboard.getProMonthly")}
                             </a>
                         </div>
                     ) : translationUsed >= translationLimit - 1 ? (
                         <p style={{ marginTop: 8, fontSize: 12, color: "#b7791f" }}>
-                            ⚠️ {locale === "ko" ? "마지막 번역 기회입니다!" : "Last translation remaining!"}
+                            ⚠️ {t("dashboard.lastTranslation")}
                             {" "}
                             <a href="/pricing" style={{ color: "#243A6E", fontWeight: 600 }}>
-                                {locale === "ko" ? "Pro로 무제한 →" : "Go unlimited with Pro →"}
+                                {t("dashboard.goUnlimitedPro")}
                             </a>
                         </p>
                     ) : null}
@@ -401,8 +401,8 @@ export default function NovelManagePage() {
                                             } else {
                                                 const data = await res.json();
                                                 setError(data.error === "TRANSLATION_QUOTA_EXCEEDED"
-                                                    ? `번역 쿼터 초과. ${Math.ceil((data.resetIn ?? 0) / 60)}분 후 재시도 가능`
-                                                    : data.message ?? data.error ?? "재시도 실패"
+                                                    ? t("dashboard.quotaExceededRetry").replace("{min}", String(Math.ceil((data.resetIn ?? 0) / 60)))
+                                                    : data.message ?? data.error ?? t("dashboard.retryFailedGeneric")
                                                 );
                                             }
                                             setRetrying(null);
@@ -432,7 +432,7 @@ export default function NovelManagePage() {
                                 </span>
                                 {ep.scheduled_at && (
                                     <span style={{ fontSize: 11, color: "#999" }}>
-                                        {new Date(ep.scheduled_at).toLocaleDateString("ko-KR")}
+                                        {new Date(ep.scheduled_at).toLocaleDateString(locale === "ko" ? "ko-KR" : "en-US")}
                                     </span>
                                 )}
                                 <Link

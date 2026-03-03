@@ -8,10 +8,10 @@ import EntityManager from "../../../../../components/EntityManager";
 
 const STORAGE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace("/api", "") ?? "";
 
-const GENRES = [
-    "판타지", "로맨스", "현대판타지", "무협", "SF", "미스터리", "스릴러",
-    "역사", "일상", "성장", "액션", "드라마", "공포", "기타",
-];
+const GENRE_KEYS = [
+    "fantasy", "romance", "modernFantasy", "martialArts", "sf", "mystery", "thriller",
+    "historical", "sliceOfLife", "comingOfAge", "action", "drama", "horror", "other",
+] as const;
 
 export default function EditNovelPage() {
     const router = useRouter();
@@ -56,7 +56,7 @@ export default function EditNovelPage() {
                 setCoverPreview(data.cover_url ?? null);
             }
         } catch {
-            setError("소설 정보를 불러오지 못했습니다.");
+            setError(t("editNovel.errorLoad"));
         } finally {
             setLoading(false);
         }
@@ -76,7 +76,7 @@ export default function EditNovelPage() {
         setError("");
 
         if (!title.trim()) {
-            setError("제목을 입력해주세요.");
+            setError(t("editNovel.errorNoTitle"));
             return;
         }
 
@@ -102,7 +102,7 @@ export default function EditNovelPage() {
 
             if (!res.ok) {
                 const data = await res.json();
-                setError(data.error ?? "저장에 실패했습니다.");
+                setError(data.error ?? t("editNovel.errorSave"));
                 setSaving(false);
                 return;
             }
@@ -120,23 +120,23 @@ export default function EditNovelPage() {
 
             router.push(`/dashboard/novels/${novelId}`);
         } catch {
-            setError("네트워크 오류가 발생했습니다.");
+            setError(t("editNovel.errorNetwork"));
             setSaving(false);
         }
     };
 
     if (loading) {
-        return <div style={{ padding: "48px 24px", textAlign: "center", color: "#666" }}>불러오는 중...</div>;
+        return <div style={{ padding: "48px 24px", textAlign: "center", color: "#666" }}>{t("common.loading")}</div>;
     }
 
     return (
         <main style={{ maxWidth: 640, margin: "0 auto", padding: "40px 24px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
                 <h1 style={{ fontFamily: '"KoPub Batang", serif', fontSize: 22, fontWeight: 600, color: "#243A6E" }}>
-                    소설 정보 수정
+                    {t("editNovel.title")}
                 </h1>
                 <Link href={`/dashboard/novels/${novelId}`} style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>
-                    ← 소설 관리로
+                    {t("editNovel.backToNovel")}
                 </Link>
             </div>
 
@@ -144,7 +144,7 @@ export default function EditNovelPage() {
                 {/* 커버 이미지 */}
                 <div style={{ marginBottom: 28 }}>
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
-                        표지 이미지
+                        {t("editNovel.coverImage")}
                     </label>
                     <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
                         <div
@@ -161,7 +161,7 @@ export default function EditNovelPage() {
                                 flexShrink: 0,
                             }}
                         >
-                            {!coverPreview && "표지 없음"}
+                            {!coverPreview && t("editNovel.noCover")}
                         </div>
                         <div>
                             <input
@@ -171,7 +171,7 @@ export default function EditNovelPage() {
                                 style={{ fontSize: 13, color: "#666" }}
                             />
                             <div style={{ fontSize: 11, color: "#999", marginTop: 6 }}>
-                                새 이미지를 선택하면 기존 표지가 교체됩니다
+                                {t("editNovel.coverChangeHint")}
                             </div>
                         </div>
                     </div>
@@ -180,7 +180,7 @@ export default function EditNovelPage() {
                 {/* 제목 */}
                 <div style={{ marginBottom: 20 }}>
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
-                        제목 <span style={{ color: "#c0392b" }}>*</span>
+                        {t("editNovel.novelTitle")} <span style={{ color: "#c0392b" }}>*</span>
                     </label>
                     <input
                         type="text"
@@ -203,7 +203,7 @@ export default function EditNovelPage() {
                 {/* 설명 */}
                 <div style={{ marginBottom: 20 }}>
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
-                        소개글
+                        {t("editNovel.description")}
                     </label>
                     <textarea
                         value={description}
@@ -226,7 +226,7 @@ export default function EditNovelPage() {
                 {/* 장르 */}
                 <div style={{ marginBottom: 32 }}>
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 500, color: "#243A6E", fontSize: 14 }}>
-                        장르
+                        {t("editNovel.genre")}
                     </label>
                     <select
                         value={genre}
@@ -243,9 +243,9 @@ export default function EditNovelPage() {
                             cursor: "pointer",
                         }}
                     >
-                        <option value="">장르 선택 (선택사항)</option>
-                        {GENRES.map((g) => (
-                            <option key={g} value={g}>{g}</option>
+                        <option value="">{t("editNovel.genreSelect")}</option>
+                        {GENRE_KEYS.map((key) => (
+                            <option key={key} value={t(`createNovel.genres.${key}`)}>{t(`createNovel.genres.${key}`)}</option>
                         ))}
                     </select>
                 </div>
@@ -272,7 +272,7 @@ export default function EditNovelPage() {
                             cursor: saving ? "not-allowed" : "pointer",
                         }}
                     >
-                        {saving ? "저장 중..." : "저장"}
+                        {saving ? t("editNovel.saving") : t("editNovel.save")}
                     </button>
                     <button
                         type="button"
@@ -288,7 +288,7 @@ export default function EditNovelPage() {
                             cursor: "pointer",
                         }}
                     >
-                        취소
+                        {t("editNovel.cancel")}
                     </button>
                 </div>
             </form>
