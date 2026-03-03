@@ -58,7 +58,8 @@ export default function NewEpisodePage() {
     const [content, setContent] = useState("");
     const [scheduledAt, setScheduledAt] = useState("");
     const [saving, setSaving] = useState(false);
-    const [saved, setSaved] = useState(false); // 에피소드가 DB에 저장됨
+    const [saved, setSaved] = useState(false); // 유저가 명시적으로 업로드 완료
+    const [episodeCreated, setEpisodeCreated] = useState(false); // 에피소드가 DB에 존재 (번역용 자동 저장 포함)
     const [error, setError] = useState("");
     const [quotaRemaining, setQuotaRemaining] = useState<number | null>(null);
     const [quotaResetIn, setQuotaResetIn] = useState(0);
@@ -187,26 +188,29 @@ export default function NewEpisodePage() {
 
         setSaving(true);
         try {
-            const res = await fetch(`${STORAGE}/api/novels/${novelId}/episodes`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    ep,
-                    title: title.trim() || null,
-                    content: content.trim(),
-                    scheduled_at: scheduledAt || null,
-                    skip_translation: true,
-                }),
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                if (res.status === 429) setError(t("episodeNew.quotaError").replace("{time}", formatCountdown(data.resetIn ?? quotaResetIn)));
-                else if (res.status === 409) setError(t("episodeNew.duplicateEp").replace("{ep}", String(ep)));
-                else setError(data.error ?? t("episodeNew.saveFailed"));
-                return;
+            if (!episodeCreated) {
+                const res = await fetch(`${STORAGE}/api/novels/${novelId}/episodes`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        ep,
+                        title: title.trim() || null,
+                        content: content.trim(),
+                        scheduled_at: scheduledAt || null,
+                        skip_translation: true,
+                    }),
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    if (res.status === 429) setError(t("episodeNew.quotaError").replace("{time}", formatCountdown(data.resetIn ?? quotaResetIn)));
+                    else if (res.status === 409) setError(t("episodeNew.duplicateEp").replace("{ep}", String(ep)));
+                    else setError(data.error ?? t("episodeNew.saveFailed"));
+                    return;
+                }
+                setEpisodeCreated(true);
             }
             setSaved(true);
         } catch {
@@ -341,7 +345,7 @@ export default function NewEpisodePage() {
         if (!token) { router.push("/login"); return; }
 
         // 아직 저장 안 했으면 먼저 저장
-        if (!saved) {
+        if (!episodeCreated) {
             setSaving(true);
             try {
                 const res = await fetch(`${STORAGE}/api/novels/${novelId}/episodes`, {
@@ -365,7 +369,7 @@ export default function NewEpisodePage() {
                     setSaving(false);
                     return;
                 }
-                setSaved(true);
+                setEpisodeCreated(true);
             } catch {
                 setError(t("episodeNew.networkError"));
                 setSaving(false);
