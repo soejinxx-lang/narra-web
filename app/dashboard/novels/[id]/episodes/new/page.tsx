@@ -76,6 +76,8 @@ export default function NewEpisodePage() {
     const [translating, setTranslating] = useState(false);
     const [langStatuses, setLangStatuses] = useState<LangStatus[]>([]);
     const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const [translateElapsed, setTranslateElapsed] = useState(0);
+    const translateStartRef = useRef<number | null>(null);
 
     // 소설 원문 언어
     const [sourceLanguage, setSourceLanguage] = useState("ko");
@@ -160,6 +162,19 @@ export default function NewEpisodePage() {
         };
     }, []);
 
+    // 번역 경과 시간 타이머
+    useEffect(() => {
+        if (!translating) {
+            translateStartRef.current = null;
+            return;
+        }
+        if (!translateStartRef.current) translateStartRef.current = Date.now();
+        const timer = setInterval(() => {
+            setTranslateElapsed(Math.floor((Date.now() - (translateStartRef.current ?? Date.now())) / 1000));
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [translating]);
+
     // ── 1. 업로드만 ──
     const handleSaveOnly = async () => {
         setError("");
@@ -169,9 +184,9 @@ export default function NewEpisodePage() {
         const detected = detectLanguage(content);
         if (detected !== "unknown" && detected !== sourceLanguage) {
             const ok = confirm(
-                `이 소설의 원문 언어는 ${LANG_NAMES[sourceLanguage] || sourceLanguage}이지만, ` +
-                `입력한 본문이 ${LANG_NAMES[detected] || detected}(으)로 감지되었습니다.\n` +
-                `이대로 진행하시겠습니까?`
+                t("episodeNew.langMismatch")
+                    .replace("{source}", LANG_NAMES[sourceLanguage] || sourceLanguage)
+                    .replace("{detected}", LANG_NAMES[detected] || detected)
             );
             if (!ok) return;
         }
@@ -179,7 +194,7 @@ export default function NewEpisodePage() {
         // 번역 안 했으면 확인
         const translated = langStatuses.some(l => l.status === "DONE" && l.language !== sourceLanguage);
         if (!translated) {
-            const ok = confirm("번역을 진행하지 않은 채로 업로드하시겠습니까?");
+            const ok = confirm(t("episodeNew.noTranslationConfirm"));
             if (!ok) return;
         }
 
@@ -541,7 +556,7 @@ export default function NewEpisodePage() {
                     >
                         {Array.from({ length: 200 }, (_, i) => i + 1).map(n => (
                             <option key={n} value={n} disabled={existingEps.has(n)} style={existingEps.has(n) ? { background: "#e0e0e0", color: "#888" } : {}}>
-                                {n}{existingEps.has(n) ? " (업로드됨)" : ""}
+                                {n}{existingEps.has(n) ? ` (${t("episodeNew.uploaded")})` : ""}
                             </option>
                         ))}
                     </select>
@@ -610,7 +625,7 @@ export default function NewEpisodePage() {
                         cursor: extracting || !content.trim() ? "not-allowed" : "pointer",
                     }}
                 >
-                    {extracting ? "추출 중..." : "고유명사 추출"}
+                    {extracting ? t("episodeNew.extracting") : t("episodeNew.extractBtn")}
                 </button>
 
                 {/* 번역 시작 */}
@@ -624,7 +639,9 @@ export default function NewEpisodePage() {
                         cursor: translating || quotaExhausted ? "not-allowed" : "pointer",
                     }}
                 >
-                    {translating ? "번역 중..." : quotaExhausted ? t("episodeNew.quotaOver") : "번역 시작"}
+                    {translating
+                        ? `${t("episodeNew.translating")} ⏱ ${Math.floor(translateElapsed / 60)}:${String(translateElapsed % 60).padStart(2, "0")}`
+                        : quotaExhausted ? t("episodeNew.quotaOver") : t("episodeNew.translateBtn")}
                 </button>
 
                 {/* 업로드 */}
@@ -638,7 +655,7 @@ export default function NewEpisodePage() {
                         cursor: saving || saved ? "not-allowed" : "pointer",
                     }}
                 >
-                    {saved ? "✓ 업로드 완료" : saving ? "업로드 중..." : "업로드"}
+                    {saved ? t("episodeNew.uploadDone") : saving ? t("episodeNew.uploading") : t("episodeNew.uploadBtn")}
                 </button>
             </div>
 
@@ -680,7 +697,7 @@ export default function NewEpisodePage() {
                                     border: "none", borderRadius: 0, fontSize: 13, fontWeight: 600, cursor: "pointer",
                                 }}
                             >
-                                저장
+                                {t("episodeNew.saveEntity")}
                             </button>
                             <button
                                 onClick={() => setExtractedEntities(prev => prev.filter((_, i) => i !== idx))}
@@ -701,7 +718,12 @@ export default function NewEpisodePage() {
                 <div style={{ padding: 20, background: "#f8f9ff", border: "1px solid #dde3f5" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                         <h3 style={{ fontSize: 16, fontWeight: 600, color: "#243A6E", margin: 0 }}>
-                            번역 진행 상황
+                            {t("episodeNew.translationProgress")}
+                            {translating && (
+                                <span style={{ fontSize: 13, fontWeight: 400, color: "#666", marginLeft: 12 }}>
+                                    ⏱ {Math.floor(translateElapsed / 60)}:{String(translateElapsed % 60).padStart(2, "0")} {t("episodeNew.elapsed")}
+                                </span>
+                            )}
                         </h3>
                         <span style={{ fontSize: 14, fontWeight: 700, color: "#243A6E" }}>
                             {completed}/{langStatuses.length}
@@ -730,10 +752,10 @@ export default function NewEpisodePage() {
                                     {l.language.toUpperCase()}
                                 </div>
                                 <div style={{ fontSize: 11, color: "#666" }}>
-                                    {l.status === "PENDING" && "⏸️ 대기"}
-                                    {l.status === "PROCESSING" && "⏳ 번역 중"}
-                                    {l.status === "DONE" && "✓ 완료"}
-                                    {l.status === "FAILED" && "✗ 실패"}
+                                    {l.status === "PENDING" && t("episodeNew.statusPending")}
+                                    {l.status === "PROCESSING" && t("episodeNew.statusProcessing")}
+                                    {l.status === "DONE" && t("episodeNew.statusDone")}
+                                    {l.status === "FAILED" && t("episodeNew.statusFailed")}
                                 </div>
                                 {l.status === "FAILED" && (
                                     <button
@@ -743,12 +765,18 @@ export default function NewEpisodePage() {
                                             background: "#e74c3c", color: "#fff", border: "none", borderRadius: 0, cursor: "pointer",
                                         }}
                                     >
-                                        재시도
+                                        {t("episodeNew.retry")}
                                     </button>
                                 )}
                             </div>
                         ))}
                     </div>
+                    {/* 2분 이상 경과 시 심리 안정 메시지 */}
+                    {translating && translateElapsed >= 120 && (
+                        <div style={{ marginTop: 12, fontSize: 12, color: "#888", textAlign: "center" as const }}>
+                            {t("episodeNew.pleaseWait")}
+                        </div>
+                    )}
                 </div>
             )}
         </main>
