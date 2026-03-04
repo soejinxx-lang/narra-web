@@ -151,6 +151,7 @@ export default function LoginPage() {
               {t("login.username")}
             </label>
             <input
+              data-testid="login.username"
               type="text"
               value={username}
               onChange={(e) => {
@@ -188,6 +189,7 @@ export default function LoginPage() {
             </label>
             <div style={{ position: "relative" }}>
               <input
+                data-testid="login.password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => {
@@ -246,6 +248,7 @@ export default function LoginPage() {
 
           {error && (
             <div
+              data-testid="login.error"
               style={{
                 padding: "12px",
                 background: "#fee",
@@ -260,6 +263,7 @@ export default function LoginPage() {
           )}
 
           <button
+            data-testid="login.submit"
             type="submit"
             disabled={loading}
             style={{

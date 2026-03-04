@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
-    "start": "next start"
+    "start": "next start",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.958.0",

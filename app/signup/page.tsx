@@ -153,6 +153,7 @@ export default function SignUpPage() {
               {t("login.name")}
             </label>
             <input
+              data-testid="signup.name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -182,8 +183,8 @@ export default function SignUpPage() {
               {t("login.username")}
             </label>
             <input
+              data-testid="signup.username"
               type="text"
-              value={username}
               onChange={(e) => {
                 const value = e.target.value;
                 const sanitized = value.replace(/[^a-zA-Z0-9_-]/g, "");
@@ -220,6 +221,7 @@ export default function SignUpPage() {
             </label>
             <div style={{ position: "relative" }}>
               <input
+                data-testid="signup.password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => {
@@ -279,6 +281,7 @@ export default function SignUpPage() {
             </label>
             <div style={{ position: "relative" }}>
               <input
+                data-testid="signup.confirm-password"
                 type={showConfirmPassword ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => {
@@ -339,6 +342,7 @@ export default function SignUpPage() {
               }}
             >
               <input
+                data-testid="signup.terms"
                 type="checkbox"
                 checked={agreedToTerms}
                 onChange={(e) => setAgreedToTerms(e.target.checked)}
@@ -371,6 +375,7 @@ export default function SignUpPage() {
               }}
             >
               <input
+                data-testid="signup.privacy"
                 type="checkbox"
                 checked={agreedToPrivacy}
                 onChange={(e) => setAgreedToPrivacy(e.target.checked)}
@@ -395,6 +400,7 @@ export default function SignUpPage() {
 
           {error && (
             <div
+              data-testid="signup.error"
               style={{
                 padding: "12px",
                 background: "#fee",
@@ -409,6 +415,7 @@ export default function SignUpPage() {
           )}
 
           <button
+            data-testid="signup.submit"
             type="submit"
             disabled={loading}
             style={{
