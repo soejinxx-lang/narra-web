@@ -93,45 +93,6 @@ export default function BottomBar() {
         © 2026 NARRA · contact@narra.kr
       </div>
 
-      {/* 사업자 정보 (접이식) */}
-      <div style={{ textAlign: "center" }}>
-        <button
-          onClick={() => setShowBizInfo(!showBizInfo)}
-          style={{
-            background: "none",
-            border: "none",
-            color: "rgba(255,255,255,0.3)",
-            fontSize: "12px",
-            cursor: "pointer",
-            padding: "4px 8px",
-            transition: "color 0.2s",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
-          onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.3)")}
-        >
-          {showBizInfo ? "▲" : "▼"} {isKorean ? "사업자 정보" : "Business Information"}
-        </button>
-
-        {showBizInfo && (
-          <div
-            style={{
-              marginTop: "12px",
-              fontSize: "12px",
-              color: "rgba(255,255,255,0.35)",
-              lineHeight: 1.8,
-            }}
-          >
-            <p>{isKorean ? "상호" : "Company"}: {businessInfo.name}</p>
-            <p>{isKorean ? "대표" : "Representative"}: {businessInfo.owner}</p>
-            <p>{isKorean ? "사업자등록번호" : "Business Reg. No."}: {businessInfo.registrationNumber}</p>
-            <p>{isKorean ? "소재지" : "Address"}: {businessInfo.address}</p>
-            {businessInfo.ecommerceNumber && (
-              <p>{isKorean ? "통신판매업신고번호" : "E-commerce Reg. No."}: {businessInfo.ecommerceNumber}</p>
-            )}
-            <p>{isKorean ? "이메일" : "Email"}: {businessInfo.email}</p>
-          </div>
-        )}
-      </div>
     </footer>
   );
 }

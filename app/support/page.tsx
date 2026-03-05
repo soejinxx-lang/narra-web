@@ -239,6 +239,30 @@ export default async function SupportPage() {
               Privacy Policy →
             </a>
           </div>
+
+          {/* 사업자 정보 — 법적 의무 공개, 최소 노출 */}
+          <details style={{ marginTop: "32px" }}>
+            <summary style={{
+              fontSize: "10px",
+              color: "rgba(0,0,0,0.15)",
+              cursor: "pointer",
+              listStyle: "none",
+              userSelect: "none",
+            }}>
+              ⓘ
+            </summary>
+            <div style={{
+              marginTop: "8px",
+              fontSize: "10px",
+              color: "rgba(0,0,0,0.25)",
+              lineHeight: 1.8,
+            }}>
+              <p>도파시스 · 박서진</p>
+              <p>166-08-03583</p>
+              <p>대구광역시 동구 송라로10길 33, 103동 902호(신천동, 동대구역센트럴시티자이)</p>
+              <p>contact@narra.kr</p>
+            </div>
+          </details>
         </section>
       </div>
     </main>

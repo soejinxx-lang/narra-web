@@ -172,11 +172,13 @@ export default async function TermsPage() {
                         ? "플랫폼은 서비스 운영을 위해 에피소드 하단 등에 광고를 게재할 수 있습니다. 광고는 독자의 읽기 경험을 해치지 않는 위치에 게재됩니다."
                         : "The Platform may display advertisements (e.g., at the bottom of episodes) to support service operations. Ads are placed in locations that do not interfere with the reading experience."}</p>
 
-                    <h4 style={{ color: "#243A6E", marginBottom: "8px", marginTop: "16px" }}>{isKorean ? "12.3 Premium 구독" : "12.3 Premium Subscription"}</h4>
+                    <h4 style={{ color: "#243A6E", marginBottom: "8px", marginTop: "16px" }}>{isKorean ? "12.3 유료 구독" : "12.3 Paid Subscriptions"}</h4>
                     <ol style={{ paddingLeft: "20px" }}>
-                        <li>{isKorean ? "가격: 월 $4.99" : "Price: $4.99/month"}</li>
-                        <li>{isKorean ? "혜택: 광고 제거, 프로필 커스텀, VIP 뱃지, 독서 통계, 오프라인 다운로드 등" : "Benefits: ad removal, profile customization, VIP badge, reading statistics, offline download, etc."}</li>
-                        <li>{isKorean ? "Premium 구독자도 모든 콘텐츠를 동일하게 이용합니다. 유료 전용 콘텐츠는 없습니다." : "Premium subscribers access the same content as free users. There is no premium-exclusive content."}</li>
+                        <li>{isKorean ? "Reader Plus: 월 $4.99 (연 $49.99)" : "Reader Plus: $4.99/month ($49.99/year)"}</li>
+                        <li>{isKorean ? "Author Starter: 월 $7.99 (연 $79.99)" : "Author Starter: $7.99/month ($79.99/year)"}</li>
+                        <li>{isKorean ? "Author Pro: 월 $12.99 (연 $129.99)" : "Author Pro: $12.99/month ($129.99/year)"}</li>
+                        <li>{isKorean ? "표시 가격은 세전 기준이며, 거주 국가에 따라 부가세(VAT)가 추가될 수 있습니다." : "Prices shown are before tax. VAT may be added depending on your country of residence."}</li>
+                        <li>{isKorean ? "유료 구독자도 모든 콘텐츠를 동일하게 이용합니다. 유료 전용 콘텐츠는 없습니다." : "Paid subscribers access the same content as free users. There is no subscription-exclusive content."}</li>
                     </ol>
 
                     <h4 style={{ color: "#243A6E", marginBottom: "8px", marginTop: "16px" }}>{isKorean ? "12.4 작가 외부 후원" : "12.4 Author External Support"}</h4>
@@ -190,6 +192,26 @@ export default async function TermsPage() {
                     <p>{isKorean
                         ? "수익화 정책 변경 시 최소 30일 전에 공지합니다."
                         : "Any changes to the monetization policy will be announced at least 30 days in advance."}</p>
+                </Section>
+
+                <Section title={isKorean ? "제13조 (청약철회 및 환불)" : "Article 13 (Cancellation and Refunds)"}>
+                    <ol style={{ paddingLeft: "20px" }}>
+                        <li>{isKorean
+                            ? "회원은 구독 결제일로부터 7일 이내에 청약을 철회할 수 있습니다. 단, 번역 요청, 콘텐츠 생성 등 서비스를 실제로 이용한 경우에는 전자상거래법 제17조 제2항에 따라 청약철회가 제한될 수 있습니다."
+                            : "Members may cancel their subscription within 7 days of payment. However, if the service has been actively used (e.g., translation requests, content creation), cancellation may be limited under Article 17(2) of the Act on Consumer Protection in Electronic Commerce."}</li>
+                        <li>{isKorean
+                            ? "구독을 해지하더라도 이미 결제된 기간이 종료될 때까지 서비스를 계속 이용할 수 있습니다."
+                            : "Even after cancellation, the service remains available until the end of the current billing period."}</li>
+                        <li>{isKorean
+                            ? "연간 구독 중도 해지 시, 월간 가격 기준으로 사용 기간을 산정하여 잔여 금액을 환불합니다."
+                            : "For annual subscriptions cancelled mid-cycle, the refund is calculated based on the monthly price for the period used, and the remaining balance is refunded."}</li>
+                        <li>{isKorean
+                            ? "환불은 LemonSqueezy 결제 포털 또는 contact@narra.kr을 통해 요청할 수 있습니다."
+                            : "Refunds may be requested through the LemonSqueezy payment portal or by contacting contact@narra.kr."}</li>
+                        <li>{isKorean
+                            ? "결제 취소 및 환불 처리에는 영업일 기준 최대 7일이 소요될 수 있습니다."
+                            : "Cancellation and refund processing may take up to 7 business days."}</li>
+                    </ol>
                 </Section>
 
                 <div style={{ marginTop: "32px", padding: "16px", background: "#f5f5f5", borderRadius: "8px", fontSize: "13px", color: "#888" }}>
