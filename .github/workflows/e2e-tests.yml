@@ -26,6 +26,10 @@ jobs:
 
       - name: Run E2E Tests
         run: npx playwright test --config=playwright.ci.ts
+        env:
+          ADMIN_API_KEY: ${{ secrets.ADMIN_API_KEY }}
+          TEST_RESULTS_API_URL: https://narra-storage.railway.app/api/test-results
+          CI: true
 
       - name: Upload report
         if: always()

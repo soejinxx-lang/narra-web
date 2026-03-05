@@ -94,6 +94,13 @@ class ApiReporter implements Reporter {
         const apiUrl = process.env.TEST_RESULTS_API_URL || "http://localhost:4000/api/test-results";
         const apiKey = process.env.ADMIN_API_KEY || "";
 
+        // 🔍 디버그: CI 환경에서 전송 정보 출력
+        console.log(`\n📡 [api-reporter] 결과 전송 시작`);
+        console.log(`   URL: ${apiUrl}`);
+        console.log(`   ADMIN_API_KEY: ${apiKey ? `설정됨 (${apiKey.length}자)` : "❌ 없음"}`);
+        console.log(`   환경: ${process.env.CI ? "CI" : "local"}`);
+        console.log(`   테스트: total=${this.tests.length}, passed=${passed}, failed=${failed}`);
+
         try {
             const res = await fetch(apiUrl, {
                 method: "POST",
@@ -104,16 +111,24 @@ class ApiReporter implements Reporter {
                 body: JSON.stringify(payload),
             });
 
+            // 🔍 디버그: 서버 응답 상세 출력
+            console.log(`   HTTP 응답: ${res.status} ${res.statusText}`);
+
             if (res.ok) {
                 const data = await res.json();
-                console.log(`\n📊 테스트 결과 저장 완료 (run_id: ${data.run_id})`);
-                console.log(`   ✅ ${passed} passed | ❌ ${failed} failed | ⚪ ${skipped} skipped`);
+                console.log(`\n✅ 테스트 결과 저장 완료 (run_id: ${data.run_id})`);
+                console.log(`   ${passed} passed | ${failed} failed | ${skipped} skipped`);
                 return;
             }
 
-            console.warn(`\n⚠️  API 전송 실패 (${res.status}). 로컬 파일로 fallback.`);
+            // 실패 시 응답 body도 출력
+            const errBody = await res.text().catch(() => "(읽기 실패)");
+            console.warn(`\n⚠️  API 전송 실패 (${res.status}): ${errBody}`);
+            console.warn(`   로컬 파일로 fallback.`);
         } catch (err) {
-            console.warn(`\n⚠️  API 서버 연결 실패. 로컬 파일로 fallback.`);
+            console.warn(`\n⚠️  API 서버 연결 실패: ${err}`);
+            console.warn(`   URL: ${apiUrl}`);
+            console.warn(`   로컬 파일로 fallback.`);
         }
 
         // Fallback: 로컬 JSON 저장
