@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useLocale } from "../../lib/i18n";
 
 const STORAGE = process.env.NEXT_PUBLIC_STORAGE_BASE_URL?.replace("/api", "") ?? "";
-const ADMIN_BASE = process.env.NEXT_PUBLIC_ADMIN_BASE_URL ?? "";
 
 type PlanType = "free" | "reader_premium" | "author_starter" | "author_pro";
 type BillingCycle = "monthly" | "annual";
@@ -68,7 +67,7 @@ export default function PricingPage() {
         if (!key) return;
         setCheckoutLoading(plan);
         try {
-            const res = await fetch(`${ADMIN_BASE}/api/ls/checkout`, {
+            const res = await fetch(`/api/ls/checkout`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ user_id: user.id, plan: key }),
