@@ -66,7 +66,7 @@ const fr = { ...en, title: "Conditions Générales", effective: "En vigueur : 1e
 
 // prettier-ignore
 const de = { ...en, title: "Nutzungsbedingungen", effective: "Gültig ab: 1. März 2026 (v1.0)", translationNotice: "Dies ist eine unverbindliche Übersetzung. Maßgeblich ist die koreanische Originalfassung.", footer: "Diese Bedingungen gelten für alle NARRA-Nutzer. Mit der Nutzung des Dienstes stimmst du diesen Bedingungen zu.",
-    a1: { title: "§ 1 (Zweck)", body: "Diese Bedingungen regeln Rechte, Pflichten und Verantwortlichkeiten zwischen NARRA (der „Plattform") und den Nutzern des Webnovel-Dienstes (dem „Dienst")." },
+    a1: { title: "§ 1 (Zweck)", body: "Diese Bedingungen regeln Rechte, Pflichten und Verantwortlichkeiten zwischen NARRA (der \u201ePlattform\u201c) und den Nutzern des Webnovel-Dienstes (dem \u201eDienst\u201c)." },
     a13: { title: "§ 13 (Kündigung und Erstattung)", items: ["Du kannst innerhalb von 7 Tagen nach Zahlung kündigen. Wenn du den Dienst bereits genutzt hast (z. B. Übersetzungen, Inhaltserstellung), kann das Widerrufsrecht eingeschränkt sein.", "Nach der Kündigung kannst du den Dienst bis zum Ende deines aktuellen Abrechnungszeitraums weiter nutzen.", "Bei vorzeitiger Kündigung eines Jahresabonnements erstatten wir den Restbetrag abzüglich der genutzten Monate zum Monatspreis.", "Erstattungen beantragst du über das LemonSqueezy-Portal oder per E-Mail an contact@narra.kr.", "Kündigungen und Erstattungen werden innerhalb von 7 Werktagen bearbeitet."] },
 };
 
