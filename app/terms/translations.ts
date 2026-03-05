@@ -1,0 +1,91 @@
+/* eslint-disable */
+import type { Locale } from "../../lib/i18n";
+
+// prettier-ignore
+const ko = {
+    title: "이용약관", effective: "시행일: 2026년 3월 1일 (v1.0)", translationNotice: "",
+    footer: "본 약관은 본 사이트를 이용하시는 모든 사용자에게 적용됩니다. 사이트 이용 시 본 약관에 동의하는 것으로 간주됩니다.",
+    a1: { title: "제1조 (목적)", body: "본 약관은 NARRA(이하 \"플랫폼\")가 제공하는 웹소설 서비스(이하 \"서비스\")의 이용과 관련하여 플랫폼과 이용자 간의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다." },
+    a2: { title: "제2조 (정의)", items: ["\"플랫폼\"이란 NARRA 웹사이트 및 관련 서비스를 의미합니다.", "\"콘텐츠\"란 소설 원문 및 번역물을 포함한 모든 창작물을 의미합니다.", "\"작가\"란 콘텐츠를 업로드한 회원을 의미합니다.", "\"독자\"란 콘텐츠를 열람하는 회원을 의미합니다.", "\"회원\"이란 플랫폼에 가입하여 서비스를 이용하는 자를 의미합니다."] },
+    a3: { title: "제3조 (약관의 게시 및 개정)", body: "플랫폼은 필요 시 본 약관을 개정할 수 있으며, 개정 시 적용일자 및 개정 사유를 명시하여 최소 7일 전에 공지합니다. 회원이 개정 약관에 동의하지 않을 경우 서비스 이용을 중단하고 탈퇴할 수 있습니다." },
+    a4: { title: "제4조 (저작권 및 권리 귀속)", s1: { title: "4.1 원문 저작권", body: "작가가 업로드한 원문의 저작권은 작가에게 귀속됩니다. 단, 작가는 플랫폼에 다음 권리를 비독점적으로 허락합니다: 전송권(웹사이트 게시), 번역권(9개 언어 자동 번역), 2차 저작물 작성권, 서비스 홍보를 위한 사용." }, s2: { title: "4.2 번역물 저작권", body: "플랫폼이 제공하는 자동 번역 콘텐츠의 저작권은 플랫폼에 귀속됩니다. 번역물은 AI 기술을 활용하여 생성되며, 참고용으로 제공됩니다. 플랫폼은 번역의 정확성이나 완전성을 보장하지 않습니다." }, s3: { title: "4.3 데이터베이스권", body: "본 플랫폼의 다국어 번역 데이터베이스는 상당한 투자와 노력의 산물로서 저작권법 제93조에 따른 데이터베이스 제작자의 권리로 보호됩니다." } },
+    a5: { title: "제5조 (AI 기술 활용)", items: ["본 플랫폼은 자동 번역, 콘텐츠 추천, 검색 최적화, 서비스 개선 영역에서 AI 기술을 활용합니다.", "작가는 창작 과정에서 AI 도구를 보조적으로 사용할 수 있습니다. 단, 최종 콘텐츠에 대한 저작권 및 법적 책임은 작가에게 있습니다.", "일부 콘텐츠는 작가가 AI 도구를 활용하여 제작했을 수 있습니다. 플랫폼은 AI 사용 여부를 검증하지 않습니다."] },
+    a6: { title: "제6조 (작가의 보증 및 책임)", intro: "작가는 다음을 보증합니다:", items: ["업로드한 콘텐츠가 자신의 창작물이거나 적법한 권리를 보유하고 있음", "콘텐츠가 제3자의 저작권, 상표권, 초상권, 명예권 등을 침해하지 않음", "콘텐츠가 관련 법령 및 플랫폼 정책을 위반하지 않음", "위 보증이 거짓일 경우 발생하는 모든 법적 책임은 작가가 부담함"] },
+    a7: { title: "제7조 (이용 제한)", intro: "다음 행위는 엄격히 금지됩니다:", items: ["콘텐츠의 복제, 전송, 배포, 출판", "번역물의 무단 사용 및 재배포", "크롤링, 스크래핑, 자동화 도구를 이용한 수집", "콘텐츠의 상업적 이용", "저작권 표시 제거 또는 변경"], warning: "위반 시 즉시 계정 정지, 법적 조치 및 손해배상이 청구될 수 있습니다." },
+    a8: { title: "제8조 (면책 사항)", items: ["플랫폼은 작가가 업로드한 콘텐츠의 정확성, 적법성, 품질에 대해 책임지지 않습니다.", "자동 번역의 정확성, 완전성, 적시성을 보장하지 않습니다.", "시스템 점검, 천재지변, 제3자 서비스 장애 등으로 서비스가 중단될 수 있습니다."] },
+    a9: { title: "제9조 (저작권 침해 신고)", body: "저작권 침해를 발견한 권리자는 권리자 정보, 침해 콘텐츠 URL, 원본 저작물 정보, 침해 사실 증명 자료를 포함하여 contact@narra.kr로 신고할 수 있습니다. 접수 시 해당 콘텐츠를 임시 비공개 처리하고 작가에게 통지합니다." },
+    a10: { title: "제10조 (서비스 요금)", items: ["NARRA는 현재 모든 콘텐츠를 무료로 제공합니다.", "일부 편의 기능(Premium 구독 등)은 유료로 제공될 수 있으며, 세부 사항은 제12조를 참조하시기 바랍니다.", "유료 서비스의 가격 또는 조건 변경 시 최소 30일 전에 공지합니다."] },
+    a11: { title: "제11조 (분쟁 해결)", items: ["본 약관은 대한민국 법률에 따라 해석됩니다.", "서비스 이용과 관련한 분쟁은 상호 협의하여 해결합니다.", "협의가 이루어지지 않을 경우 서울중앙지방법원을 제1심 관할법원으로 합니다."] },
+    a12: { title: "제12조 (수익화 및 서비스 모델)", s1: { title: "12.1 콘텐츠 제공", body: "NARRA는 현재 모든 에피소드를 무료로 제공합니다." }, s2: { title: "12.2 광고", body: "플랫폼은 서비스 운영을 위해 에피소드 하단 등에 광고를 게재할 수 있습니다. 광고는 독자의 읽기 경험을 해치지 않는 위치에 게재됩니다." }, s3: { title: "12.3 유료 구독", items: ["Reader Plus: 월 $4.99 (연 $49.99)", "Author Starter: 월 $7.99 (연 $79.99)", "Author Pro: 월 $12.99 (연 $129.99)", "표시 가격은 세전 기준이며, 거주 국가에 따라 부가세(VAT)가 추가될 수 있습니다.", "유료 구독자도 모든 콘텐츠를 동일하게 이용합니다. 유료 전용 콘텐츠는 없습니다."] }, s4: { title: "12.4 작가 외부 후원", items: ["작가는 Patreon, Ko-fi 등 외부 플랫폼을 통해 후원을 받을 수 있습니다.", "플랫폼은 외부 후원 수익에서 수수료를 가져가지 않습니다.", "Premium 수익 배분은 파트너 계약을 체결한 작가에 한해 별도 기준에 따라 제공될 수 있습니다."] }, s5: { title: "12.5 정책 변경", body: "수익화 정책 변경 시 최소 30일 전에 공지합니다." } },
+    a13: { title: "제13조 (청약철회 및 환불)", items: ["회원은 구독 결제일로부터 7일 이내에 청약을 철회할 수 있습니다. 단, 번역 요청, 콘텐츠 생성 등 서비스를 실제로 이용한 경우에는 전자상거래법 제17조 제2항에 따라 청약철회가 제한될 수 있습니다.", "구독을 해지하더라도 이미 결제된 기간이 종료될 때까지 서비스를 계속 이용할 수 있습니다.", "연간 구독 중도 해지 시, 월간 가격 기준으로 사용 기간을 산정하여 잔여 금액을 환불합니다.", "환불은 LemonSqueezy 결제 포털 또는 contact@narra.kr을 통해 요청할 수 있습니다.", "결제 취소 및 환불 처리에는 영업일 기준 최대 7일이 소요될 수 있습니다."] },
+};
+
+// prettier-ignore
+const en = {
+    title: "Terms of Service", effective: "Effective: March 1, 2026 (v1.0)",
+    translationNotice: "⚠️ This is a reference translation. The legally binding version is the Korean original. In case of discrepancies, the Korean version prevails.",
+    footer: "These Terms apply to all users of this site. By using the site, you are deemed to have agreed to these Terms.",
+    a1: { title: "Article 1 (Purpose)", body: "These Terms of Service govern the rights, obligations, and responsibilities between NARRA (the \"Platform\") and users regarding the use of the web novel service (the \"Service\")." },
+    a2: { title: "Article 2 (Definitions)", items: ["\"Platform\" refers to the NARRA website and all related services.", "\"Content\" refers to all creative works including original texts and translations.", "\"Author\" refers to a member who uploads Content.", "\"Reader\" refers to a member who reads Content.", "\"Member\" refers to a person who has registered and uses the Service."] },
+    a3: { title: "Article 3 (Amendment)", body: "The Platform may amend these Terms as necessary and will provide at least 7 days' prior notice specifying the effective date and reasons for the amendment. Members who do not agree to the amended Terms may discontinue use and withdraw." },
+    a4: { title: "Article 4 (Copyright and Rights)", s1: { title: "4.1 Original Works", body: "Copyright of original works uploaded by Authors belongs to the Author. However, the Author grants the Platform a non-exclusive license to: display on the website, translate into 9 languages, create derivative works, and use for service promotion." }, s2: { title: "4.2 Translations", body: "Copyright of auto-translated content belongs to the Platform. Translations are generated using AI technology and provided for reference only. The Platform does not guarantee translation accuracy or completeness." }, s3: { title: "4.3 Database Rights", body: "The Platform's multilingual translation database is protected as a substantial investment under database producer rights (Korean Copyright Act, Article 93)." } },
+    a5: { title: "Article 5 (Use of AI Technology)", items: ["The Platform uses AI technology for automatic translation, content recommendation, search optimization, and service improvement.", "Authors may use AI tools as assistants in the creative process. However, copyright and legal responsibility for the final content rests with the Author.", "Some content may have been created with AI tools. The Platform does not verify AI usage."] },
+    a6: { title: "Article 6 (Author Warranties)", intro: "Authors warrant that:", items: ["Uploaded content is their own creation or they hold lawful rights to it", "Content does not infringe on any third-party intellectual property rights", "Content complies with applicable laws and Platform policies", "The Author bears all legal liability if the above warranties are false"] },
+    a7: { title: "Article 7 (Usage Restrictions)", intro: "The following are strictly prohibited:", items: ["Copying, transmitting, distributing, or publishing Content", "Unauthorized use or redistribution of translations", "Crawling, scraping, or automated data collection", "Commercial use of Content", "Removing or altering copyright notices"], warning: "Violations may result in immediate account suspension, legal action, and claims for damages." },
+    a8: { title: "Article 8 (Disclaimers)", items: ["The Platform is not responsible for the accuracy, legality, or quality of Author-uploaded content.", "The Platform does not guarantee translation accuracy, completeness, or timeliness.", "Service may be interrupted due to maintenance, force majeure, or third-party service failures."] },
+    a9: { title: "Article 9 (Copyright Infringement Reports)", body: "Rights holders who discover copyright infringement may report to contact@narra.kr with: rights holder information, infringing content URL, original work details, and proof of infringement. Upon receipt, the content will be temporarily hidden and the Author notified." },
+    a10: { title: "Article 10 (Service Fees)", items: ["NARRA currently provides all content free of charge.", "Some convenience features (e.g., Premium subscription) may be offered as paid services. Please refer to Article 12 for details.", "Changes to paid service pricing or terms will be announced at least 30 days in advance."] },
+    a11: { title: "Article 11 (Dispute Resolution)", items: ["These Terms are governed by the laws of the Republic of Korea.", "Disputes shall be resolved through mutual consultation.", "If consultation fails, the Seoul Central District Court shall have jurisdiction."] },
+    a12: { title: "Article 12 (Monetization and Service Model)", s1: { title: "12.1 Content Access", body: "NARRA currently provides all episodes free of charge." }, s2: { title: "12.2 Advertising", body: "The Platform may display advertisements (e.g., at the bottom of episodes) to support service operations. Ads are placed in locations that do not interfere with the reading experience." }, s3: { title: "12.3 Paid Subscriptions", items: ["Reader Plus: $4.99/month ($49.99/year)", "Author Starter: $7.99/month ($79.99/year)", "Author Pro: $12.99/month ($129.99/year)", "Prices shown are before tax. VAT may be added depending on your country of residence.", "Paid subscribers access the same content as free users. There is no subscription-exclusive content."] }, s4: { title: "12.4 Author External Support", items: ["Authors may receive support through external platforms such as Patreon and Ko-fi.", "The Platform does not take any commission from external support revenue.", "Premium revenue sharing may be offered to authors with partner agreements, subject to separate terms."] }, s5: { title: "12.5 Policy Changes", body: "Any changes to the monetization policy will be announced at least 30 days in advance." } },
+    a13: { title: "Article 13 (Cancellation and Refunds)", items: ["Members may cancel their subscription within 7 days of payment. However, if the service has been actively used (e.g., translation requests, content creation), cancellation may be limited under Article 17(2) of the Act on Consumer Protection in Electronic Commerce.", "Even after cancellation, the service remains available until the end of the current billing period.", "For annual subscriptions cancelled mid-cycle, the refund is calculated based on the monthly price for the period used, and the remaining balance is refunded.", "Refunds may be requested through the LemonSqueezy payment portal or by contacting contact@narra.kr.", "Cancellation and refund processing may take up to 7 business days."] },
+};
+
+// prettier-ignore
+const ja = { ...en, title: "利用規約", effective: "施行日：2026年3月1日（v1.0）", translationNotice: "⚠️ これは参考翻訳です。法的拘束力を持つのは韓国語原文です。", footer: "本規約はすべてのユーザーに適用されます。サイトの利用により、本規約に同意したものとみなされます。",
+    a1: { title: "第1条（目的）", body: "本規約は、NARRA（以下「プラットフォーム」）が提供するウェブ小説サービス（以下「サービス」）の利用に関し、プラットフォームとユーザー間の権利、義務及び責任事項を規定することを目的とします。" },
+    a13: { title: "第13条（解約及び返金）", items: ["会員は購読決済日から7日以内に申込みを撤回できます。ただし、翻訳リクエスト、コンテンツ作成等のサービスを実際に利用した場合は撤回が制限される場合があります。", "購読を解約しても、既に決済された期間の終了までサービスを継続利用できます。", "年間購読の途中解約時、月額基準で使用期間を算定し、残額を返金します。", "返金はLemonSqueezy決済ポータルまたはcontact@narra.krで申請できます。", "決済取消及び返金処理には最大7営業日かかる場合があります。"] },
+};
+
+// prettier-ignore
+const zh = { ...en, title: "服务条款", effective: "生效日期：2026年3月1日（v1.0）", translationNotice: "⚠️ 此为参考翻译。具有法律约束力的版本为韩文原文。", footer: "本条款适用于所有用户。使用本网站即视为同意本条款。",
+    a1: { title: "第1条（目的）", body: "本条款旨在规定NARRA（以下简称"平台"）提供的网络小说服务（以下简称"服务"）的使用中，平台与用户之间的权利、义务和责任事项。" },
+    a13: { title: "第13条（取消及退款）", items: ["会员可在订阅付款日起7日内撤回申请。但如已实际使用翻译请求、内容创建等服务，撤回可能受到限制。", "取消订阅后，仍可继续使用已付费期间的服务。", "年度订阅中途取消时，按月价计算使用期间，退还剩余金额。", "退款可通过LemonSqueezy支付门户或contact@narra.kr申请。", "取消和退款处理最多需要7个工作日。"] },
+};
+
+// prettier-ignore
+const es = { ...en, title: "Términos de Servicio", effective: "Vigente: 1 de marzo de 2026 (v1.0)", translationNotice: "⚠️ Esta es una traducción de referencia. La versión legalmente vinculante es el original en coreano.", footer: "Estos Términos se aplican a todos los usuarios. Al usar el sitio, se considera que ha aceptado estos Términos.",
+    a1: { title: "Artículo 1 (Propósito)", body: "Estos Términos rigen los derechos, obligaciones y responsabilidades entre NARRA (la \"Plataforma\") y los usuarios con respecto al uso del servicio de novelas web (el \"Servicio\")." },
+    a13: { title: "Artículo 13 (Cancelación y Reembolsos)", items: ["Los miembros pueden cancelar su suscripción dentro de los 7 días posteriores al pago. Sin embargo, si el servicio se ha utilizado activamente (p. ej., solicitudes de traducción, creación de contenido), la cancelación puede estar limitada.", "Incluso después de la cancelación, el servicio permanece disponible hasta el final del período de facturación actual.", "Para suscripciones anuales canceladas a mitad de ciclo, el reembolso se calcula según el precio mensual del período utilizado.", "Los reembolsos se pueden solicitar a través del portal LemonSqueezy o contactando a contact@narra.kr.", "El procesamiento de cancelaciones y reembolsos puede tardar hasta 7 días hábiles."] },
+};
+
+// prettier-ignore
+const fr = { ...en, title: "Conditions d'Utilisation", effective: "En vigueur : 1er mars 2026 (v1.0)", translationNotice: "⚠️ Ceci est une traduction de référence. La version coréenne originale fait foi.", footer: "Ces Conditions s'appliquent à tous les utilisateurs. En utilisant le site, vous êtes réputé avoir accepté ces Conditions.",
+    a1: { title: "Article 1 (Objet)", body: "Les présentes Conditions régissent les droits, obligations et responsabilités entre NARRA (la « Plateforme ») et les utilisateurs concernant l'utilisation du service de romans web (le « Service »)." },
+    a13: { title: "Article 13 (Annulation et Remboursements)", items: ["Les membres peuvent annuler leur abonnement dans les 7 jours suivant le paiement. Toutefois, si le service a été activement utilisé (traductions, création de contenu), l'annulation peut être limitée.", "Même après annulation, le service reste disponible jusqu'à la fin de la période de facturation en cours.", "Pour les abonnements annuels annulés en cours de cycle, le remboursement est calculé sur la base du prix mensuel pour la période utilisée.", "Les remboursements peuvent être demandés via le portail LemonSqueezy ou en contactant contact@narra.kr.", "Le traitement des annulations et remboursements peut prendre jusqu'à 7 jours ouvrés."] },
+};
+
+// prettier-ignore
+const de = { ...en, title: "Nutzungsbedingungen", effective: "Gültig ab: 1. März 2026 (v1.0)", translationNotice: "⚠️ Dies ist eine Referenzübersetzung. Rechtsverbindlich ist die koreanische Originalfassung.", footer: "Diese Bedingungen gelten für alle Nutzer. Durch die Nutzung der Website stimmen Sie diesen Bedingungen zu.",
+    a1: { title: "Artikel 1 (Zweck)", body: "Diese Nutzungsbedingungen regeln die Rechte, Pflichten und Verantwortlichkeiten zwischen NARRA (die „Plattform") und den Nutzern bezüglich der Nutzung des Webnovel-Dienstes (der „Dienst")." },
+    a13: { title: "Artikel 13 (Kündigung und Rückerstattung)", items: ["Mitglieder können ihr Abonnement innerhalb von 7 Tagen nach Zahlung kündigen. Wurde der Dienst aktiv genutzt (z.B. Übersetzungsanfragen, Inhaltserstellung), kann die Kündigung eingeschränkt sein.", "Auch nach der Kündigung bleibt der Dienst bis zum Ende des aktuellen Abrechnungszeitraums verfügbar.", "Bei jährlichen Abonnements, die vorzeitig gekündigt werden, wird die Rückerstattung auf Basis des Monatspreises berechnet.", "Rückerstattungen können über das LemonSqueezy-Portal oder per E-Mail an contact@narra.kr angefordert werden.", "Die Bearbeitung von Kündigungen und Rückerstattungen kann bis zu 7 Werktage dauern."] },
+};
+
+// prettier-ignore
+const pt = { ...en, title: "Termos de Serviço", effective: "Vigente: 1 de março de 2026 (v1.0)", translationNotice: "⚠️ Esta é uma tradução de referência. A versão juridicamente vinculativa é o original em coreano.", footer: "Estes Termos aplicam-se a todos os usuários. Ao usar o site, considera-se que você concordou com estes Termos.",
+    a1: { title: "Artigo 1 (Finalidade)", body: "Estes Termos regem os direitos, obrigações e responsabilidades entre NARRA (a \"Plataforma\") e os usuários em relação ao uso do serviço de novels (o \"Serviço\")." },
+    a13: { title: "Artigo 13 (Cancelamento e Reembolsos)", items: ["Os membros podem cancelar sua assinatura dentro de 7 dias após o pagamento. No entanto, se o serviço foi ativamente utilizado (traduções, criação de conteúdo), o cancelamento pode ser limitado.", "Mesmo após o cancelamento, o serviço permanece disponível até o final do período de faturamento atual.", "Para assinaturas anuais canceladas no meio do ciclo, o reembolso é calculado com base no preço mensal do período utilizado.", "Os reembolsos podem ser solicitados pelo portal LemonSqueezy ou por contact@narra.kr.", "O processamento de cancelamentos e reembolsos pode levar até 7 dias úteis."] },
+};
+
+// prettier-ignore
+const id = { ...en, title: "Ketentuan Layanan", effective: "Berlaku: 1 Maret 2026 (v1.0)", translationNotice: "⚠️ Ini adalah terjemahan referensi. Versi yang mengikat secara hukum adalah versi asli Korea.", footer: "Ketentuan ini berlaku untuk semua pengguna. Dengan menggunakan situs, Anda dianggap telah menyetujui Ketentuan ini.",
+    a1: { title: "Pasal 1 (Tujuan)", body: "Ketentuan ini mengatur hak, kewajiban, dan tanggung jawab antara NARRA (\"Platform\") dan pengguna terkait penggunaan layanan novel web (\"Layanan\")." },
+    a13: { title: "Pasal 13 (Pembatalan dan Pengembalian Dana)", items: ["Anggota dapat membatalkan langganan dalam 7 hari setelah pembayaran. Namun, jika layanan telah aktif digunakan (terjemahan, pembuatan konten), pembatalan dapat dibatasi.", "Setelah pembatalan, layanan tetap tersedia hingga akhir periode penagihan saat ini.", "Untuk langganan tahunan yang dibatalkan di tengah siklus, pengembalian dana dihitung berdasarkan harga bulanan untuk periode yang digunakan.", "Pengembalian dana dapat diminta melalui portal LemonSqueezy atau menghubungi contact@narra.kr.", "Pemrosesan pembatalan dan pengembalian dana dapat memakan waktu hingga 7 hari kerja."] },
+};
+
+type TermsData = typeof ko;
+
+const TRANSLATIONS: Record<string, TermsData> = { ko, en, ja, zh, es, fr, de, pt, id };
+
+export function getTermsTranslations(locale: Locale): TermsData {
+    return TRANSLATIONS[locale] || en;
+}

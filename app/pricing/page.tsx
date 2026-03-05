@@ -216,7 +216,7 @@ export default function PricingPage() {
                 <div style={{
                     background: "#fff", borderRadius: "16px", padding: "32px 20px",
                     border: isCurrentPlan("free") ? "2px solid #243A6E" : "1px solid #e5e5e5",
-                    position: "relative",
+                    position: "relative", display: "flex", flexDirection: "column",
                 }}>
                     {isCurrentPlan("free") && (
                         <div style={{
@@ -232,9 +232,9 @@ export default function PricingPage() {
                     <p style={{ fontSize: "12px", color: "#aaa", textAlign: "center", marginBottom: "24px" }}>
                         {t("pricing.freeForever")}
                     </p>
-                    <ul style={{ listStyle: "none", padding: 0, fontSize: "13px", lineHeight: 2.2, color: "#555" }}>
+                    <ul style={{ listStyle: "none", padding: 0, fontSize: "13px", lineHeight: 2.2, color: "#555", flex: 1 }}>
                         {[t("pricing.free.readAll"), t("pricing.free.trans"), t("pricing.free.novel"), t("pricing.free.entity"), t("pricing.free.adIncluded")].map((f, i) => (
-                            <li key={i}>✅ {f}</li>
+                            <li key={i}>{f}</li>
                         ))}
                     </ul>
                 </div>
@@ -260,6 +260,7 @@ export default function PricingPage() {
                                 position: "relative",
                                 transform: plan.popular ? "scale(1.03)" : "none",
                                 boxShadow: plan.popular ? "0 8px 32px rgba(36,58,110,0.2)" : "none",
+                                display: "flex", flexDirection: "column" as const,
                             }}
                         >
                             {plan.popular && (
@@ -270,7 +271,7 @@ export default function PricingPage() {
                                     color: "#fff", fontSize: "11px", fontWeight: 700,
                                     padding: "4px 14px", borderRadius: "10px",
                                 }}>
-                                    ⭐ {t("pricing.popular")}
+                                    {t("pricing.popular")}
                                 </div>
                             )}
                             {isCurrent && !plan.popular && (
@@ -295,19 +296,26 @@ export default function PricingPage() {
                             <p style={{
                                 fontSize: "12px",
                                 color: plan.popular ? "rgba(255,255,255,0.7)" : "#aaa",
-                                textAlign: "center", marginBottom: "24px",
+                                textAlign: "center", marginBottom: "12px",
                             }}>
                                 {cycle === "annual"
                                     ? `$${price.annual} ${t("pricing.billedAnnually")} · ${savings}% ${t("pricing.off")}`
                                     : `$${price.monthly} ${t("pricing.billedMonthly")}`}
                             </p>
+                            <div style={{
+                                textAlign: "center", marginBottom: "20px",
+                                fontSize: "13px", fontWeight: 600,
+                                color: plan.popular ? "#f9a825" : "#2e7d32",
+                            }}>
+                                1 month free trial
+                            </div>
 
                             <ul style={{
                                 listStyle: "none", padding: 0, fontSize: "13px", lineHeight: 2.2,
-                                color: plan.popular ? "#fff" : "#555",
+                                color: plan.popular ? "#fff" : "#555", flex: 1,
                             }}>
                                 {plan.features.map((f, i) => (
-                                    <li key={i}>{i === 0 && plan.key !== "reader_premium" ? "💎" : "✨"} {f}</li>
+                                    <li key={i}>{f}</li>
                                 ))}
                             </ul>
 
@@ -349,49 +357,7 @@ export default function PricingPage() {
                 })}
             </div>
 
-            {/* Comparison hint */}
-            <div style={{ textAlign: "center", marginBottom: "40px", fontSize: "14px", color: "#667" }}>
-                💡 {t("pricing.comparisonHint")}
-            </div>
 
-            {/* Comparison Table */}
-            <div style={{
-                background: "#fff", borderRadius: "12px",
-                border: "1px solid #e5e5e5", overflow: "hidden", marginBottom: "48px",
-            }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
-                    <thead>
-                        <tr style={{ background: "#f8f8f8" }}>
-                            <th style={{ padding: "14px 16px", textAlign: "left", fontWeight: 600 }}>{t("pricing.feature")}</th>
-                            <th style={{ padding: "14px 16px", textAlign: "center", fontWeight: 600 }}>Free</th>
-                            <th style={{ padding: "14px 16px", textAlign: "center", fontWeight: 600, color: "#4a7cf7" }}>Reader Plus</th>
-                            <th style={{ padding: "14px 16px", textAlign: "center", fontWeight: 600, color: "#243A6E" }}>Starter</th>
-                            <th style={{ padding: "14px 16px", textAlign: "center", fontWeight: 600, color: "#243A6E" }}>Pro ⭐</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {[
-                            { label: t("pricing.readEpisodes"), free: "✅", reader: "✅", starter: "✅", pro: "✅" },
-                            { label: t("pricing.ads"), free: t("pricing.adsYes"), reader: "❌", starter: "❌", pro: "❌" },
-                            { label: t("pricing.earlyAccess"), free: "❌", reader: "✅", starter: "✅", pro: "✅" },
-                            { label: t("pricing.vipBadge"), free: "❌", reader: "✅", starter: "✅", pro: "✅" },
-                            { label: t("pricing.translations"), free: "3/day", reader: "3/day", starter: "15/day", pro: "∞" },
-                            { label: t("pricing.novels"), free: "3/day", reader: "3/day", starter: "10/day", pro: "∞" },
-                            { label: t("pricing.entityExtract"), free: "5/day", reader: "5/day", starter: "20/day", pro: "∞" },
-                            { label: t("pricing.priorityQueue"), free: "❌", reader: "❌", starter: "❌", pro: "✅" },
-                            { label: t("pricing.priceMonthly"), free: "$0", reader: "$4.99", starter: "$7.99", pro: "$12.99" },
-                        ].map((row, i) => (
-                            <tr key={i} style={{ borderTop: "1px solid #f0f0f0" }}>
-                                <td style={{ padding: "12px 16px", fontWeight: 500 }}>{row.label}</td>
-                                <td style={{ padding: "12px 16px", textAlign: "center", color: "#888" }}>{row.free}</td>
-                                <td style={{ padding: "12px 16px", textAlign: "center", color: "#4a7cf7" }}>{row.reader}</td>
-                                <td style={{ padding: "12px 16px", textAlign: "center", color: "#555" }}>{row.starter}</td>
-                                <td style={{ padding: "12px 16px", textAlign: "center", color: "#243A6E", fontWeight: 600 }}>{row.pro}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
 
             {/* FAQ */}
             <div style={{ background: "#fff", borderRadius: "12px", padding: "32px", border: "1px solid #e5e5e5" }}>
