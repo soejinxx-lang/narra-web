@@ -131,14 +131,14 @@ export default function PricingPage() {
 
         const overlayUrl = `https://soejin.gumroad.com/l/${slug}?${params.toString()}`;
 
-        // Gumroad overlay 열기
-        const gumroadOverlay = (window as any).GumroadOverlay;
-        if (gumroadOverlay) {
-            gumroadOverlay.show({ url: overlayUrl });
-        } else {
-            // SDK 로드 안 된 경우 fallback: 새 탭으로 열기
-            window.open(overlayUrl, "_blank");
-        }
+        // Gumroad SDK는 class="gumroad-button" 링크 클릭을 가로채서 오버레이를 띄움
+        const a = document.createElement("a");
+        a.className = "gumroad-button";
+        a.href = overlayUrl;
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => a.remove(), 100);
 
         // 결제 완료 감지를 위한 polling 시작
         startPolling();
