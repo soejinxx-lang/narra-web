@@ -25,17 +25,48 @@ export default function PricingPage() {
     const { t } = useLocale();
 
     const [cycle, setCycle] = useState<BillingCycle>("annual");
-    const [user, setUser] = useState<{ id: string } | null>(null);
+    const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
     const [currentPlan, setCurrentPlan] = useState<PlanType>("free");
     const [loading, setLoading] = useState(true);
     const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState(false);
+    const [pollingStatus, setPollingStatus] = useState<"idle" | "polling" | "done" | "timeout">("idle");
 
+    // 결제 후 success redirect → 플랜 반영 polling
     useEffect(() => {
-        if (typeof window !== "undefined" && window.location.search.includes("success=true")) {
-            setSuccessMessage(true);
-            window.history.replaceState({}, "", "/pricing");
-        }
+        if (typeof window === "undefined" || !window.location.search.includes("success=true")) return;
+        window.history.replaceState({}, "", "/pricing");
+        setSuccessMessage(true);
+        setPollingStatus("polling");
+
+        let attempts = 0;
+        const maxAttempts = 12; // 5초 × 12 = 60초
+
+        const poll = setInterval(async () => {
+            attempts++;
+            try {
+                const rawToken = localStorage.getItem("authToken") || "";
+                let token = rawToken;
+                try { const p = JSON.parse(rawToken); token = p?.value ?? rawToken; } catch { /* raw */ }
+                const res = await fetch(`${STORAGE}/api/user/plan`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.plan_type && data.plan_type !== "free") {
+                        setCurrentPlan(data.plan_type);
+                        setPollingStatus("done");
+                        clearInterval(poll);
+                    }
+                }
+            } catch { /* ignore */ }
+            if (attempts >= maxAttempts) {
+                setPollingStatus("timeout");
+                clearInterval(poll);
+            }
+        }, 5000);
+
+        return () => clearInterval(poll);
     }, []);
 
     useEffect(() => {
@@ -70,7 +101,7 @@ export default function PricingPage() {
             const res = await fetch(`/api/ls/checkout`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user_id: user.id, plan: key }),
+                body: JSON.stringify({ user_id: user.id, plan: key, email: user.email || "" }),
             });
             const data = await res.json();
             if (data.url) {
@@ -147,14 +178,21 @@ export default function PricingPage() {
                 </p>
             </div>
 
-            {/* Success */}
+            {/* Success / Polling Status */}
             {successMessage && (
                 <div style={{
-                    padding: "16px 20px", background: "#e8f5e9", border: "1px solid #66bb6a",
+                    padding: "16px 20px",
+                    background: pollingStatus === "done" ? "#e8f5e9" : pollingStatus === "timeout" ? "#fff3e0" : "#e3f2fd",
+                    border: `1px solid ${pollingStatus === "done" ? "#66bb6a" : pollingStatus === "timeout" ? "#ff9800" : "#42a5f5"}`,
                     borderRadius: "12px", marginBottom: "32px", textAlign: "center",
-                    fontSize: "15px", color: "#2e7d32", fontWeight: 500,
+                    fontSize: "15px",
+                    color: pollingStatus === "done" ? "#2e7d32" : pollingStatus === "timeout" ? "#e65100" : "#1565c0",
+                    fontWeight: 500,
                 }}>
-                    ✨ {t("pricing.successMsg")}
+                    {pollingStatus === "polling" && "⏳ 결제 확인 중... 잠시만 기다려주세요"}
+                    {pollingStatus === "done" && `✨ ${t("pricing.successMsg")}`}
+                    {pollingStatus === "timeout" && "⚠️ 결제 반영에 시간이 걸릴 수 있습니다. 1~2분 후 새로고침해주세요."}
+                    {pollingStatus === "idle" && `✨ ${t("pricing.successMsg")}`}
                 </div>
             )}
 

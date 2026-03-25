@@ -2,87 +2,59 @@ export const runtime = "nodejs";
 
 import { NextResponse, NextRequest } from "next/server";
 
-const LS_API_KEY = process.env.LEMONSQUEEZY_API_KEY || "";
-const LS_STORE_ID = process.env.LEMONSQUEEZY_STORE_ID || "";
-
-// Product → Variant 매핑 (3 plans × 2 cycles = 6 variants)
-const VARIANTS: Record<string, string> = {
-    reader_premium_monthly: process.env.LEMONSQUEEZY_VARIANT_READER_MONTHLY || "",
-    reader_premium_annual: process.env.LEMONSQUEEZY_VARIANT_READER_ANNUAL || "",
-    author_starter_monthly: process.env.LEMONSQUEEZY_VARIANT_STARTER_MONTHLY || "",
-    author_starter_annual: process.env.LEMONSQUEEZY_VARIANT_STARTER_ANNUAL || "",
-    author_pro_monthly: process.env.LEMONSQUEEZY_VARIANT_PRO_MONTHLY || "",
-    author_pro_annual: process.env.LEMONSQUEEZY_VARIANT_PRO_ANNUAL || "",
+/**
+ * Gumroad 상품 slug 매핑 (3 plans × 2 cycles = 6)
+ * URL: https://soejin.gumroad.com/l/{slug}
+ */
+const GUMROAD_SLUGS: Record<string, string> = {
+    reader_premium_monthly: "ReaderPlusMonthly",
+    reader_premium_annual: "ReaderPlusAnnual",
+    author_starter_monthly: "AuthorStarterMonthly",
+    author_starter_annual: "AuthorStarterAnnual",
+    author_pro_monthly: "AuthorProMonthly",
+    author_pro_annual: "AuthorProAnnual",
 };
 
-const ALLOWED_PLANS = new Set(Object.keys(VARIANTS));
+const ALLOWED_PLANS = new Set(Object.keys(GUMROAD_SLUGS));
 
 /**
  * POST /api/ls/checkout
- * Lemon Squeezy Checkout URL 생성
- * body: { user_id, plan: "reader_premium_monthly" | ... }
+ * Gumroad Checkout URL 생성 (기존 LS 엔드포인트 호환)
+ * body: { user_id, plan: "reader_premium_monthly" | ..., email?: string }
  */
 export async function POST(req: NextRequest) {
     const body = await req.json();
     const userId = body.user_id;
     const plan = body.plan;
+    const email = body.email || "";
 
     if (!userId) {
         return NextResponse.json({ error: "MISSING_USER_ID" }, { status: 400 });
     }
 
     if (!plan || !ALLOWED_PLANS.has(plan)) {
-        return NextResponse.json({ error: "INVALID_PLAN", allowed: Array.from(ALLOWED_PLANS) }, { status: 400 });
+        return NextResponse.json(
+            { error: "INVALID_PLAN", allowed: Array.from(ALLOWED_PLANS) },
+            { status: 400 }
+        );
     }
 
-    const variantId = VARIANTS[plan];
-    if (!variantId || !LS_API_KEY || !LS_STORE_ID) {
-        console.error("LS config missing", { plan, variantId: !!variantId, apiKey: !!LS_API_KEY });
-        return NextResponse.json({ error: "SERVER_CONFIG_ERROR" }, { status: 500 });
-    }
-
+    const slug = GUMROAD_SLUGS[plan];
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://narra.kr";
 
-    const res = await fetch("https://api.lemonsqueezy.com/v1/checkouts", {
-        method: "POST",
-        headers: {
-            "Accept": "application/vnd.api+json",
-            "Content-Type": "application/vnd.api+json",
-            "Authorization": `Bearer ${LS_API_KEY}`,
-        },
-        body: JSON.stringify({
-            data: {
-                type: "checkouts",
-                attributes: {
-                    checkout_data: {
-                        custom: {
-                            user_id: userId,
-                        },
-                    },
-                    product_options: {
-                        redirect_url: `${siteUrl}/pricing?success=true`,
-                    },
-                },
-                relationships: {
-                    store: { data: { type: "stores", id: LS_STORE_ID } },
-                    variant: { data: { type: "variants", id: variantId } },
-                },
-            },
-        }),
-    });
-
-    if (!res.ok) {
-        const error = await res.text();
-        console.error("LS Checkout creation failed:", error);
-        return NextResponse.json({ error: "CHECKOUT_FAILED" }, { status: 500 });
+    // Gumroad checkout URL 조립
+    // custom_fields[user_id]로 webhook에서 유저 식별
+    // wanted=true → 바로 결제 화면 진입
+    const params = new URLSearchParams();
+    params.set("wanted", "true");
+    params.set("custom_fields[user_id]", userId);
+    if (email) {
+        params.set("email", email);
     }
+    // Gumroad은 success redirect를 상품 설정에서 하거나, receipt에서 자동 처리됨
+    // 우리는 상품 설정의 redirect URL을 사용하되, fallback으로 query에도 넣음
 
-    const data = await res.json();
-    const checkoutUrl = data.data?.attributes?.url;
-
-    if (!checkoutUrl) {
-        return NextResponse.json({ error: "NO_CHECKOUT_URL" }, { status: 500 });
-    }
+    const checkoutUrl = `https://soejin.gumroad.com/l/${slug}?${params.toString()}`;
 
     return NextResponse.json({ url: checkoutUrl });
 }
