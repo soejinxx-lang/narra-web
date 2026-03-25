@@ -58,11 +58,12 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://gumroad.com https://assets.gumroad.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://gumroad.com https://assets.gumroad.com",
               "img-src 'self' data: https:",
               "font-src 'self' data: https://fonts.gstatic.com",
-              "connect-src 'self' https://www.google-analytics.com https://*.railway.app",
+              "connect-src 'self' https://www.google-analytics.com https://*.railway.app https://api.gumroad.com https://gumroad.com",
+              "frame-src 'self' https://gumroad.com",
             ].join("; "),
           },
           {
