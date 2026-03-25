@@ -16,6 +16,15 @@ const PRICES = {
     author_pro: { monthly: 12.99, annual: 129.99 },
 };
 
+const GUMROAD_SLUGS: Record<string, string> = {
+    reader_premium_monthly: "ReaderPlusMonthly",
+    reader_premium_annual: "ReaderPlusAnnual",
+    author_starter_monthly: "AuthorStarterMonthly",
+    author_starter_annual: "AuthorStarterAnnual",
+    author_pro_monthly: "AuthorProMonthly",
+    author_pro_annual: "AuthorProAnnual",
+};
+
 function getCheckoutKey(plan: PlanType, cycle: BillingCycle): string {
     if (plan === "free") return "";
     return `${plan}_${cycle}`;
@@ -32,15 +41,23 @@ export default function PricingPage() {
     const [successMessage, setSuccessMessage] = useState(false);
     const [pollingStatus, setPollingStatus] = useState<"idle" | "polling" | "done" | "timeout">("idle");
 
-    // 결제 후 success redirect → 플랜 반영 polling
+    // Gumroad JS SDK 로드
     useEffect(() => {
-        if (typeof window === "undefined" || !window.location.search.includes("success=true")) return;
-        window.history.replaceState({}, "", "/pricing");
+        if (document.getElementById("gumroad-js")) return;
+        const script = document.createElement("script");
+        script.id = "gumroad-js";
+        script.src = "https://gumroad.com/js/gumroad.js";
+        script.async = true;
+        document.head.appendChild(script);
+    }, []);
+
+    // 결제 후 polling (Gumroad overlay 닫힌 후 플랜 반영 확인)
+    const startPolling = () => {
         setSuccessMessage(true);
         setPollingStatus("polling");
 
         let attempts = 0;
-        const maxAttempts = 12; // 5초 × 12 = 60초
+        const maxAttempts = 12;
 
         const poll = setInterval(async () => {
             attempts++;
@@ -65,8 +82,13 @@ export default function PricingPage() {
                 clearInterval(poll);
             }
         }, 5000);
+    };
 
-        return () => clearInterval(poll);
+    // 결제 후 success redirect 대응 (이전 호환)
+    useEffect(() => {
+        if (typeof window === "undefined" || !window.location.search.includes("success=true")) return;
+        window.history.replaceState({}, "", "/pricing");
+        startPolling();
     }, []);
 
     useEffect(() => {
@@ -92,28 +114,35 @@ export default function PricingPage() {
         load();
     }, []);
 
-    const handleCheckout = async (plan: PlanType) => {
+    /** Gumroad 오버레이로 결제 (사이트 이탈 없음) */
+    const handleCheckout = (plan: PlanType) => {
         if (!user) { window.location.href = "/login"; return; }
         const key = getCheckoutKey(plan, cycle);
         if (!key) return;
-        setCheckoutLoading(plan);
-        try {
-            const res = await fetch(`/api/ls/checkout`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user_id: user.id, plan: key, email: user.email || "" }),
-            });
-            const data = await res.json();
-            if (data.url) {
-                window.location.href = data.url;
-            } else {
-                alert(t("pricing.checkoutFail"));
-                setCheckoutLoading(null);
-            }
-        } catch {
-            alert(t("pricing.networkError"));
-            setCheckoutLoading(null);
+
+        const slug = GUMROAD_SLUGS[key];
+        if (!slug) return;
+
+        // Gumroad overlay URL 조립
+        const params = new URLSearchParams();
+        params.set("wanted", "true");
+        params.set("custom_fields[user_id]", user.id);
+        if (user.email) params.set("email", user.email);
+
+        const overlayUrl = `https://soejin.gumroad.com/l/${slug}?${params.toString()}`;
+
+        // Gumroad overlay 열기
+        const gumroadOverlay = (window as any).GumroadOverlay;
+        if (gumroadOverlay) {
+            gumroadOverlay.show({ url: overlayUrl });
+        } else {
+            // SDK 로드 안 된 경우 fallback: 새 탭으로 열기
+            window.open(overlayUrl, "_blank");
         }
+
+        // 결제 완료 감지를 위한 polling 시작
+        startPolling();
+        setCheckoutLoading(null);
     };
 
     const isCurrentPlan = (key: PlanType) => currentPlan === key;

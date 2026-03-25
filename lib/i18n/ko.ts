@@ -466,7 +466,7 @@ const ko = {
         subtitle: "9개 언어 자동 번역으로 전 세계 독자에게 다가가세요",
         monthly: "월간",
         annual: "연간",
-        twoMonthsFree: "2개월 무료",
+        twoMonthsFree: "1개월 무료",
         perMonth: "월",
         freeForever: "영원히 무료",
         billedAnnually: "연간 결제",

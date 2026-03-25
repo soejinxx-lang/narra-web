@@ -466,7 +466,7 @@ const zh = {
         subtitle: "9种语言自动翻译，触达全球读者",
         monthly: "月付",
         annual: "年付",
-        twoMonthsFree: "省2个月",
+        twoMonthsFree: "免费1个月",
         perMonth: "月",
         freeForever: "永久免费",
         billedAnnually: "按年计费",

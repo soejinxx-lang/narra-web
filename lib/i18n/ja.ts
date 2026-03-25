@@ -466,7 +466,7 @@ const ja = {
         subtitle: "9言語の自動翻訳で世界中の読者に届けましょう",
         monthly: "月間",
         annual: "年間",
-        twoMonthsFree: "2ヶ月無料",
+        twoMonthsFree: "1ヶ月無料",
         perMonth: "月",
         freeForever: "ずっと無料",
         billedAnnually: "年間決済",

@@ -40,7 +40,7 @@ const de = {
     pricing: {
         title: "Wahlen Sie den passenden Plan",
         subtitle: "Erreichen Sie globale Leser mit automatischer Ubersetzung in 9 Sprachen",
-        monthly: "Monatlich", annual: "Jahrlich", twoMonthsFree: "2 Monate gratis", perMonth: "Mo.", freeForever: "Fur immer kostenlos",
+        monthly: "Monatlich", annual: "Jahrlich", twoMonthsFree: "1 Monat gratis", perMonth: "Mo.", freeForever: "Fur immer kostenlos",
         billedAnnually: "jahrlich abgerechnet", billedMonthly: "monatlich abgerechnet", off: "Rabatt", current: "AKTUELL", popular: "BESTER WERT",
         active: "Aktiv", processing: "Wird verarbeitet...", manage: "Verwalten", checkoutFail: "Checkout konnte nicht erstellt werden", networkError: "Netzwerkfehler",
         successMsg: "Abonnement aktiv.", comparisonHint: "Author Pro ist unbegrenzt für $5 mehr als Starter",

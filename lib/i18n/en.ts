@@ -466,7 +466,7 @@ const en = {
         subtitle: "Reach global readers with automatic translation to 9 languages",
         monthly: "Monthly",
         annual: "Annual",
-        twoMonthsFree: "2 months free",
+        twoMonthsFree: "1 month free",
         perMonth: "mo",
         freeForever: "Free forever",
         billedAnnually: "billed annually",

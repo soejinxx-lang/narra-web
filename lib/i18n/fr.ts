@@ -40,7 +40,7 @@ const fr = {
     pricing: {
         title: "Choisissez le plan qui vous convient",
         subtitle: "Atteignez des lecteurs du monde entier grace a la traduction automatique en 9 langues",
-        monthly: "Mensuel", annual: "Annuel", twoMonthsFree: "2 mois gratuits", perMonth: "mois", freeForever: "Gratuit pour toujours",
+        monthly: "Mensuel", annual: "Annuel", twoMonthsFree: "1 mois gratuit", perMonth: "mois", freeForever: "Gratuit pour toujours",
         billedAnnually: "facture annuellement", billedMonthly: "facture mensuellement", off: "economie", current: "ACTUEL", popular: "MEILLEURE OFFRE",
         active: "Actif", processing: "Traitement...", manage: "Gerer", checkoutFail: "Echec de la creation du paiement", networkError: "Erreur reseau",
         successMsg: "Abonnement actif.", comparisonHint: "Author Pro est illimité pour $5 de plus que Starter",

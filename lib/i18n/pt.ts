@@ -42,7 +42,7 @@ const pt = {
     pricing: {
         title: "Escolha o plano ideal para voce",
         subtitle: "Alcance leitores globais com traducao automatica em 9 idiomas",
-        monthly: "Mensal", annual: "Anual", twoMonthsFree: "2 meses gratis", perMonth: "mes", freeForever: "Gratis para sempre",
+        monthly: "Mensal", annual: "Anual", twoMonthsFree: "1 mês grátis", perMonth: "mes", freeForever: "Gratis para sempre",
         billedAnnually: "cobrado anualmente", billedMonthly: "cobrado mensalmente", off: "desconto", current: "ATUAL", popular: "MELHOR VALOR",
         active: "Ativo", processing: "Processando...", manage: "Gerenciar", checkoutFail: "Falha ao criar o pagamento", networkError: "Erro de rede",
         successMsg: "Assinatura ativa.", comparisonHint: "Author Pro é ilimitado por $5 a mais que Starter",

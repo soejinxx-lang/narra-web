@@ -42,7 +42,7 @@ const id = {
     pricing: {
         title: "Pilih paket yang cocok untuk Anda",
         subtitle: "Jangkau pembaca global dengan terjemahan otomatis ke 9 bahasa",
-        monthly: "Bulanan", annual: "Tahunan", twoMonthsFree: "Gratis 2 bulan", perMonth: "bln", freeForever: "Gratis selamanya",
+        monthly: "Bulanan", annual: "Tahunan", twoMonthsFree: "Gratis 1 bulan", perMonth: "bln", freeForever: "Gratis selamanya",
         billedAnnually: "ditagih tahunan", billedMonthly: "ditagih bulanan", off: "hemat", current: "SAAT INI", popular: "TERBAIK",
         active: "Aktif", processing: "Memproses...", manage: "Kelola", checkoutFail: "Gagal membuat halaman pembayaran", networkError: "Kesalahan jaringan",
         successMsg: "Langganan aktif.", comparisonHint: "Author Pro tak terbatas hanya $5 lebih dari Starter",
