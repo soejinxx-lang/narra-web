@@ -40,18 +40,9 @@ export default function PricingPage() {
     const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState(false);
     const [pollingStatus, setPollingStatus] = useState<"idle" | "polling" | "done" | "timeout">("idle");
+    const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
 
-    // Gumroad JS SDK 로드
-    useEffect(() => {
-        if (document.getElementById("gumroad-js")) return;
-        const script = document.createElement("script");
-        script.id = "gumroad-js";
-        script.src = "https://gumroad.com/js/gumroad.js";
-        script.async = true;
-        document.head.appendChild(script);
-    }, []);
-
-    // 결제 후 polling (Gumroad overlay 닫힌 후 플랜 반영 확인)
+    // 결제 후 polling (overlay 닫힌 후 플랜 반영 확인)
     const startPolling = () => {
         setSuccessMessage(true);
         setPollingStatus("polling");
@@ -114,7 +105,7 @@ export default function PricingPage() {
         load();
     }, []);
 
-    /** Gumroad 오버레이로 결제 (사이트 이탈 없음) */
+    /** 결제 오버레이 열기 (iframe) */
     const handleCheckout = (plan: PlanType) => {
         if (!user) { window.location.href = "/login"; return; }
         const key = getCheckoutKey(plan, cycle);
@@ -123,26 +114,19 @@ export default function PricingPage() {
         const slug = GUMROAD_SLUGS[key];
         if (!slug) return;
 
-        // Gumroad overlay URL 조립
         const params = new URLSearchParams();
         params.set("wanted", "true");
         params.set("custom_fields[user_id]", user.id);
         if (user.email) params.set("email", user.email);
 
-        const overlayUrl = `https://soejin.gumroad.com/l/${slug}?${params.toString()}`;
+        const url = `https://soejin.gumroad.com/l/${slug}?${params.toString()}`;
+        setCheckoutUrl(url);
+    };
 
-        // Gumroad SDK는 class="gumroad-button" 링크 클릭을 가로채서 오버레이를 띄움
-        const a = document.createElement("a");
-        a.className = "gumroad-button";
-        a.href = overlayUrl;
-        a.style.display = "none";
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => a.remove(), 100);
-
-        // 결제 완료 감지를 위한 polling 시작
+    /** 오버레이 닫기 */
+    const closeOverlay = () => {
+        setCheckoutUrl(null);
         startPolling();
-        setCheckoutLoading(null);
     };
 
     const isCurrentPlan = (key: PlanType) => currentPlan === key;
@@ -455,6 +439,42 @@ export default function PricingPage() {
                     main > div:nth-child(4) > div:nth-child(4) { transform: none !important; }
                 }
             `}</style>
+
+            {/* Gumroad Checkout Overlay */}
+            {checkoutUrl && (
+                <div
+                    onClick={closeOverlay}
+                    style={{
+                        position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+                        background: "rgba(0,0,0,0.75)", zIndex: 9999,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                    }}
+                >
+                    <div
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                            position: "relative", width: "90%", maxWidth: "500px",
+                            height: "85vh", borderRadius: "16px", overflow: "hidden",
+                            background: "#fff", boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
+                        }}
+                    >
+                        <button
+                            onClick={closeOverlay}
+                            style={{
+                                position: "absolute", top: "8px", right: "8px", zIndex: 10,
+                                background: "rgba(0,0,0,0.6)", color: "#fff", border: "none",
+                                borderRadius: "50%", width: "32px", height: "32px",
+                                cursor: "pointer", fontSize: "16px", fontWeight: "bold",
+                            }}
+                        >✕</button>
+                        <iframe
+                            src={checkoutUrl}
+                            style={{ width: "100%", height: "100%", border: "none" }}
+                            title="Checkout"
+                        />
+                    </div>
+                </div>
+            )}
         </main>
     );
 }
