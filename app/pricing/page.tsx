@@ -40,7 +40,6 @@ export default function PricingPage() {
     const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState(false);
     const [pollingStatus, setPollingStatus] = useState<"idle" | "polling" | "done" | "timeout">("idle");
-    const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
 
     // 결제 후 polling (overlay 닫힌 후 플랜 반영 확인)
     const startPolling = () => {
@@ -120,13 +119,22 @@ export default function PricingPage() {
         if (user.email) params.set("email", user.email);
 
         const url = `https://soejin.gumroad.com/l/${slug}?${params.toString()}`;
-        setCheckoutUrl(url);
-    };
 
-    /** 오버레이 닫기 */
-    const closeOverlay = () => {
-        setCheckoutUrl(null);
-        startPolling();
+        // 중앙 정렬 팝업
+        const w = 520, h = 700;
+        const left = (screen.width - w) / 2;
+        const top = (screen.height - h) / 2;
+        const popup = window.open(url, "gumroad_checkout", `width=${w},height=${h},left=${left},top=${top},scrollbars=yes`);
+
+        // 팝업 닫힘 감지 → polling 시작
+        if (popup) {
+            const checkClosed = setInterval(() => {
+                if (popup.closed) {
+                    clearInterval(checkClosed);
+                    startPolling();
+                }
+            }, 500);
+        }
     };
 
     const isCurrentPlan = (key: PlanType) => currentPlan === key;
@@ -439,42 +447,6 @@ export default function PricingPage() {
                     main > div:nth-child(4) > div:nth-child(4) { transform: none !important; }
                 }
             `}</style>
-
-            {/* Gumroad Checkout Overlay */}
-            {checkoutUrl && (
-                <div
-                    onClick={closeOverlay}
-                    style={{
-                        position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-                        background: "rgba(0,0,0,0.75)", zIndex: 9999,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                    }}
-                >
-                    <div
-                        onClick={(e) => e.stopPropagation()}
-                        style={{
-                            position: "relative", width: "90%", maxWidth: "500px",
-                            height: "85vh", borderRadius: "16px", overflow: "hidden",
-                            background: "#fff", boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
-                        }}
-                    >
-                        <button
-                            onClick={closeOverlay}
-                            style={{
-                                position: "absolute", top: "8px", right: "8px", zIndex: 10,
-                                background: "rgba(0,0,0,0.6)", color: "#fff", border: "none",
-                                borderRadius: "50%", width: "32px", height: "32px",
-                                cursor: "pointer", fontSize: "16px", fontWeight: "bold",
-                            }}
-                        >✕</button>
-                        <iframe
-                            src={checkoutUrl}
-                            style={{ width: "100%", height: "100%", border: "none" }}
-                            title="Checkout"
-                        />
-                    </div>
-                </div>
-            )}
         </main>
     );
 }
