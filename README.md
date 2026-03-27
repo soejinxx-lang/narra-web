@@ -1,6 +1,8 @@
 # 📱 NARRA Web — 독자용 프론트엔드
 
 > [narra.kr](https://narra.kr) — 다국어 웹소설 읽기·커뮤니티·구독 플랫폼
+>
+> 📚 공통 문서: [docs/](../docs/) | 📜 규칙: [docs/rules.md](../docs/rules.md)
 
 ---
 
@@ -218,3 +220,21 @@ npm run test:e2e     # E2E 테스트
 - **도메인**: narra.kr
 - **방식**: `git push` → 자동 배포
 - **환경변수**: Vercel UI에서 관리
+
+---
+
+## 변경 이력
+
+### 2026-03-27
+- Gumroad 결제 연동: 팝업 윈도우 방식 (`pricing/page.tsx`)
+- CSP에 gumroad.com 추가 (`next.config.ts`)
+- i18n "2 months free" → "1 month free" 전체 9개 언어 수정
+
+### 2026-03-03
+- 사이트 성능 최적화 (동적 i18n 임포트, 서버 컴포넌트 전환)
+
+### 2026-01-28
+- 인도네시아어 언어 선택 UI 수정
+
+### 2026-01-27
+- 조회수 API 프록시 추가
