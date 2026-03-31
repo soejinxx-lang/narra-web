@@ -2,6 +2,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
+import type { Metadata } from "next";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { fetchNovelById, fetchEpisodesByNovelId } from "@/lib/api";
@@ -15,6 +16,38 @@ type PageProps = {
     id: string;
   }>;
 };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  try {
+    const novel = await fetchNovelById(id);
+    if (!novel) return {};
+    const desc = novel.description
+      ? novel.description.slice(0, 160)
+      : `Read ${novel.title} in 9 languages on NARRA`;
+    return {
+      title: novel.title,
+      description: desc,
+      openGraph: {
+        type: "article",
+        title: novel.title,
+        description: desc,
+        url: `https://www.narra.kr/novels/${id}`,
+        ...(novel.cover_url && {
+          images: [{ url: novel.cover_url, width: 600, height: 900, alt: novel.title }],
+        }),
+      },
+      twitter: {
+        card: novel.cover_url ? "summary_large_image" : "summary",
+        title: novel.title,
+        description: desc,
+        ...(novel.cover_url && { images: [novel.cover_url] }),
+      },
+    };
+  } catch {
+    return {};
+  }
+}
 
 export default async function Page({ params }: PageProps) {
   const { id } = await params;

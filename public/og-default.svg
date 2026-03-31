@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d0d2a"/>
+      <stop offset="100%" style="stop-color:#1a1a3e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <text x="600" y="250" font-family="Georgia, serif" font-size="72" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="12">NARRA</text>
+  <text x="600" y="320" font-family="system-ui, sans-serif" font-size="24" fill="#a0a0c0" text-anchor="middle">Web novels that feel written just for you.</text>
+  <text x="600" y="380" font-family="system-ui, sans-serif" font-size="18" fill="#6b6b9b" text-anchor="middle">9 Languages · AI Translation · Free to Read</text>
+  <text x="600" y="550" font-family="system-ui, sans-serif" font-size="16" fill="#4a4a6a" text-anchor="middle">narra.kr</text>
+</svg>

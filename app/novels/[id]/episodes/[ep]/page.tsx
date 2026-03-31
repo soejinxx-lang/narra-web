@@ -1,10 +1,53 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { fetchEpisodesByNovelId, fetchNovelById, fetchEpisodeContent } from "@/lib/api";
 import EpisodeReader from "@/app/components/EpisodeReader";
+
+type PageProps = {
+  params: Promise<{ id: string; ep: string }>;
+};
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id, ep } = await params;
+  try {
+    const [novel, episodes] = await Promise.all([
+      fetchNovelById(id).catch(() => null),
+      fetchEpisodesByNovelId(id).catch(() => []),
+    ]);
+    const episode = episodes.find((e: any) => String(e.ep) === String(ep));
+    const novelTitle = novel?.title ?? "Novel";
+    const epTitle = episode?.title
+      ? `EP ${ep}: ${episode.title}`
+      : `Episode ${ep}`;
+    const title = `${epTitle} — ${novelTitle}`;
+    const desc = `Read ${novelTitle} Episode ${ep} in 9 languages on NARRA. AI translation with consistent proper nouns.`;
+    return {
+      title,
+      description: desc,
+      openGraph: {
+        type: "article",
+        title,
+        description: desc,
+        url: `https://www.narra.kr/novels/${id}/episodes/${ep}`,
+        ...(novel?.cover_url && {
+          images: [{ url: novel.cover_url, width: 600, height: 900, alt: novelTitle }],
+        }),
+      },
+      twitter: {
+        card: novel?.cover_url ? "summary_large_image" : "summary",
+        title,
+        description: desc,
+        ...(novel?.cover_url && { images: [novel.cover_url] }),
+      },
+    };
+  } catch {
+    return {};
+  }
+}
 
 async function fetchEpisode(id: string, ep: string) {
   const episodes = await fetchEpisodesByNovelId(id);

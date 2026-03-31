@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import MusicPlayer from "./components/MusicPlayer";
 import BottomBar from "./components/BottomBar";
 import Providers from "./components/Providers";
+import RefTracker from "./components/RefTracker";
 import { getDictionary } from "../lib/i18n/getDictionary";
 import type { Locale } from "../lib/i18n";
 
@@ -21,8 +22,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NARRA",
-  description: "Discover stories from around the world. Web novels that feel written just for you.",
+  metadataBase: new URL("https://www.narra.kr"),
+  title: {
+    default: "NARRA — Web Novels in 9 Languages",
+    template: "%s | NARRA",
+  },
+  description: "Read Korean web novels translated into 9 languages with AI-locked proper nouns. Names stay consistent chapter to chapter.",
   robots: {
     index: true,
     follow: true,
@@ -31,6 +36,27 @@ export const metadata: Metadata = {
   },
   other: {
     'robots': 'noai, noimageai',
+  },
+  openGraph: {
+    type: "website",
+    siteName: "NARRA",
+    title: "NARRA — Web Novels in 9 Languages",
+    description: "Korean web novels with AI translation that actually keeps names consistent. 9 languages, free to read.",
+    url: "https://www.narra.kr",
+    images: [
+      {
+        url: "/og-default.svg",
+        width: 1200,
+        height: 630,
+        alt: "NARRA — Web novels that feel written just for you",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NARRA — Web Novels in 9 Languages",
+    description: "Korean web novels with AI translation that keeps names consistent chapter to chapter.",
+    images: ["/og-default.svg"],
   },
 };
 
@@ -74,6 +100,7 @@ export default async function RootLayout({
         </Script>
 
         <Providers initialLocale={locale} initialDict={dict}>
+          <RefTracker />
           <Header />
           <main
             style={{
